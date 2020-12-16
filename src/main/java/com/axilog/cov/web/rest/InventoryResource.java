@@ -102,13 +102,21 @@ public class InventoryResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of inventories in body.
      */
     @GetMapping("/inventories")
-    public ResponseEntity<InventoryRepresentation> getAllInventories(InventoryCriteria criteria, Pageable pageable) {
+    public ResponseEntity<List<Inventory>> getAllInventories(InventoryCriteria criteria, Pageable pageable) {
         log.debug("REST request to get Inventories by criteria: {}", criteria);
         Page<Inventory> page = inventoryQueryService.findByCriteria(criteria, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-        List<Inventory> inventories = page.getContent();
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+    
+    @GetMapping("/inventory/list")
+    public ResponseEntity<InventoryRepresentation> getAllRepresentationInventories(InventoryCriteria criteria, Pageable pageable) {
+        log.debug("REST request to get Inventories by criteria: {}", criteria);
+//        Page<Inventory> page = inventoryQueryService.findByCriteria(criteria);
+//        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        List<Inventory> inventories = inventoryQueryService.findAll();
         InventoryRepresentation inventoryRepresentation = inventoryMapper.toInventoryRepresentation(inventories);
-        return ResponseEntity.ok().headers(headers).body(inventoryRepresentation);
+        return ResponseEntity.ok().body(inventoryRepresentation);
     }
 
     /**
