@@ -3,7 +3,7 @@ import { ICategory } from 'app/shared/model/category.model';
 
 export interface IProduct {
   id?: number;
-  productId?: string;
+  productId?: number;
   description?: string;
   productCode?: string;
   inventories?: IInventory[];
@@ -13,7 +13,7 @@ export interface IProduct {
 export class Product implements IProduct {
   constructor(
     public id?: number,
-    public productId?: string,
+    public productId?: number,
     public description?: string,
     public productCode?: string,
     public inventories?: IInventory[],

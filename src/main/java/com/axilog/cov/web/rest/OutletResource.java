@@ -1,17 +1,14 @@
 package com.axilog.cov.web.rest;
 
 import com.axilog.cov.domain.Outlet;
-import com.axilog.cov.service.OutletQueryService;
 import com.axilog.cov.service.OutletService;
-import com.axilog.cov.service.dto.OutletCriteria;
 import com.axilog.cov.web.rest.errors.BadRequestAlertException;
+import com.axilog.cov.service.dto.OutletCriteria;
+import com.axilog.cov.service.OutletQueryService;
+
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,9 +16,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * REST controller for managing {@link com.axilog.cov.domain.Outlet}.
@@ -29,6 +31,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @RestController
 @RequestMapping("/api")
 public class OutletResource {
+
     private final Logger log = LoggerFactory.getLogger(OutletResource.class);
 
     private static final String ENTITY_NAME = "outlet";
@@ -59,8 +62,7 @@ public class OutletResource {
             throw new BadRequestAlertException("A new outlet cannot already have an ID", ENTITY_NAME, "idexists");
         }
         Outlet result = outletService.save(outlet);
-        return ResponseEntity
-            .created(new URI("/api/outlets/" + result.getId()))
+        return ResponseEntity.created(new URI("/api/outlets/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
@@ -81,8 +83,7 @@ public class OutletResource {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
         Outlet result = outletService.save(outlet);
-        return ResponseEntity
-            .ok()
+        return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, outlet.getId().toString()))
             .body(result);
     }
@@ -137,9 +138,6 @@ public class OutletResource {
     public ResponseEntity<Void> deleteOutlet(@PathVariable Long id) {
         log.debug("REST request to delete Outlet : {}", id);
         outletService.delete(id);
-        return ResponseEntity
-            .noContent()
-            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
-            .build();
+        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
     }
 }

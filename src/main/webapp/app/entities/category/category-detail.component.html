@@ -16,12 +16,6 @@
                 <dd>
                     <span>{{ category.descriptionCategory }}</span>
                 </dd>
-                <dt><span jhiTranslate="covlabServerApp.category.product">Product</span></dt>
-                <dd>
-                    <div *ngIf="category.product">
-                        <a [routerLink]="['/product', category.product?.id, 'view']">{{ category.product?.id }}</a>
-                    </div>
-                </dd>
             </dl>
 
             <button type="submit"

@@ -1,9 +1,8 @@
 package com.axilog.cov.domain;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import com.axilog.cov.web.rest.TestUtil;
 import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
+import com.axilog.cov.web.rest.TestUtil;
 
 public class InventoryTest {
 

@@ -1,9 +1,11 @@
 package com.axilog.cov.domain;
 
+
+import javax.persistence.*;
+
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.*;
 
 /**
  * A Outlet.
@@ -11,6 +13,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "outlet")
 public class Outlet implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -18,19 +21,22 @@ public class Outlet implements Serializable {
     private Long id;
 
     @Column(name = "outlet_id")
-    private String outletId;
+    private Long outletId;
 
     @Column(name = "outlet_name")
     private String outletName;
 
-    @Column(name = "outlet_location")
-    private String outletLocation;
+    @Column(name = "outlet_region")
+    private String outletRegion;
+
+    @Column(name = "outlet_adress")
+    private String outletAdress;
 
     @Column(name = "outlet_lat")
-    private String outletLat;
+    private Double outletLat;
 
-    @Column(name = "outlet_long")
-    private String outletLong;
+    @Column(name = "outlet_lng")
+    private Double outletLng;
 
     @OneToMany(mappedBy = "outlet")
     private Set<Inventory> inventories = new HashSet<>();
@@ -44,16 +50,16 @@ public class Outlet implements Serializable {
         this.id = id;
     }
 
-    public String getOutletId() {
+    public Long getOutletId() {
         return outletId;
     }
 
-    public Outlet outletId(String outletId) {
+    public Outlet outletId(Long outletId) {
         this.outletId = outletId;
         return this;
     }
 
-    public void setOutletId(String outletId) {
+    public void setOutletId(Long outletId) {
         this.outletId = outletId;
     }
 
@@ -70,43 +76,56 @@ public class Outlet implements Serializable {
         this.outletName = outletName;
     }
 
-    public String getOutletLocation() {
-        return outletLocation;
+    public String getOutletRegion() {
+        return outletRegion;
     }
 
-    public Outlet outletLocation(String outletLocation) {
-        this.outletLocation = outletLocation;
+    public Outlet outletRegion(String outletRegion) {
+        this.outletRegion = outletRegion;
         return this;
     }
 
-    public void setOutletLocation(String outletLocation) {
-        this.outletLocation = outletLocation;
+    public void setOutletRegion(String outletRegion) {
+        this.outletRegion = outletRegion;
     }
 
-    public String getOutletLat() {
+    public String getOutletAdress() {
+        return outletAdress;
+    }
+
+    public Outlet outletAdress(String outletAdress) {
+        this.outletAdress = outletAdress;
+        return this;
+    }
+
+    public void setOutletAdress(String outletAdress) {
+        this.outletAdress = outletAdress;
+    }
+
+    public Double getOutletLat() {
         return outletLat;
     }
 
-    public Outlet outletLat(String outletLat) {
+    public Outlet outletLat(Double outletLat) {
         this.outletLat = outletLat;
         return this;
     }
 
-    public void setOutletLat(String outletLat) {
+    public void setOutletLat(Double outletLat) {
         this.outletLat = outletLat;
     }
 
-    public String getOutletLong() {
-        return outletLong;
+    public Double getOutletLng() {
+        return outletLng;
     }
 
-    public Outlet outletLong(String outletLong) {
-        this.outletLong = outletLong;
+    public Outlet outletLng(Double outletLng) {
+        this.outletLng = outletLng;
         return this;
     }
 
-    public void setOutletLong(String outletLong) {
-        this.outletLong = outletLong;
+    public void setOutletLng(Double outletLng) {
+        this.outletLng = outletLng;
     }
 
     public Set<Inventory> getInventories() {
@@ -133,7 +152,6 @@ public class Outlet implements Serializable {
     public void setInventories(Set<Inventory> inventories) {
         this.inventories = inventories;
     }
-
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -157,11 +175,12 @@ public class Outlet implements Serializable {
     public String toString() {
         return "Outlet{" +
             "id=" + getId() +
-            ", outletId='" + getOutletId() + "'" +
+            ", outletId=" + getOutletId() +
             ", outletName='" + getOutletName() + "'" +
-            ", outletLocation='" + getOutletLocation() + "'" +
-            ", outletLat='" + getOutletLat() + "'" +
-            ", outletLong='" + getOutletLong() + "'" +
+            ", outletRegion='" + getOutletRegion() + "'" +
+            ", outletAdress='" + getOutletAdress() + "'" +
+            ", outletLat=" + getOutletLat() +
+            ", outletLng=" + getOutletLng() +
             "}";
     }
 }

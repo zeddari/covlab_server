@@ -18,9 +18,10 @@
       },
       "outletId": "Outlet Id",
       "outletName": "Outlet Name",
-      "outletLocation": "Outlet Location",
+      "outletRegion": "Outlet Region",
+      "outletAdress": "Outlet Adress",
       "outletLat": "Outlet Lat",
-      "outletLong": "Outlet Long",
+      "outletLng": "Outlet Lng",
       "inventory": "Inventory"
     }
   }

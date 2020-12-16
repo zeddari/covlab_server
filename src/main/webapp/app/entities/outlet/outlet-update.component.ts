@@ -19,9 +19,10 @@ export class OutletUpdateComponent implements OnInit {
     id: [],
     outletId: [],
     outletName: [],
-    outletLocation: [],
+    outletRegion: [],
+    outletAdress: [],
     outletLat: [],
-    outletLong: [],
+    outletLng: [],
   });
 
   constructor(protected outletService: OutletService, protected activatedRoute: ActivatedRoute, private fb: FormBuilder) {}
@@ -37,9 +38,10 @@ export class OutletUpdateComponent implements OnInit {
       id: outlet.id,
       outletId: outlet.outletId,
       outletName: outlet.outletName,
-      outletLocation: outlet.outletLocation,
+      outletRegion: outlet.outletRegion,
+      outletAdress: outlet.outletAdress,
       outletLat: outlet.outletLat,
-      outletLong: outlet.outletLong,
+      outletLng: outlet.outletLng,
     });
   }
 
@@ -63,9 +65,10 @@ export class OutletUpdateComponent implements OnInit {
       id: this.editForm.get(['id'])!.value,
       outletId: this.editForm.get(['outletId'])!.value,
       outletName: this.editForm.get(['outletName'])!.value,
-      outletLocation: this.editForm.get(['outletLocation'])!.value,
+      outletRegion: this.editForm.get(['outletRegion'])!.value,
+      outletAdress: this.editForm.get(['outletAdress'])!.value,
       outletLat: this.editForm.get(['outletLat'])!.value,
-      outletLong: this.editForm.get(['outletLong'])!.value,
+      outletLng: this.editForm.get(['outletLng'])!.value,
     };
   }
 

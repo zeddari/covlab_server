@@ -4,12 +4,9 @@ import { HttpResponse } from '@angular/common/http';
 import { FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 import { ICategory, Category } from 'app/shared/model/category.model';
 import { CategoryService } from './category.service';
-import { IProduct } from 'app/shared/model/product.model';
-import { ProductService } from 'app/entities/product/product.service';
 
 @Component({
   selector: 'jhi-category-update',
@@ -17,47 +14,18 @@ import { ProductService } from 'app/entities/product/product.service';
 })
 export class CategoryUpdateComponent implements OnInit {
   isSaving = false;
-  products: IProduct[] = [];
 
   editForm = this.fb.group({
     id: [],
     categoryId: [],
     descriptionCategory: [],
-    product: [],
   });
 
-  constructor(
-    protected categoryService: CategoryService,
-    protected productService: ProductService,
-    protected activatedRoute: ActivatedRoute,
-    private fb: FormBuilder
-  ) {}
+  constructor(protected categoryService: CategoryService, protected activatedRoute: ActivatedRoute, private fb: FormBuilder) {}
 
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ category }) => {
       this.updateForm(category);
-
-      this.productService
-        .query({ 'categoryId.specified': 'false' })
-        .pipe(
-          map((res: HttpResponse<IProduct[]>) => {
-            return res.body || [];
-          })
-        )
-        .subscribe((resBody: IProduct[]) => {
-          if (!category.product || !category.product.id) {
-            this.products = resBody;
-          } else {
-            this.productService
-              .find(category.product.id)
-              .pipe(
-                map((subRes: HttpResponse<IProduct>) => {
-                  return subRes.body ? [subRes.body].concat(resBody) : resBody;
-                })
-              )
-              .subscribe((concatRes: IProduct[]) => (this.products = concatRes));
-          }
-        });
     });
   }
 
@@ -66,7 +34,6 @@ export class CategoryUpdateComponent implements OnInit {
       id: category.id,
       categoryId: category.categoryId,
       descriptionCategory: category.descriptionCategory,
-      product: category.product,
     });
   }
 
@@ -90,7 +57,6 @@ export class CategoryUpdateComponent implements OnInit {
       id: this.editForm.get(['id'])!.value,
       categoryId: this.editForm.get(['categoryId'])!.value,
       descriptionCategory: this.editForm.get(['descriptionCategory'])!.value,
-      product: this.editForm.get(['product'])!.value,
     };
   }
 
@@ -108,9 +74,5 @@ export class CategoryUpdateComponent implements OnInit {
 
   protected onSaveError(): void {
     this.isSaving = false;
-  }
-
-  trackById(index: number, item: IProduct): any {
-    return item.id;
   }
 }

@@ -1,14 +1,17 @@
 package com.axilog.cov.service;
 
 import com.axilog.cov.domain.Outlet;
-import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import java.util.Optional;
 
 /**
  * Service Interface for managing {@link Outlet}.
  */
 public interface OutletService {
+
     /**
      * Save a outlet.
      *
@@ -24,6 +27,7 @@ public interface OutletService {
      * @return the list of entities.
      */
     Page<Outlet> findAll(Pageable pageable);
+
 
     /**
      * Get the "id" outlet.

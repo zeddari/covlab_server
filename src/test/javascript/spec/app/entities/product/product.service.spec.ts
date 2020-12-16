@@ -20,7 +20,7 @@ describe('Service Tests', () => {
       service = injector.get(ProductService);
       httpMock = injector.get(HttpTestingController);
 
-      elemDefault = new Product(0, 'AAAAAAA', 'AAAAAAA', 'AAAAAAA');
+      elemDefault = new Product(0, 0, 'AAAAAAA', 'AAAAAAA');
     });
 
     describe('Service methods', () => {
@@ -54,7 +54,7 @@ describe('Service Tests', () => {
       it('should update a Product', () => {
         const returnedFromService = Object.assign(
           {
-            productId: 'BBBBBB',
+            productId: 1,
             description: 'BBBBBB',
             productCode: 'BBBBBB',
           },
@@ -73,7 +73,7 @@ describe('Service Tests', () => {
       it('should return a list of Product', () => {
         const returnedFromService = Object.assign(
           {
-            productId: 'BBBBBB',
+            productId: 1,
             description: 'BBBBBB',
             productCode: 'BBBBBB',
           },

@@ -1,34 +1,34 @@
 
 entity Inventory {
-	inventoryId       		String
-    itemCode         		String
-    description     		String
-    quantitiesInHand 		String
-    quantitiesInTransit 	String
+	inventoryId       		Long
+    quantitiesInHand 		Double
+    quantitiesInTransit 	Double
     uom 					String
-    actualDailyConsumption  String
-    recordLevel 			String
-    suggestedQuantity 		String
-    expectedCoveringDay     String
-    quantity         		String
-    location		        String
-    lasterUpdated			LocalDate
+    actualDailyConsumption  Double
+    actualAvgConsumption	Double
+    reOrderLevel 			String
+    suggestedQuantity 		Double
+    expectedCoveringDay     Double
+    lastUpdatedAt			LocalDate
+    status					String
 }
 
 entity Outlet {
-	outletId 			String
+	outletId 			Long
 	outletName 			String
-    outletLocation 		String
-    outletLat 			String
-    outletLong 			String
+    outletRegion   	 	String
+    outletAdress		String
+    outletLat 			Double
+    outletLng 			Double
+    outletType 			String
 }
 	 entity Product {
- 	productId 		String
-    description 	String
-    productCode 	String
+ 	productId 			Long
+    description 		String
+    productCode	 		String
  }
     entity Category {
-    categoryId 			String
+    categoryId 			Long
     descriptionCategory String
   
     }
@@ -36,13 +36,11 @@ entity Outlet {
 //relationship
 relationship OneToMany {
     Outlet{inventory} to Inventory{outlet}
-}
-relationship OneToOne {
     Category{product} to Product{category}
+    Product{inventory} to Inventory{product}
 }
-relationship OneToMany {
-   Product{inventory} to Inventory{product}
-}
+
+
 
 
 // Set pagination options

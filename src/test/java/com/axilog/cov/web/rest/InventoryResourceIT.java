@@ -1,22 +1,14 @@
 package com.axilog.cov.web.rest;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasItem;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
 import com.axilog.cov.CovlabServerApp;
 import com.axilog.cov.domain.Inventory;
 import com.axilog.cov.domain.Outlet;
 import com.axilog.cov.domain.Product;
 import com.axilog.cov.repository.InventoryRepository;
-import com.axilog.cov.service.InventoryQueryService;
 import com.axilog.cov.service.InventoryService;
 import com.axilog.cov.service.dto.InventoryCriteria;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.List;
-import javax.persistence.EntityManager;
+import com.axilog.cov.service.InventoryQueryService;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +18,15 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+import javax.persistence.EntityManager;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasItem;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * Integration tests for the {@link InventoryResource} REST controller.
@@ -34,45 +35,47 @@ import org.springframework.transaction.annotation.Transactional;
 @AutoConfigureMockMvc
 @WithMockUser
 public class InventoryResourceIT {
-    private static final String DEFAULT_INVENTORY_ID = "AAAAAAAAAA";
-    private static final String UPDATED_INVENTORY_ID = "BBBBBBBBBB";
 
-    private static final String DEFAULT_ITEM_CODE = "AAAAAAAAAA";
-    private static final String UPDATED_ITEM_CODE = "BBBBBBBBBB";
+    private static final Long DEFAULT_INVENTORY_ID = 1L;
+    private static final Long UPDATED_INVENTORY_ID = 2L;
+    private static final Long SMALLER_INVENTORY_ID = 1L - 1L;
 
-    private static final String DEFAULT_DESCRIPTION = "AAAAAAAAAA";
-    private static final String UPDATED_DESCRIPTION = "BBBBBBBBBB";
+    private static final Double DEFAULT_QUANTITIES_IN_HAND = 1D;
+    private static final Double UPDATED_QUANTITIES_IN_HAND = 2D;
+    private static final Double SMALLER_QUANTITIES_IN_HAND = 1D - 1D;
 
-    private static final String DEFAULT_QUANTITIES_IN_HAND = "AAAAAAAAAA";
-    private static final String UPDATED_QUANTITIES_IN_HAND = "BBBBBBBBBB";
-
-    private static final String DEFAULT_QUANTITIES_IN_TRANSIT = "AAAAAAAAAA";
-    private static final String UPDATED_QUANTITIES_IN_TRANSIT = "BBBBBBBBBB";
+    private static final Double DEFAULT_QUANTITIES_IN_TRANSIT = 1D;
+    private static final Double UPDATED_QUANTITIES_IN_TRANSIT = 2D;
+    private static final Double SMALLER_QUANTITIES_IN_TRANSIT = 1D - 1D;
 
     private static final String DEFAULT_UOM = "AAAAAAAAAA";
     private static final String UPDATED_UOM = "BBBBBBBBBB";
 
-    private static final String DEFAULT_ACTUAL_DAILY_CONSUMPTION = "AAAAAAAAAA";
-    private static final String UPDATED_ACTUAL_DAILY_CONSUMPTION = "BBBBBBBBBB";
+    private static final Double DEFAULT_ACTUAL_DAILY_CONSUMPTION = 1D;
+    private static final Double UPDATED_ACTUAL_DAILY_CONSUMPTION = 2D;
+    private static final Double SMALLER_ACTUAL_DAILY_CONSUMPTION = 1D - 1D;
 
-    private static final String DEFAULT_RECORD_LEVEL = "AAAAAAAAAA";
-    private static final String UPDATED_RECORD_LEVEL = "BBBBBBBBBB";
+    private static final Double DEFAULT_ACTUAL_AVG_CONSUMPTION = 1D;
+    private static final Double UPDATED_ACTUAL_AVG_CONSUMPTION = 2D;
+    private static final Double SMALLER_ACTUAL_AVG_CONSUMPTION = 1D - 1D;
 
-    private static final String DEFAULT_SUGGESTED_QUANTITY = "AAAAAAAAAA";
-    private static final String UPDATED_SUGGESTED_QUANTITY = "BBBBBBBBBB";
+    private static final String DEFAULT_RE_ORDER_LEVEL = "AAAAAAAAAA";
+    private static final String UPDATED_RE_ORDER_LEVEL = "BBBBBBBBBB";
 
-    private static final String DEFAULT_EXPECTED_COVERING_DAY = "AAAAAAAAAA";
-    private static final String UPDATED_EXPECTED_COVERING_DAY = "BBBBBBBBBB";
+    private static final Double DEFAULT_SUGGESTED_QUANTITY = 1D;
+    private static final Double UPDATED_SUGGESTED_QUANTITY = 2D;
+    private static final Double SMALLER_SUGGESTED_QUANTITY = 1D - 1D;
 
-    private static final String DEFAULT_QUANTITY = "AAAAAAAAAA";
-    private static final String UPDATED_QUANTITY = "BBBBBBBBBB";
+    private static final Double DEFAULT_EXPECTED_COVERING_DAY = 1D;
+    private static final Double UPDATED_EXPECTED_COVERING_DAY = 2D;
+    private static final Double SMALLER_EXPECTED_COVERING_DAY = 1D - 1D;
 
-    private static final String DEFAULT_LOCATION = "AAAAAAAAAA";
-    private static final String UPDATED_LOCATION = "BBBBBBBBBB";
+    private static final LocalDate DEFAULT_LAST_UPDATED_AT = LocalDate.ofEpochDay(0L);
+    private static final LocalDate UPDATED_LAST_UPDATED_AT = LocalDate.now(ZoneId.systemDefault());
+    private static final LocalDate SMALLER_LAST_UPDATED_AT = LocalDate.ofEpochDay(-1L);
 
-    private static final LocalDate DEFAULT_LASTER_UPDATED = LocalDate.ofEpochDay(0L);
-    private static final LocalDate UPDATED_LASTER_UPDATED = LocalDate.now(ZoneId.systemDefault());
-    private static final LocalDate SMALLER_LASTER_UPDATED = LocalDate.ofEpochDay(-1L);
+    private static final String DEFAULT_STATUS = "AAAAAAAAAA";
+    private static final String UPDATED_STATUS = "BBBBBBBBBB";
 
     @Autowired
     private InventoryRepository inventoryRepository;
@@ -100,21 +103,18 @@ public class InventoryResourceIT {
     public static Inventory createEntity(EntityManager em) {
         Inventory inventory = new Inventory()
             .inventoryId(DEFAULT_INVENTORY_ID)
-            .itemCode(DEFAULT_ITEM_CODE)
-            .description(DEFAULT_DESCRIPTION)
             .quantitiesInHand(DEFAULT_QUANTITIES_IN_HAND)
             .quantitiesInTransit(DEFAULT_QUANTITIES_IN_TRANSIT)
             .uom(DEFAULT_UOM)
             .actualDailyConsumption(DEFAULT_ACTUAL_DAILY_CONSUMPTION)
-            .recordLevel(DEFAULT_RECORD_LEVEL)
+            .actualAvgConsumption(DEFAULT_ACTUAL_AVG_CONSUMPTION)
+            .reOrderLevel(DEFAULT_RE_ORDER_LEVEL)
             .suggestedQuantity(DEFAULT_SUGGESTED_QUANTITY)
             .expectedCoveringDay(DEFAULT_EXPECTED_COVERING_DAY)
-            .quantity(DEFAULT_QUANTITY)
-            .location(DEFAULT_LOCATION)
-            .lasterUpdated(DEFAULT_LASTER_UPDATED);
+            .lastUpdatedAt(DEFAULT_LAST_UPDATED_AT)
+            .status(DEFAULT_STATUS);
         return inventory;
     }
-
     /**
      * Create an updated entity for this test.
      *
@@ -124,18 +124,16 @@ public class InventoryResourceIT {
     public static Inventory createUpdatedEntity(EntityManager em) {
         Inventory inventory = new Inventory()
             .inventoryId(UPDATED_INVENTORY_ID)
-            .itemCode(UPDATED_ITEM_CODE)
-            .description(UPDATED_DESCRIPTION)
             .quantitiesInHand(UPDATED_QUANTITIES_IN_HAND)
             .quantitiesInTransit(UPDATED_QUANTITIES_IN_TRANSIT)
             .uom(UPDATED_UOM)
             .actualDailyConsumption(UPDATED_ACTUAL_DAILY_CONSUMPTION)
-            .recordLevel(UPDATED_RECORD_LEVEL)
+            .actualAvgConsumption(UPDATED_ACTUAL_AVG_CONSUMPTION)
+            .reOrderLevel(UPDATED_RE_ORDER_LEVEL)
             .suggestedQuantity(UPDATED_SUGGESTED_QUANTITY)
             .expectedCoveringDay(UPDATED_EXPECTED_COVERING_DAY)
-            .quantity(UPDATED_QUANTITY)
-            .location(UPDATED_LOCATION)
-            .lasterUpdated(UPDATED_LASTER_UPDATED);
+            .lastUpdatedAt(UPDATED_LAST_UPDATED_AT)
+            .status(UPDATED_STATUS);
         return inventory;
     }
 
@@ -149,8 +147,9 @@ public class InventoryResourceIT {
     public void createInventory() throws Exception {
         int databaseSizeBeforeCreate = inventoryRepository.findAll().size();
         // Create the Inventory
-        restInventoryMockMvc
-            .perform(post("/api/inventories").contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(inventory)))
+        restInventoryMockMvc.perform(post("/api/inventories")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(TestUtil.convertObjectToJsonBytes(inventory)))
             .andExpect(status().isCreated());
 
         // Validate the Inventory in the database
@@ -158,18 +157,16 @@ public class InventoryResourceIT {
         assertThat(inventoryList).hasSize(databaseSizeBeforeCreate + 1);
         Inventory testInventory = inventoryList.get(inventoryList.size() - 1);
         assertThat(testInventory.getInventoryId()).isEqualTo(DEFAULT_INVENTORY_ID);
-        assertThat(testInventory.getItemCode()).isEqualTo(DEFAULT_ITEM_CODE);
-        assertThat(testInventory.getDescription()).isEqualTo(DEFAULT_DESCRIPTION);
         assertThat(testInventory.getQuantitiesInHand()).isEqualTo(DEFAULT_QUANTITIES_IN_HAND);
         assertThat(testInventory.getQuantitiesInTransit()).isEqualTo(DEFAULT_QUANTITIES_IN_TRANSIT);
         assertThat(testInventory.getUom()).isEqualTo(DEFAULT_UOM);
         assertThat(testInventory.getActualDailyConsumption()).isEqualTo(DEFAULT_ACTUAL_DAILY_CONSUMPTION);
-        assertThat(testInventory.getRecordLevel()).isEqualTo(DEFAULT_RECORD_LEVEL);
+        assertThat(testInventory.getActualAvgConsumption()).isEqualTo(DEFAULT_ACTUAL_AVG_CONSUMPTION);
+        assertThat(testInventory.getReOrderLevel()).isEqualTo(DEFAULT_RE_ORDER_LEVEL);
         assertThat(testInventory.getSuggestedQuantity()).isEqualTo(DEFAULT_SUGGESTED_QUANTITY);
         assertThat(testInventory.getExpectedCoveringDay()).isEqualTo(DEFAULT_EXPECTED_COVERING_DAY);
-        assertThat(testInventory.getQuantity()).isEqualTo(DEFAULT_QUANTITY);
-        assertThat(testInventory.getLocation()).isEqualTo(DEFAULT_LOCATION);
-        assertThat(testInventory.getLasterUpdated()).isEqualTo(DEFAULT_LASTER_UPDATED);
+        assertThat(testInventory.getLastUpdatedAt()).isEqualTo(DEFAULT_LAST_UPDATED_AT);
+        assertThat(testInventory.getStatus()).isEqualTo(DEFAULT_STATUS);
     }
 
     @Test
@@ -181,14 +178,16 @@ public class InventoryResourceIT {
         inventory.setId(1L);
 
         // An entity with an existing ID cannot be created, so this API call must fail
-        restInventoryMockMvc
-            .perform(post("/api/inventories").contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(inventory)))
+        restInventoryMockMvc.perform(post("/api/inventories")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(TestUtil.convertObjectToJsonBytes(inventory)))
             .andExpect(status().isBadRequest());
 
         // Validate the Inventory in the database
         List<Inventory> inventoryList = inventoryRepository.findAll();
         assertThat(inventoryList).hasSize(databaseSizeBeforeCreate);
     }
+
 
     @Test
     @Transactional
@@ -197,26 +196,23 @@ public class InventoryResourceIT {
         inventoryRepository.saveAndFlush(inventory);
 
         // Get all the inventoryList
-        restInventoryMockMvc
-            .perform(get("/api/inventories?sort=id,desc"))
+        restInventoryMockMvc.perform(get("/api/inventories?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(inventory.getId().intValue())))
-            .andExpect(jsonPath("$.[*].inventoryId").value(hasItem(DEFAULT_INVENTORY_ID)))
-            .andExpect(jsonPath("$.[*].itemCode").value(hasItem(DEFAULT_ITEM_CODE)))
-            .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)))
-            .andExpect(jsonPath("$.[*].quantitiesInHand").value(hasItem(DEFAULT_QUANTITIES_IN_HAND)))
-            .andExpect(jsonPath("$.[*].quantitiesInTransit").value(hasItem(DEFAULT_QUANTITIES_IN_TRANSIT)))
+            .andExpect(jsonPath("$.[*].inventoryId").value(hasItem(DEFAULT_INVENTORY_ID.intValue())))
+            .andExpect(jsonPath("$.[*].quantitiesInHand").value(hasItem(DEFAULT_QUANTITIES_IN_HAND.doubleValue())))
+            .andExpect(jsonPath("$.[*].quantitiesInTransit").value(hasItem(DEFAULT_QUANTITIES_IN_TRANSIT.doubleValue())))
             .andExpect(jsonPath("$.[*].uom").value(hasItem(DEFAULT_UOM)))
-            .andExpect(jsonPath("$.[*].actualDailyConsumption").value(hasItem(DEFAULT_ACTUAL_DAILY_CONSUMPTION)))
-            .andExpect(jsonPath("$.[*].recordLevel").value(hasItem(DEFAULT_RECORD_LEVEL)))
-            .andExpect(jsonPath("$.[*].suggestedQuantity").value(hasItem(DEFAULT_SUGGESTED_QUANTITY)))
-            .andExpect(jsonPath("$.[*].expectedCoveringDay").value(hasItem(DEFAULT_EXPECTED_COVERING_DAY)))
-            .andExpect(jsonPath("$.[*].quantity").value(hasItem(DEFAULT_QUANTITY)))
-            .andExpect(jsonPath("$.[*].location").value(hasItem(DEFAULT_LOCATION)))
-            .andExpect(jsonPath("$.[*].lasterUpdated").value(hasItem(DEFAULT_LASTER_UPDATED.toString())));
+            .andExpect(jsonPath("$.[*].actualDailyConsumption").value(hasItem(DEFAULT_ACTUAL_DAILY_CONSUMPTION.doubleValue())))
+            .andExpect(jsonPath("$.[*].actualAvgConsumption").value(hasItem(DEFAULT_ACTUAL_AVG_CONSUMPTION.doubleValue())))
+            .andExpect(jsonPath("$.[*].reOrderLevel").value(hasItem(DEFAULT_RE_ORDER_LEVEL)))
+            .andExpect(jsonPath("$.[*].suggestedQuantity").value(hasItem(DEFAULT_SUGGESTED_QUANTITY.doubleValue())))
+            .andExpect(jsonPath("$.[*].expectedCoveringDay").value(hasItem(DEFAULT_EXPECTED_COVERING_DAY.doubleValue())))
+            .andExpect(jsonPath("$.[*].lastUpdatedAt").value(hasItem(DEFAULT_LAST_UPDATED_AT.toString())))
+            .andExpect(jsonPath("$.[*].status").value(hasItem(DEFAULT_STATUS)));
     }
-
+    
     @Test
     @Transactional
     public void getInventory() throws Exception {
@@ -224,25 +220,23 @@ public class InventoryResourceIT {
         inventoryRepository.saveAndFlush(inventory);
 
         // Get the inventory
-        restInventoryMockMvc
-            .perform(get("/api/inventories/{id}", inventory.getId()))
+        restInventoryMockMvc.perform(get("/api/inventories/{id}", inventory.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(inventory.getId().intValue()))
-            .andExpect(jsonPath("$.inventoryId").value(DEFAULT_INVENTORY_ID))
-            .andExpect(jsonPath("$.itemCode").value(DEFAULT_ITEM_CODE))
-            .andExpect(jsonPath("$.description").value(DEFAULT_DESCRIPTION))
-            .andExpect(jsonPath("$.quantitiesInHand").value(DEFAULT_QUANTITIES_IN_HAND))
-            .andExpect(jsonPath("$.quantitiesInTransit").value(DEFAULT_QUANTITIES_IN_TRANSIT))
+            .andExpect(jsonPath("$.inventoryId").value(DEFAULT_INVENTORY_ID.intValue()))
+            .andExpect(jsonPath("$.quantitiesInHand").value(DEFAULT_QUANTITIES_IN_HAND.doubleValue()))
+            .andExpect(jsonPath("$.quantitiesInTransit").value(DEFAULT_QUANTITIES_IN_TRANSIT.doubleValue()))
             .andExpect(jsonPath("$.uom").value(DEFAULT_UOM))
-            .andExpect(jsonPath("$.actualDailyConsumption").value(DEFAULT_ACTUAL_DAILY_CONSUMPTION))
-            .andExpect(jsonPath("$.recordLevel").value(DEFAULT_RECORD_LEVEL))
-            .andExpect(jsonPath("$.suggestedQuantity").value(DEFAULT_SUGGESTED_QUANTITY))
-            .andExpect(jsonPath("$.expectedCoveringDay").value(DEFAULT_EXPECTED_COVERING_DAY))
-            .andExpect(jsonPath("$.quantity").value(DEFAULT_QUANTITY))
-            .andExpect(jsonPath("$.location").value(DEFAULT_LOCATION))
-            .andExpect(jsonPath("$.lasterUpdated").value(DEFAULT_LASTER_UPDATED.toString()));
+            .andExpect(jsonPath("$.actualDailyConsumption").value(DEFAULT_ACTUAL_DAILY_CONSUMPTION.doubleValue()))
+            .andExpect(jsonPath("$.actualAvgConsumption").value(DEFAULT_ACTUAL_AVG_CONSUMPTION.doubleValue()))
+            .andExpect(jsonPath("$.reOrderLevel").value(DEFAULT_RE_ORDER_LEVEL))
+            .andExpect(jsonPath("$.suggestedQuantity").value(DEFAULT_SUGGESTED_QUANTITY.doubleValue()))
+            .andExpect(jsonPath("$.expectedCoveringDay").value(DEFAULT_EXPECTED_COVERING_DAY.doubleValue()))
+            .andExpect(jsonPath("$.lastUpdatedAt").value(DEFAULT_LAST_UPDATED_AT.toString()))
+            .andExpect(jsonPath("$.status").value(DEFAULT_STATUS));
     }
+
 
     @Test
     @Transactional
@@ -261,6 +255,7 @@ public class InventoryResourceIT {
         defaultInventoryShouldBeFound("id.lessThanOrEqual=" + id);
         defaultInventoryShouldNotBeFound("id.lessThan=" + id);
     }
+
 
     @Test
     @Transactional
@@ -316,185 +311,56 @@ public class InventoryResourceIT {
 
     @Test
     @Transactional
-    public void getAllInventoriesByInventoryIdContainsSomething() throws Exception {
+    public void getAllInventoriesByInventoryIdIsGreaterThanOrEqualToSomething() throws Exception {
         // Initialize the database
         inventoryRepository.saveAndFlush(inventory);
 
-        // Get all the inventoryList where inventoryId contains DEFAULT_INVENTORY_ID
-        defaultInventoryShouldBeFound("inventoryId.contains=" + DEFAULT_INVENTORY_ID);
+        // Get all the inventoryList where inventoryId is greater than or equal to DEFAULT_INVENTORY_ID
+        defaultInventoryShouldBeFound("inventoryId.greaterThanOrEqual=" + DEFAULT_INVENTORY_ID);
 
-        // Get all the inventoryList where inventoryId contains UPDATED_INVENTORY_ID
-        defaultInventoryShouldNotBeFound("inventoryId.contains=" + UPDATED_INVENTORY_ID);
+        // Get all the inventoryList where inventoryId is greater than or equal to UPDATED_INVENTORY_ID
+        defaultInventoryShouldNotBeFound("inventoryId.greaterThanOrEqual=" + UPDATED_INVENTORY_ID);
     }
 
     @Test
     @Transactional
-    public void getAllInventoriesByInventoryIdNotContainsSomething() throws Exception {
+    public void getAllInventoriesByInventoryIdIsLessThanOrEqualToSomething() throws Exception {
         // Initialize the database
         inventoryRepository.saveAndFlush(inventory);
 
-        // Get all the inventoryList where inventoryId does not contain DEFAULT_INVENTORY_ID
-        defaultInventoryShouldNotBeFound("inventoryId.doesNotContain=" + DEFAULT_INVENTORY_ID);
+        // Get all the inventoryList where inventoryId is less than or equal to DEFAULT_INVENTORY_ID
+        defaultInventoryShouldBeFound("inventoryId.lessThanOrEqual=" + DEFAULT_INVENTORY_ID);
 
-        // Get all the inventoryList where inventoryId does not contain UPDATED_INVENTORY_ID
-        defaultInventoryShouldBeFound("inventoryId.doesNotContain=" + UPDATED_INVENTORY_ID);
+        // Get all the inventoryList where inventoryId is less than or equal to SMALLER_INVENTORY_ID
+        defaultInventoryShouldNotBeFound("inventoryId.lessThanOrEqual=" + SMALLER_INVENTORY_ID);
     }
 
     @Test
     @Transactional
-    public void getAllInventoriesByItemCodeIsEqualToSomething() throws Exception {
+    public void getAllInventoriesByInventoryIdIsLessThanSomething() throws Exception {
         // Initialize the database
         inventoryRepository.saveAndFlush(inventory);
 
-        // Get all the inventoryList where itemCode equals to DEFAULT_ITEM_CODE
-        defaultInventoryShouldBeFound("itemCode.equals=" + DEFAULT_ITEM_CODE);
+        // Get all the inventoryList where inventoryId is less than DEFAULT_INVENTORY_ID
+        defaultInventoryShouldNotBeFound("inventoryId.lessThan=" + DEFAULT_INVENTORY_ID);
 
-        // Get all the inventoryList where itemCode equals to UPDATED_ITEM_CODE
-        defaultInventoryShouldNotBeFound("itemCode.equals=" + UPDATED_ITEM_CODE);
+        // Get all the inventoryList where inventoryId is less than UPDATED_INVENTORY_ID
+        defaultInventoryShouldBeFound("inventoryId.lessThan=" + UPDATED_INVENTORY_ID);
     }
 
     @Test
     @Transactional
-    public void getAllInventoriesByItemCodeIsNotEqualToSomething() throws Exception {
+    public void getAllInventoriesByInventoryIdIsGreaterThanSomething() throws Exception {
         // Initialize the database
         inventoryRepository.saveAndFlush(inventory);
 
-        // Get all the inventoryList where itemCode not equals to DEFAULT_ITEM_CODE
-        defaultInventoryShouldNotBeFound("itemCode.notEquals=" + DEFAULT_ITEM_CODE);
+        // Get all the inventoryList where inventoryId is greater than DEFAULT_INVENTORY_ID
+        defaultInventoryShouldNotBeFound("inventoryId.greaterThan=" + DEFAULT_INVENTORY_ID);
 
-        // Get all the inventoryList where itemCode not equals to UPDATED_ITEM_CODE
-        defaultInventoryShouldBeFound("itemCode.notEquals=" + UPDATED_ITEM_CODE);
+        // Get all the inventoryList where inventoryId is greater than SMALLER_INVENTORY_ID
+        defaultInventoryShouldBeFound("inventoryId.greaterThan=" + SMALLER_INVENTORY_ID);
     }
 
-    @Test
-    @Transactional
-    public void getAllInventoriesByItemCodeIsInShouldWork() throws Exception {
-        // Initialize the database
-        inventoryRepository.saveAndFlush(inventory);
-
-        // Get all the inventoryList where itemCode in DEFAULT_ITEM_CODE or UPDATED_ITEM_CODE
-        defaultInventoryShouldBeFound("itemCode.in=" + DEFAULT_ITEM_CODE + "," + UPDATED_ITEM_CODE);
-
-        // Get all the inventoryList where itemCode equals to UPDATED_ITEM_CODE
-        defaultInventoryShouldNotBeFound("itemCode.in=" + UPDATED_ITEM_CODE);
-    }
-
-    @Test
-    @Transactional
-    public void getAllInventoriesByItemCodeIsNullOrNotNull() throws Exception {
-        // Initialize the database
-        inventoryRepository.saveAndFlush(inventory);
-
-        // Get all the inventoryList where itemCode is not null
-        defaultInventoryShouldBeFound("itemCode.specified=true");
-
-        // Get all the inventoryList where itemCode is null
-        defaultInventoryShouldNotBeFound("itemCode.specified=false");
-    }
-
-    @Test
-    @Transactional
-    public void getAllInventoriesByItemCodeContainsSomething() throws Exception {
-        // Initialize the database
-        inventoryRepository.saveAndFlush(inventory);
-
-        // Get all the inventoryList where itemCode contains DEFAULT_ITEM_CODE
-        defaultInventoryShouldBeFound("itemCode.contains=" + DEFAULT_ITEM_CODE);
-
-        // Get all the inventoryList where itemCode contains UPDATED_ITEM_CODE
-        defaultInventoryShouldNotBeFound("itemCode.contains=" + UPDATED_ITEM_CODE);
-    }
-
-    @Test
-    @Transactional
-    public void getAllInventoriesByItemCodeNotContainsSomething() throws Exception {
-        // Initialize the database
-        inventoryRepository.saveAndFlush(inventory);
-
-        // Get all the inventoryList where itemCode does not contain DEFAULT_ITEM_CODE
-        defaultInventoryShouldNotBeFound("itemCode.doesNotContain=" + DEFAULT_ITEM_CODE);
-
-        // Get all the inventoryList where itemCode does not contain UPDATED_ITEM_CODE
-        defaultInventoryShouldBeFound("itemCode.doesNotContain=" + UPDATED_ITEM_CODE);
-    }
-
-    @Test
-    @Transactional
-    public void getAllInventoriesByDescriptionIsEqualToSomething() throws Exception {
-        // Initialize the database
-        inventoryRepository.saveAndFlush(inventory);
-
-        // Get all the inventoryList where description equals to DEFAULT_DESCRIPTION
-        defaultInventoryShouldBeFound("description.equals=" + DEFAULT_DESCRIPTION);
-
-        // Get all the inventoryList where description equals to UPDATED_DESCRIPTION
-        defaultInventoryShouldNotBeFound("description.equals=" + UPDATED_DESCRIPTION);
-    }
-
-    @Test
-    @Transactional
-    public void getAllInventoriesByDescriptionIsNotEqualToSomething() throws Exception {
-        // Initialize the database
-        inventoryRepository.saveAndFlush(inventory);
-
-        // Get all the inventoryList where description not equals to DEFAULT_DESCRIPTION
-        defaultInventoryShouldNotBeFound("description.notEquals=" + DEFAULT_DESCRIPTION);
-
-        // Get all the inventoryList where description not equals to UPDATED_DESCRIPTION
-        defaultInventoryShouldBeFound("description.notEquals=" + UPDATED_DESCRIPTION);
-    }
-
-    @Test
-    @Transactional
-    public void getAllInventoriesByDescriptionIsInShouldWork() throws Exception {
-        // Initialize the database
-        inventoryRepository.saveAndFlush(inventory);
-
-        // Get all the inventoryList where description in DEFAULT_DESCRIPTION or UPDATED_DESCRIPTION
-        defaultInventoryShouldBeFound("description.in=" + DEFAULT_DESCRIPTION + "," + UPDATED_DESCRIPTION);
-
-        // Get all the inventoryList where description equals to UPDATED_DESCRIPTION
-        defaultInventoryShouldNotBeFound("description.in=" + UPDATED_DESCRIPTION);
-    }
-
-    @Test
-    @Transactional
-    public void getAllInventoriesByDescriptionIsNullOrNotNull() throws Exception {
-        // Initialize the database
-        inventoryRepository.saveAndFlush(inventory);
-
-        // Get all the inventoryList where description is not null
-        defaultInventoryShouldBeFound("description.specified=true");
-
-        // Get all the inventoryList where description is null
-        defaultInventoryShouldNotBeFound("description.specified=false");
-    }
-
-    @Test
-    @Transactional
-    public void getAllInventoriesByDescriptionContainsSomething() throws Exception {
-        // Initialize the database
-        inventoryRepository.saveAndFlush(inventory);
-
-        // Get all the inventoryList where description contains DEFAULT_DESCRIPTION
-        defaultInventoryShouldBeFound("description.contains=" + DEFAULT_DESCRIPTION);
-
-        // Get all the inventoryList where description contains UPDATED_DESCRIPTION
-        defaultInventoryShouldNotBeFound("description.contains=" + UPDATED_DESCRIPTION);
-    }
-
-    @Test
-    @Transactional
-    public void getAllInventoriesByDescriptionNotContainsSomething() throws Exception {
-        // Initialize the database
-        inventoryRepository.saveAndFlush(inventory);
-
-        // Get all the inventoryList where description does not contain DEFAULT_DESCRIPTION
-        defaultInventoryShouldNotBeFound("description.doesNotContain=" + DEFAULT_DESCRIPTION);
-
-        // Get all the inventoryList where description does not contain UPDATED_DESCRIPTION
-        defaultInventoryShouldBeFound("description.doesNotContain=" + UPDATED_DESCRIPTION);
-    }
 
     @Test
     @Transactional
@@ -550,29 +416,56 @@ public class InventoryResourceIT {
 
     @Test
     @Transactional
-    public void getAllInventoriesByQuantitiesInHandContainsSomething() throws Exception {
+    public void getAllInventoriesByQuantitiesInHandIsGreaterThanOrEqualToSomething() throws Exception {
         // Initialize the database
         inventoryRepository.saveAndFlush(inventory);
 
-        // Get all the inventoryList where quantitiesInHand contains DEFAULT_QUANTITIES_IN_HAND
-        defaultInventoryShouldBeFound("quantitiesInHand.contains=" + DEFAULT_QUANTITIES_IN_HAND);
+        // Get all the inventoryList where quantitiesInHand is greater than or equal to DEFAULT_QUANTITIES_IN_HAND
+        defaultInventoryShouldBeFound("quantitiesInHand.greaterThanOrEqual=" + DEFAULT_QUANTITIES_IN_HAND);
 
-        // Get all the inventoryList where quantitiesInHand contains UPDATED_QUANTITIES_IN_HAND
-        defaultInventoryShouldNotBeFound("quantitiesInHand.contains=" + UPDATED_QUANTITIES_IN_HAND);
+        // Get all the inventoryList where quantitiesInHand is greater than or equal to UPDATED_QUANTITIES_IN_HAND
+        defaultInventoryShouldNotBeFound("quantitiesInHand.greaterThanOrEqual=" + UPDATED_QUANTITIES_IN_HAND);
     }
 
     @Test
     @Transactional
-    public void getAllInventoriesByQuantitiesInHandNotContainsSomething() throws Exception {
+    public void getAllInventoriesByQuantitiesInHandIsLessThanOrEqualToSomething() throws Exception {
         // Initialize the database
         inventoryRepository.saveAndFlush(inventory);
 
-        // Get all the inventoryList where quantitiesInHand does not contain DEFAULT_QUANTITIES_IN_HAND
-        defaultInventoryShouldNotBeFound("quantitiesInHand.doesNotContain=" + DEFAULT_QUANTITIES_IN_HAND);
+        // Get all the inventoryList where quantitiesInHand is less than or equal to DEFAULT_QUANTITIES_IN_HAND
+        defaultInventoryShouldBeFound("quantitiesInHand.lessThanOrEqual=" + DEFAULT_QUANTITIES_IN_HAND);
 
-        // Get all the inventoryList where quantitiesInHand does not contain UPDATED_QUANTITIES_IN_HAND
-        defaultInventoryShouldBeFound("quantitiesInHand.doesNotContain=" + UPDATED_QUANTITIES_IN_HAND);
+        // Get all the inventoryList where quantitiesInHand is less than or equal to SMALLER_QUANTITIES_IN_HAND
+        defaultInventoryShouldNotBeFound("quantitiesInHand.lessThanOrEqual=" + SMALLER_QUANTITIES_IN_HAND);
     }
+
+    @Test
+    @Transactional
+    public void getAllInventoriesByQuantitiesInHandIsLessThanSomething() throws Exception {
+        // Initialize the database
+        inventoryRepository.saveAndFlush(inventory);
+
+        // Get all the inventoryList where quantitiesInHand is less than DEFAULT_QUANTITIES_IN_HAND
+        defaultInventoryShouldNotBeFound("quantitiesInHand.lessThan=" + DEFAULT_QUANTITIES_IN_HAND);
+
+        // Get all the inventoryList where quantitiesInHand is less than UPDATED_QUANTITIES_IN_HAND
+        defaultInventoryShouldBeFound("quantitiesInHand.lessThan=" + UPDATED_QUANTITIES_IN_HAND);
+    }
+
+    @Test
+    @Transactional
+    public void getAllInventoriesByQuantitiesInHandIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        inventoryRepository.saveAndFlush(inventory);
+
+        // Get all the inventoryList where quantitiesInHand is greater than DEFAULT_QUANTITIES_IN_HAND
+        defaultInventoryShouldNotBeFound("quantitiesInHand.greaterThan=" + DEFAULT_QUANTITIES_IN_HAND);
+
+        // Get all the inventoryList where quantitiesInHand is greater than SMALLER_QUANTITIES_IN_HAND
+        defaultInventoryShouldBeFound("quantitiesInHand.greaterThan=" + SMALLER_QUANTITIES_IN_HAND);
+    }
+
 
     @Test
     @Transactional
@@ -628,29 +521,56 @@ public class InventoryResourceIT {
 
     @Test
     @Transactional
-    public void getAllInventoriesByQuantitiesInTransitContainsSomething() throws Exception {
+    public void getAllInventoriesByQuantitiesInTransitIsGreaterThanOrEqualToSomething() throws Exception {
         // Initialize the database
         inventoryRepository.saveAndFlush(inventory);
 
-        // Get all the inventoryList where quantitiesInTransit contains DEFAULT_QUANTITIES_IN_TRANSIT
-        defaultInventoryShouldBeFound("quantitiesInTransit.contains=" + DEFAULT_QUANTITIES_IN_TRANSIT);
+        // Get all the inventoryList where quantitiesInTransit is greater than or equal to DEFAULT_QUANTITIES_IN_TRANSIT
+        defaultInventoryShouldBeFound("quantitiesInTransit.greaterThanOrEqual=" + DEFAULT_QUANTITIES_IN_TRANSIT);
 
-        // Get all the inventoryList where quantitiesInTransit contains UPDATED_QUANTITIES_IN_TRANSIT
-        defaultInventoryShouldNotBeFound("quantitiesInTransit.contains=" + UPDATED_QUANTITIES_IN_TRANSIT);
+        // Get all the inventoryList where quantitiesInTransit is greater than or equal to UPDATED_QUANTITIES_IN_TRANSIT
+        defaultInventoryShouldNotBeFound("quantitiesInTransit.greaterThanOrEqual=" + UPDATED_QUANTITIES_IN_TRANSIT);
     }
 
     @Test
     @Transactional
-    public void getAllInventoriesByQuantitiesInTransitNotContainsSomething() throws Exception {
+    public void getAllInventoriesByQuantitiesInTransitIsLessThanOrEqualToSomething() throws Exception {
         // Initialize the database
         inventoryRepository.saveAndFlush(inventory);
 
-        // Get all the inventoryList where quantitiesInTransit does not contain DEFAULT_QUANTITIES_IN_TRANSIT
-        defaultInventoryShouldNotBeFound("quantitiesInTransit.doesNotContain=" + DEFAULT_QUANTITIES_IN_TRANSIT);
+        // Get all the inventoryList where quantitiesInTransit is less than or equal to DEFAULT_QUANTITIES_IN_TRANSIT
+        defaultInventoryShouldBeFound("quantitiesInTransit.lessThanOrEqual=" + DEFAULT_QUANTITIES_IN_TRANSIT);
 
-        // Get all the inventoryList where quantitiesInTransit does not contain UPDATED_QUANTITIES_IN_TRANSIT
-        defaultInventoryShouldBeFound("quantitiesInTransit.doesNotContain=" + UPDATED_QUANTITIES_IN_TRANSIT);
+        // Get all the inventoryList where quantitiesInTransit is less than or equal to SMALLER_QUANTITIES_IN_TRANSIT
+        defaultInventoryShouldNotBeFound("quantitiesInTransit.lessThanOrEqual=" + SMALLER_QUANTITIES_IN_TRANSIT);
     }
+
+    @Test
+    @Transactional
+    public void getAllInventoriesByQuantitiesInTransitIsLessThanSomething() throws Exception {
+        // Initialize the database
+        inventoryRepository.saveAndFlush(inventory);
+
+        // Get all the inventoryList where quantitiesInTransit is less than DEFAULT_QUANTITIES_IN_TRANSIT
+        defaultInventoryShouldNotBeFound("quantitiesInTransit.lessThan=" + DEFAULT_QUANTITIES_IN_TRANSIT);
+
+        // Get all the inventoryList where quantitiesInTransit is less than UPDATED_QUANTITIES_IN_TRANSIT
+        defaultInventoryShouldBeFound("quantitiesInTransit.lessThan=" + UPDATED_QUANTITIES_IN_TRANSIT);
+    }
+
+    @Test
+    @Transactional
+    public void getAllInventoriesByQuantitiesInTransitIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        inventoryRepository.saveAndFlush(inventory);
+
+        // Get all the inventoryList where quantitiesInTransit is greater than DEFAULT_QUANTITIES_IN_TRANSIT
+        defaultInventoryShouldNotBeFound("quantitiesInTransit.greaterThan=" + DEFAULT_QUANTITIES_IN_TRANSIT);
+
+        // Get all the inventoryList where quantitiesInTransit is greater than SMALLER_QUANTITIES_IN_TRANSIT
+        defaultInventoryShouldBeFound("quantitiesInTransit.greaterThan=" + SMALLER_QUANTITIES_IN_TRANSIT);
+    }
+
 
     @Test
     @Transactional
@@ -703,8 +623,7 @@ public class InventoryResourceIT {
         // Get all the inventoryList where uom is null
         defaultInventoryShouldNotBeFound("uom.specified=false");
     }
-
-    @Test
+                @Test
     @Transactional
     public void getAllInventoriesByUomContainsSomething() throws Exception {
         // Initialize the database
@@ -729,6 +648,7 @@ public class InventoryResourceIT {
         // Get all the inventoryList where uom does not contain UPDATED_UOM
         defaultInventoryShouldBeFound("uom.doesNotContain=" + UPDATED_UOM);
     }
+
 
     @Test
     @Transactional
@@ -763,9 +683,7 @@ public class InventoryResourceIT {
         inventoryRepository.saveAndFlush(inventory);
 
         // Get all the inventoryList where actualDailyConsumption in DEFAULT_ACTUAL_DAILY_CONSUMPTION or UPDATED_ACTUAL_DAILY_CONSUMPTION
-        defaultInventoryShouldBeFound(
-            "actualDailyConsumption.in=" + DEFAULT_ACTUAL_DAILY_CONSUMPTION + "," + UPDATED_ACTUAL_DAILY_CONSUMPTION
-        );
+        defaultInventoryShouldBeFound("actualDailyConsumption.in=" + DEFAULT_ACTUAL_DAILY_CONSUMPTION + "," + UPDATED_ACTUAL_DAILY_CONSUMPTION);
 
         // Get all the inventoryList where actualDailyConsumption equals to UPDATED_ACTUAL_DAILY_CONSUMPTION
         defaultInventoryShouldNotBeFound("actualDailyConsumption.in=" + UPDATED_ACTUAL_DAILY_CONSUMPTION);
@@ -786,107 +704,239 @@ public class InventoryResourceIT {
 
     @Test
     @Transactional
-    public void getAllInventoriesByActualDailyConsumptionContainsSomething() throws Exception {
+    public void getAllInventoriesByActualDailyConsumptionIsGreaterThanOrEqualToSomething() throws Exception {
         // Initialize the database
         inventoryRepository.saveAndFlush(inventory);
 
-        // Get all the inventoryList where actualDailyConsumption contains DEFAULT_ACTUAL_DAILY_CONSUMPTION
-        defaultInventoryShouldBeFound("actualDailyConsumption.contains=" + DEFAULT_ACTUAL_DAILY_CONSUMPTION);
+        // Get all the inventoryList where actualDailyConsumption is greater than or equal to DEFAULT_ACTUAL_DAILY_CONSUMPTION
+        defaultInventoryShouldBeFound("actualDailyConsumption.greaterThanOrEqual=" + DEFAULT_ACTUAL_DAILY_CONSUMPTION);
 
-        // Get all the inventoryList where actualDailyConsumption contains UPDATED_ACTUAL_DAILY_CONSUMPTION
-        defaultInventoryShouldNotBeFound("actualDailyConsumption.contains=" + UPDATED_ACTUAL_DAILY_CONSUMPTION);
+        // Get all the inventoryList where actualDailyConsumption is greater than or equal to UPDATED_ACTUAL_DAILY_CONSUMPTION
+        defaultInventoryShouldNotBeFound("actualDailyConsumption.greaterThanOrEqual=" + UPDATED_ACTUAL_DAILY_CONSUMPTION);
     }
 
     @Test
     @Transactional
-    public void getAllInventoriesByActualDailyConsumptionNotContainsSomething() throws Exception {
+    public void getAllInventoriesByActualDailyConsumptionIsLessThanOrEqualToSomething() throws Exception {
         // Initialize the database
         inventoryRepository.saveAndFlush(inventory);
 
-        // Get all the inventoryList where actualDailyConsumption does not contain DEFAULT_ACTUAL_DAILY_CONSUMPTION
-        defaultInventoryShouldNotBeFound("actualDailyConsumption.doesNotContain=" + DEFAULT_ACTUAL_DAILY_CONSUMPTION);
+        // Get all the inventoryList where actualDailyConsumption is less than or equal to DEFAULT_ACTUAL_DAILY_CONSUMPTION
+        defaultInventoryShouldBeFound("actualDailyConsumption.lessThanOrEqual=" + DEFAULT_ACTUAL_DAILY_CONSUMPTION);
 
-        // Get all the inventoryList where actualDailyConsumption does not contain UPDATED_ACTUAL_DAILY_CONSUMPTION
-        defaultInventoryShouldBeFound("actualDailyConsumption.doesNotContain=" + UPDATED_ACTUAL_DAILY_CONSUMPTION);
+        // Get all the inventoryList where actualDailyConsumption is less than or equal to SMALLER_ACTUAL_DAILY_CONSUMPTION
+        defaultInventoryShouldNotBeFound("actualDailyConsumption.lessThanOrEqual=" + SMALLER_ACTUAL_DAILY_CONSUMPTION);
     }
 
     @Test
     @Transactional
-    public void getAllInventoriesByRecordLevelIsEqualToSomething() throws Exception {
+    public void getAllInventoriesByActualDailyConsumptionIsLessThanSomething() throws Exception {
         // Initialize the database
         inventoryRepository.saveAndFlush(inventory);
 
-        // Get all the inventoryList where recordLevel equals to DEFAULT_RECORD_LEVEL
-        defaultInventoryShouldBeFound("recordLevel.equals=" + DEFAULT_RECORD_LEVEL);
+        // Get all the inventoryList where actualDailyConsumption is less than DEFAULT_ACTUAL_DAILY_CONSUMPTION
+        defaultInventoryShouldNotBeFound("actualDailyConsumption.lessThan=" + DEFAULT_ACTUAL_DAILY_CONSUMPTION);
 
-        // Get all the inventoryList where recordLevel equals to UPDATED_RECORD_LEVEL
-        defaultInventoryShouldNotBeFound("recordLevel.equals=" + UPDATED_RECORD_LEVEL);
+        // Get all the inventoryList where actualDailyConsumption is less than UPDATED_ACTUAL_DAILY_CONSUMPTION
+        defaultInventoryShouldBeFound("actualDailyConsumption.lessThan=" + UPDATED_ACTUAL_DAILY_CONSUMPTION);
     }
 
     @Test
     @Transactional
-    public void getAllInventoriesByRecordLevelIsNotEqualToSomething() throws Exception {
+    public void getAllInventoriesByActualDailyConsumptionIsGreaterThanSomething() throws Exception {
         // Initialize the database
         inventoryRepository.saveAndFlush(inventory);
 
-        // Get all the inventoryList where recordLevel not equals to DEFAULT_RECORD_LEVEL
-        defaultInventoryShouldNotBeFound("recordLevel.notEquals=" + DEFAULT_RECORD_LEVEL);
+        // Get all the inventoryList where actualDailyConsumption is greater than DEFAULT_ACTUAL_DAILY_CONSUMPTION
+        defaultInventoryShouldNotBeFound("actualDailyConsumption.greaterThan=" + DEFAULT_ACTUAL_DAILY_CONSUMPTION);
 
-        // Get all the inventoryList where recordLevel not equals to UPDATED_RECORD_LEVEL
-        defaultInventoryShouldBeFound("recordLevel.notEquals=" + UPDATED_RECORD_LEVEL);
+        // Get all the inventoryList where actualDailyConsumption is greater than SMALLER_ACTUAL_DAILY_CONSUMPTION
+        defaultInventoryShouldBeFound("actualDailyConsumption.greaterThan=" + SMALLER_ACTUAL_DAILY_CONSUMPTION);
+    }
+
+
+    @Test
+    @Transactional
+    public void getAllInventoriesByActualAvgConsumptionIsEqualToSomething() throws Exception {
+        // Initialize the database
+        inventoryRepository.saveAndFlush(inventory);
+
+        // Get all the inventoryList where actualAvgConsumption equals to DEFAULT_ACTUAL_AVG_CONSUMPTION
+        defaultInventoryShouldBeFound("actualAvgConsumption.equals=" + DEFAULT_ACTUAL_AVG_CONSUMPTION);
+
+        // Get all the inventoryList where actualAvgConsumption equals to UPDATED_ACTUAL_AVG_CONSUMPTION
+        defaultInventoryShouldNotBeFound("actualAvgConsumption.equals=" + UPDATED_ACTUAL_AVG_CONSUMPTION);
     }
 
     @Test
     @Transactional
-    public void getAllInventoriesByRecordLevelIsInShouldWork() throws Exception {
+    public void getAllInventoriesByActualAvgConsumptionIsNotEqualToSomething() throws Exception {
         // Initialize the database
         inventoryRepository.saveAndFlush(inventory);
 
-        // Get all the inventoryList where recordLevel in DEFAULT_RECORD_LEVEL or UPDATED_RECORD_LEVEL
-        defaultInventoryShouldBeFound("recordLevel.in=" + DEFAULT_RECORD_LEVEL + "," + UPDATED_RECORD_LEVEL);
+        // Get all the inventoryList where actualAvgConsumption not equals to DEFAULT_ACTUAL_AVG_CONSUMPTION
+        defaultInventoryShouldNotBeFound("actualAvgConsumption.notEquals=" + DEFAULT_ACTUAL_AVG_CONSUMPTION);
 
-        // Get all the inventoryList where recordLevel equals to UPDATED_RECORD_LEVEL
-        defaultInventoryShouldNotBeFound("recordLevel.in=" + UPDATED_RECORD_LEVEL);
+        // Get all the inventoryList where actualAvgConsumption not equals to UPDATED_ACTUAL_AVG_CONSUMPTION
+        defaultInventoryShouldBeFound("actualAvgConsumption.notEquals=" + UPDATED_ACTUAL_AVG_CONSUMPTION);
     }
 
     @Test
     @Transactional
-    public void getAllInventoriesByRecordLevelIsNullOrNotNull() throws Exception {
+    public void getAllInventoriesByActualAvgConsumptionIsInShouldWork() throws Exception {
         // Initialize the database
         inventoryRepository.saveAndFlush(inventory);
 
-        // Get all the inventoryList where recordLevel is not null
-        defaultInventoryShouldBeFound("recordLevel.specified=true");
+        // Get all the inventoryList where actualAvgConsumption in DEFAULT_ACTUAL_AVG_CONSUMPTION or UPDATED_ACTUAL_AVG_CONSUMPTION
+        defaultInventoryShouldBeFound("actualAvgConsumption.in=" + DEFAULT_ACTUAL_AVG_CONSUMPTION + "," + UPDATED_ACTUAL_AVG_CONSUMPTION);
 
-        // Get all the inventoryList where recordLevel is null
-        defaultInventoryShouldNotBeFound("recordLevel.specified=false");
+        // Get all the inventoryList where actualAvgConsumption equals to UPDATED_ACTUAL_AVG_CONSUMPTION
+        defaultInventoryShouldNotBeFound("actualAvgConsumption.in=" + UPDATED_ACTUAL_AVG_CONSUMPTION);
     }
 
     @Test
     @Transactional
-    public void getAllInventoriesByRecordLevelContainsSomething() throws Exception {
+    public void getAllInventoriesByActualAvgConsumptionIsNullOrNotNull() throws Exception {
         // Initialize the database
         inventoryRepository.saveAndFlush(inventory);
 
-        // Get all the inventoryList where recordLevel contains DEFAULT_RECORD_LEVEL
-        defaultInventoryShouldBeFound("recordLevel.contains=" + DEFAULT_RECORD_LEVEL);
+        // Get all the inventoryList where actualAvgConsumption is not null
+        defaultInventoryShouldBeFound("actualAvgConsumption.specified=true");
 
-        // Get all the inventoryList where recordLevel contains UPDATED_RECORD_LEVEL
-        defaultInventoryShouldNotBeFound("recordLevel.contains=" + UPDATED_RECORD_LEVEL);
+        // Get all the inventoryList where actualAvgConsumption is null
+        defaultInventoryShouldNotBeFound("actualAvgConsumption.specified=false");
     }
 
     @Test
     @Transactional
-    public void getAllInventoriesByRecordLevelNotContainsSomething() throws Exception {
+    public void getAllInventoriesByActualAvgConsumptionIsGreaterThanOrEqualToSomething() throws Exception {
         // Initialize the database
         inventoryRepository.saveAndFlush(inventory);
 
-        // Get all the inventoryList where recordLevel does not contain DEFAULT_RECORD_LEVEL
-        defaultInventoryShouldNotBeFound("recordLevel.doesNotContain=" + DEFAULT_RECORD_LEVEL);
+        // Get all the inventoryList where actualAvgConsumption is greater than or equal to DEFAULT_ACTUAL_AVG_CONSUMPTION
+        defaultInventoryShouldBeFound("actualAvgConsumption.greaterThanOrEqual=" + DEFAULT_ACTUAL_AVG_CONSUMPTION);
 
-        // Get all the inventoryList where recordLevel does not contain UPDATED_RECORD_LEVEL
-        defaultInventoryShouldBeFound("recordLevel.doesNotContain=" + UPDATED_RECORD_LEVEL);
+        // Get all the inventoryList where actualAvgConsumption is greater than or equal to UPDATED_ACTUAL_AVG_CONSUMPTION
+        defaultInventoryShouldNotBeFound("actualAvgConsumption.greaterThanOrEqual=" + UPDATED_ACTUAL_AVG_CONSUMPTION);
     }
+
+    @Test
+    @Transactional
+    public void getAllInventoriesByActualAvgConsumptionIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        inventoryRepository.saveAndFlush(inventory);
+
+        // Get all the inventoryList where actualAvgConsumption is less than or equal to DEFAULT_ACTUAL_AVG_CONSUMPTION
+        defaultInventoryShouldBeFound("actualAvgConsumption.lessThanOrEqual=" + DEFAULT_ACTUAL_AVG_CONSUMPTION);
+
+        // Get all the inventoryList where actualAvgConsumption is less than or equal to SMALLER_ACTUAL_AVG_CONSUMPTION
+        defaultInventoryShouldNotBeFound("actualAvgConsumption.lessThanOrEqual=" + SMALLER_ACTUAL_AVG_CONSUMPTION);
+    }
+
+    @Test
+    @Transactional
+    public void getAllInventoriesByActualAvgConsumptionIsLessThanSomething() throws Exception {
+        // Initialize the database
+        inventoryRepository.saveAndFlush(inventory);
+
+        // Get all the inventoryList where actualAvgConsumption is less than DEFAULT_ACTUAL_AVG_CONSUMPTION
+        defaultInventoryShouldNotBeFound("actualAvgConsumption.lessThan=" + DEFAULT_ACTUAL_AVG_CONSUMPTION);
+
+        // Get all the inventoryList where actualAvgConsumption is less than UPDATED_ACTUAL_AVG_CONSUMPTION
+        defaultInventoryShouldBeFound("actualAvgConsumption.lessThan=" + UPDATED_ACTUAL_AVG_CONSUMPTION);
+    }
+
+    @Test
+    @Transactional
+    public void getAllInventoriesByActualAvgConsumptionIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        inventoryRepository.saveAndFlush(inventory);
+
+        // Get all the inventoryList where actualAvgConsumption is greater than DEFAULT_ACTUAL_AVG_CONSUMPTION
+        defaultInventoryShouldNotBeFound("actualAvgConsumption.greaterThan=" + DEFAULT_ACTUAL_AVG_CONSUMPTION);
+
+        // Get all the inventoryList where actualAvgConsumption is greater than SMALLER_ACTUAL_AVG_CONSUMPTION
+        defaultInventoryShouldBeFound("actualAvgConsumption.greaterThan=" + SMALLER_ACTUAL_AVG_CONSUMPTION);
+    }
+
+
+    @Test
+    @Transactional
+    public void getAllInventoriesByReOrderLevelIsEqualToSomething() throws Exception {
+        // Initialize the database
+        inventoryRepository.saveAndFlush(inventory);
+
+        // Get all the inventoryList where reOrderLevel equals to DEFAULT_RE_ORDER_LEVEL
+        defaultInventoryShouldBeFound("reOrderLevel.equals=" + DEFAULT_RE_ORDER_LEVEL);
+
+        // Get all the inventoryList where reOrderLevel equals to UPDATED_RE_ORDER_LEVEL
+        defaultInventoryShouldNotBeFound("reOrderLevel.equals=" + UPDATED_RE_ORDER_LEVEL);
+    }
+
+    @Test
+    @Transactional
+    public void getAllInventoriesByReOrderLevelIsNotEqualToSomething() throws Exception {
+        // Initialize the database
+        inventoryRepository.saveAndFlush(inventory);
+
+        // Get all the inventoryList where reOrderLevel not equals to DEFAULT_RE_ORDER_LEVEL
+        defaultInventoryShouldNotBeFound("reOrderLevel.notEquals=" + DEFAULT_RE_ORDER_LEVEL);
+
+        // Get all the inventoryList where reOrderLevel not equals to UPDATED_RE_ORDER_LEVEL
+        defaultInventoryShouldBeFound("reOrderLevel.notEquals=" + UPDATED_RE_ORDER_LEVEL);
+    }
+
+    @Test
+    @Transactional
+    public void getAllInventoriesByReOrderLevelIsInShouldWork() throws Exception {
+        // Initialize the database
+        inventoryRepository.saveAndFlush(inventory);
+
+        // Get all the inventoryList where reOrderLevel in DEFAULT_RE_ORDER_LEVEL or UPDATED_RE_ORDER_LEVEL
+        defaultInventoryShouldBeFound("reOrderLevel.in=" + DEFAULT_RE_ORDER_LEVEL + "," + UPDATED_RE_ORDER_LEVEL);
+
+        // Get all the inventoryList where reOrderLevel equals to UPDATED_RE_ORDER_LEVEL
+        defaultInventoryShouldNotBeFound("reOrderLevel.in=" + UPDATED_RE_ORDER_LEVEL);
+    }
+
+    @Test
+    @Transactional
+    public void getAllInventoriesByReOrderLevelIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        inventoryRepository.saveAndFlush(inventory);
+
+        // Get all the inventoryList where reOrderLevel is not null
+        defaultInventoryShouldBeFound("reOrderLevel.specified=true");
+
+        // Get all the inventoryList where reOrderLevel is null
+        defaultInventoryShouldNotBeFound("reOrderLevel.specified=false");
+    }
+                @Test
+    @Transactional
+    public void getAllInventoriesByReOrderLevelContainsSomething() throws Exception {
+        // Initialize the database
+        inventoryRepository.saveAndFlush(inventory);
+
+        // Get all the inventoryList where reOrderLevel contains DEFAULT_RE_ORDER_LEVEL
+        defaultInventoryShouldBeFound("reOrderLevel.contains=" + DEFAULT_RE_ORDER_LEVEL);
+
+        // Get all the inventoryList where reOrderLevel contains UPDATED_RE_ORDER_LEVEL
+        defaultInventoryShouldNotBeFound("reOrderLevel.contains=" + UPDATED_RE_ORDER_LEVEL);
+    }
+
+    @Test
+    @Transactional
+    public void getAllInventoriesByReOrderLevelNotContainsSomething() throws Exception {
+        // Initialize the database
+        inventoryRepository.saveAndFlush(inventory);
+
+        // Get all the inventoryList where reOrderLevel does not contain DEFAULT_RE_ORDER_LEVEL
+        defaultInventoryShouldNotBeFound("reOrderLevel.doesNotContain=" + DEFAULT_RE_ORDER_LEVEL);
+
+        // Get all the inventoryList where reOrderLevel does not contain UPDATED_RE_ORDER_LEVEL
+        defaultInventoryShouldBeFound("reOrderLevel.doesNotContain=" + UPDATED_RE_ORDER_LEVEL);
+    }
+
 
     @Test
     @Transactional
@@ -942,29 +992,56 @@ public class InventoryResourceIT {
 
     @Test
     @Transactional
-    public void getAllInventoriesBySuggestedQuantityContainsSomething() throws Exception {
+    public void getAllInventoriesBySuggestedQuantityIsGreaterThanOrEqualToSomething() throws Exception {
         // Initialize the database
         inventoryRepository.saveAndFlush(inventory);
 
-        // Get all the inventoryList where suggestedQuantity contains DEFAULT_SUGGESTED_QUANTITY
-        defaultInventoryShouldBeFound("suggestedQuantity.contains=" + DEFAULT_SUGGESTED_QUANTITY);
+        // Get all the inventoryList where suggestedQuantity is greater than or equal to DEFAULT_SUGGESTED_QUANTITY
+        defaultInventoryShouldBeFound("suggestedQuantity.greaterThanOrEqual=" + DEFAULT_SUGGESTED_QUANTITY);
 
-        // Get all the inventoryList where suggestedQuantity contains UPDATED_SUGGESTED_QUANTITY
-        defaultInventoryShouldNotBeFound("suggestedQuantity.contains=" + UPDATED_SUGGESTED_QUANTITY);
+        // Get all the inventoryList where suggestedQuantity is greater than or equal to UPDATED_SUGGESTED_QUANTITY
+        defaultInventoryShouldNotBeFound("suggestedQuantity.greaterThanOrEqual=" + UPDATED_SUGGESTED_QUANTITY);
     }
 
     @Test
     @Transactional
-    public void getAllInventoriesBySuggestedQuantityNotContainsSomething() throws Exception {
+    public void getAllInventoriesBySuggestedQuantityIsLessThanOrEqualToSomething() throws Exception {
         // Initialize the database
         inventoryRepository.saveAndFlush(inventory);
 
-        // Get all the inventoryList where suggestedQuantity does not contain DEFAULT_SUGGESTED_QUANTITY
-        defaultInventoryShouldNotBeFound("suggestedQuantity.doesNotContain=" + DEFAULT_SUGGESTED_QUANTITY);
+        // Get all the inventoryList where suggestedQuantity is less than or equal to DEFAULT_SUGGESTED_QUANTITY
+        defaultInventoryShouldBeFound("suggestedQuantity.lessThanOrEqual=" + DEFAULT_SUGGESTED_QUANTITY);
 
-        // Get all the inventoryList where suggestedQuantity does not contain UPDATED_SUGGESTED_QUANTITY
-        defaultInventoryShouldBeFound("suggestedQuantity.doesNotContain=" + UPDATED_SUGGESTED_QUANTITY);
+        // Get all the inventoryList where suggestedQuantity is less than or equal to SMALLER_SUGGESTED_QUANTITY
+        defaultInventoryShouldNotBeFound("suggestedQuantity.lessThanOrEqual=" + SMALLER_SUGGESTED_QUANTITY);
     }
+
+    @Test
+    @Transactional
+    public void getAllInventoriesBySuggestedQuantityIsLessThanSomething() throws Exception {
+        // Initialize the database
+        inventoryRepository.saveAndFlush(inventory);
+
+        // Get all the inventoryList where suggestedQuantity is less than DEFAULT_SUGGESTED_QUANTITY
+        defaultInventoryShouldNotBeFound("suggestedQuantity.lessThan=" + DEFAULT_SUGGESTED_QUANTITY);
+
+        // Get all the inventoryList where suggestedQuantity is less than UPDATED_SUGGESTED_QUANTITY
+        defaultInventoryShouldBeFound("suggestedQuantity.lessThan=" + UPDATED_SUGGESTED_QUANTITY);
+    }
+
+    @Test
+    @Transactional
+    public void getAllInventoriesBySuggestedQuantityIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        inventoryRepository.saveAndFlush(inventory);
+
+        // Get all the inventoryList where suggestedQuantity is greater than DEFAULT_SUGGESTED_QUANTITY
+        defaultInventoryShouldNotBeFound("suggestedQuantity.greaterThan=" + DEFAULT_SUGGESTED_QUANTITY);
+
+        // Get all the inventoryList where suggestedQuantity is greater than SMALLER_SUGGESTED_QUANTITY
+        defaultInventoryShouldBeFound("suggestedQuantity.greaterThan=" + SMALLER_SUGGESTED_QUANTITY);
+    }
+
 
     @Test
     @Transactional
@@ -1020,289 +1097,239 @@ public class InventoryResourceIT {
 
     @Test
     @Transactional
-    public void getAllInventoriesByExpectedCoveringDayContainsSomething() throws Exception {
+    public void getAllInventoriesByExpectedCoveringDayIsGreaterThanOrEqualToSomething() throws Exception {
         // Initialize the database
         inventoryRepository.saveAndFlush(inventory);
 
-        // Get all the inventoryList where expectedCoveringDay contains DEFAULT_EXPECTED_COVERING_DAY
-        defaultInventoryShouldBeFound("expectedCoveringDay.contains=" + DEFAULT_EXPECTED_COVERING_DAY);
+        // Get all the inventoryList where expectedCoveringDay is greater than or equal to DEFAULT_EXPECTED_COVERING_DAY
+        defaultInventoryShouldBeFound("expectedCoveringDay.greaterThanOrEqual=" + DEFAULT_EXPECTED_COVERING_DAY);
 
-        // Get all the inventoryList where expectedCoveringDay contains UPDATED_EXPECTED_COVERING_DAY
-        defaultInventoryShouldNotBeFound("expectedCoveringDay.contains=" + UPDATED_EXPECTED_COVERING_DAY);
+        // Get all the inventoryList where expectedCoveringDay is greater than or equal to UPDATED_EXPECTED_COVERING_DAY
+        defaultInventoryShouldNotBeFound("expectedCoveringDay.greaterThanOrEqual=" + UPDATED_EXPECTED_COVERING_DAY);
     }
 
     @Test
     @Transactional
-    public void getAllInventoriesByExpectedCoveringDayNotContainsSomething() throws Exception {
+    public void getAllInventoriesByExpectedCoveringDayIsLessThanOrEqualToSomething() throws Exception {
         // Initialize the database
         inventoryRepository.saveAndFlush(inventory);
 
-        // Get all the inventoryList where expectedCoveringDay does not contain DEFAULT_EXPECTED_COVERING_DAY
-        defaultInventoryShouldNotBeFound("expectedCoveringDay.doesNotContain=" + DEFAULT_EXPECTED_COVERING_DAY);
+        // Get all the inventoryList where expectedCoveringDay is less than or equal to DEFAULT_EXPECTED_COVERING_DAY
+        defaultInventoryShouldBeFound("expectedCoveringDay.lessThanOrEqual=" + DEFAULT_EXPECTED_COVERING_DAY);
 
-        // Get all the inventoryList where expectedCoveringDay does not contain UPDATED_EXPECTED_COVERING_DAY
-        defaultInventoryShouldBeFound("expectedCoveringDay.doesNotContain=" + UPDATED_EXPECTED_COVERING_DAY);
+        // Get all the inventoryList where expectedCoveringDay is less than or equal to SMALLER_EXPECTED_COVERING_DAY
+        defaultInventoryShouldNotBeFound("expectedCoveringDay.lessThanOrEqual=" + SMALLER_EXPECTED_COVERING_DAY);
     }
 
     @Test
     @Transactional
-    public void getAllInventoriesByQuantityIsEqualToSomething() throws Exception {
+    public void getAllInventoriesByExpectedCoveringDayIsLessThanSomething() throws Exception {
         // Initialize the database
         inventoryRepository.saveAndFlush(inventory);
 
-        // Get all the inventoryList where quantity equals to DEFAULT_QUANTITY
-        defaultInventoryShouldBeFound("quantity.equals=" + DEFAULT_QUANTITY);
+        // Get all the inventoryList where expectedCoveringDay is less than DEFAULT_EXPECTED_COVERING_DAY
+        defaultInventoryShouldNotBeFound("expectedCoveringDay.lessThan=" + DEFAULT_EXPECTED_COVERING_DAY);
 
-        // Get all the inventoryList where quantity equals to UPDATED_QUANTITY
-        defaultInventoryShouldNotBeFound("quantity.equals=" + UPDATED_QUANTITY);
+        // Get all the inventoryList where expectedCoveringDay is less than UPDATED_EXPECTED_COVERING_DAY
+        defaultInventoryShouldBeFound("expectedCoveringDay.lessThan=" + UPDATED_EXPECTED_COVERING_DAY);
     }
 
     @Test
     @Transactional
-    public void getAllInventoriesByQuantityIsNotEqualToSomething() throws Exception {
+    public void getAllInventoriesByExpectedCoveringDayIsGreaterThanSomething() throws Exception {
         // Initialize the database
         inventoryRepository.saveAndFlush(inventory);
 
-        // Get all the inventoryList where quantity not equals to DEFAULT_QUANTITY
-        defaultInventoryShouldNotBeFound("quantity.notEquals=" + DEFAULT_QUANTITY);
+        // Get all the inventoryList where expectedCoveringDay is greater than DEFAULT_EXPECTED_COVERING_DAY
+        defaultInventoryShouldNotBeFound("expectedCoveringDay.greaterThan=" + DEFAULT_EXPECTED_COVERING_DAY);
 
-        // Get all the inventoryList where quantity not equals to UPDATED_QUANTITY
-        defaultInventoryShouldBeFound("quantity.notEquals=" + UPDATED_QUANTITY);
+        // Get all the inventoryList where expectedCoveringDay is greater than SMALLER_EXPECTED_COVERING_DAY
+        defaultInventoryShouldBeFound("expectedCoveringDay.greaterThan=" + SMALLER_EXPECTED_COVERING_DAY);
+    }
+
+
+    @Test
+    @Transactional
+    public void getAllInventoriesByLastUpdatedAtIsEqualToSomething() throws Exception {
+        // Initialize the database
+        inventoryRepository.saveAndFlush(inventory);
+
+        // Get all the inventoryList where lastUpdatedAt equals to DEFAULT_LAST_UPDATED_AT
+        defaultInventoryShouldBeFound("lastUpdatedAt.equals=" + DEFAULT_LAST_UPDATED_AT);
+
+        // Get all the inventoryList where lastUpdatedAt equals to UPDATED_LAST_UPDATED_AT
+        defaultInventoryShouldNotBeFound("lastUpdatedAt.equals=" + UPDATED_LAST_UPDATED_AT);
     }
 
     @Test
     @Transactional
-    public void getAllInventoriesByQuantityIsInShouldWork() throws Exception {
+    public void getAllInventoriesByLastUpdatedAtIsNotEqualToSomething() throws Exception {
         // Initialize the database
         inventoryRepository.saveAndFlush(inventory);
 
-        // Get all the inventoryList where quantity in DEFAULT_QUANTITY or UPDATED_QUANTITY
-        defaultInventoryShouldBeFound("quantity.in=" + DEFAULT_QUANTITY + "," + UPDATED_QUANTITY);
+        // Get all the inventoryList where lastUpdatedAt not equals to DEFAULT_LAST_UPDATED_AT
+        defaultInventoryShouldNotBeFound("lastUpdatedAt.notEquals=" + DEFAULT_LAST_UPDATED_AT);
 
-        // Get all the inventoryList where quantity equals to UPDATED_QUANTITY
-        defaultInventoryShouldNotBeFound("quantity.in=" + UPDATED_QUANTITY);
+        // Get all the inventoryList where lastUpdatedAt not equals to UPDATED_LAST_UPDATED_AT
+        defaultInventoryShouldBeFound("lastUpdatedAt.notEquals=" + UPDATED_LAST_UPDATED_AT);
     }
 
     @Test
     @Transactional
-    public void getAllInventoriesByQuantityIsNullOrNotNull() throws Exception {
+    public void getAllInventoriesByLastUpdatedAtIsInShouldWork() throws Exception {
         // Initialize the database
         inventoryRepository.saveAndFlush(inventory);
 
-        // Get all the inventoryList where quantity is not null
-        defaultInventoryShouldBeFound("quantity.specified=true");
+        // Get all the inventoryList where lastUpdatedAt in DEFAULT_LAST_UPDATED_AT or UPDATED_LAST_UPDATED_AT
+        defaultInventoryShouldBeFound("lastUpdatedAt.in=" + DEFAULT_LAST_UPDATED_AT + "," + UPDATED_LAST_UPDATED_AT);
 
-        // Get all the inventoryList where quantity is null
-        defaultInventoryShouldNotBeFound("quantity.specified=false");
+        // Get all the inventoryList where lastUpdatedAt equals to UPDATED_LAST_UPDATED_AT
+        defaultInventoryShouldNotBeFound("lastUpdatedAt.in=" + UPDATED_LAST_UPDATED_AT);
     }
 
     @Test
     @Transactional
-    public void getAllInventoriesByQuantityContainsSomething() throws Exception {
+    public void getAllInventoriesByLastUpdatedAtIsNullOrNotNull() throws Exception {
         // Initialize the database
         inventoryRepository.saveAndFlush(inventory);
 
-        // Get all the inventoryList where quantity contains DEFAULT_QUANTITY
-        defaultInventoryShouldBeFound("quantity.contains=" + DEFAULT_QUANTITY);
+        // Get all the inventoryList where lastUpdatedAt is not null
+        defaultInventoryShouldBeFound("lastUpdatedAt.specified=true");
 
-        // Get all the inventoryList where quantity contains UPDATED_QUANTITY
-        defaultInventoryShouldNotBeFound("quantity.contains=" + UPDATED_QUANTITY);
+        // Get all the inventoryList where lastUpdatedAt is null
+        defaultInventoryShouldNotBeFound("lastUpdatedAt.specified=false");
     }
 
     @Test
     @Transactional
-    public void getAllInventoriesByQuantityNotContainsSomething() throws Exception {
+    public void getAllInventoriesByLastUpdatedAtIsGreaterThanOrEqualToSomething() throws Exception {
         // Initialize the database
         inventoryRepository.saveAndFlush(inventory);
 
-        // Get all the inventoryList where quantity does not contain DEFAULT_QUANTITY
-        defaultInventoryShouldNotBeFound("quantity.doesNotContain=" + DEFAULT_QUANTITY);
+        // Get all the inventoryList where lastUpdatedAt is greater than or equal to DEFAULT_LAST_UPDATED_AT
+        defaultInventoryShouldBeFound("lastUpdatedAt.greaterThanOrEqual=" + DEFAULT_LAST_UPDATED_AT);
 
-        // Get all the inventoryList where quantity does not contain UPDATED_QUANTITY
-        defaultInventoryShouldBeFound("quantity.doesNotContain=" + UPDATED_QUANTITY);
+        // Get all the inventoryList where lastUpdatedAt is greater than or equal to UPDATED_LAST_UPDATED_AT
+        defaultInventoryShouldNotBeFound("lastUpdatedAt.greaterThanOrEqual=" + UPDATED_LAST_UPDATED_AT);
     }
 
     @Test
     @Transactional
-    public void getAllInventoriesByLocationIsEqualToSomething() throws Exception {
+    public void getAllInventoriesByLastUpdatedAtIsLessThanOrEqualToSomething() throws Exception {
         // Initialize the database
         inventoryRepository.saveAndFlush(inventory);
 
-        // Get all the inventoryList where location equals to DEFAULT_LOCATION
-        defaultInventoryShouldBeFound("location.equals=" + DEFAULT_LOCATION);
+        // Get all the inventoryList where lastUpdatedAt is less than or equal to DEFAULT_LAST_UPDATED_AT
+        defaultInventoryShouldBeFound("lastUpdatedAt.lessThanOrEqual=" + DEFAULT_LAST_UPDATED_AT);
 
-        // Get all the inventoryList where location equals to UPDATED_LOCATION
-        defaultInventoryShouldNotBeFound("location.equals=" + UPDATED_LOCATION);
+        // Get all the inventoryList where lastUpdatedAt is less than or equal to SMALLER_LAST_UPDATED_AT
+        defaultInventoryShouldNotBeFound("lastUpdatedAt.lessThanOrEqual=" + SMALLER_LAST_UPDATED_AT);
     }
 
     @Test
     @Transactional
-    public void getAllInventoriesByLocationIsNotEqualToSomething() throws Exception {
+    public void getAllInventoriesByLastUpdatedAtIsLessThanSomething() throws Exception {
         // Initialize the database
         inventoryRepository.saveAndFlush(inventory);
 
-        // Get all the inventoryList where location not equals to DEFAULT_LOCATION
-        defaultInventoryShouldNotBeFound("location.notEquals=" + DEFAULT_LOCATION);
+        // Get all the inventoryList where lastUpdatedAt is less than DEFAULT_LAST_UPDATED_AT
+        defaultInventoryShouldNotBeFound("lastUpdatedAt.lessThan=" + DEFAULT_LAST_UPDATED_AT);
 
-        // Get all the inventoryList where location not equals to UPDATED_LOCATION
-        defaultInventoryShouldBeFound("location.notEquals=" + UPDATED_LOCATION);
+        // Get all the inventoryList where lastUpdatedAt is less than UPDATED_LAST_UPDATED_AT
+        defaultInventoryShouldBeFound("lastUpdatedAt.lessThan=" + UPDATED_LAST_UPDATED_AT);
     }
 
     @Test
     @Transactional
-    public void getAllInventoriesByLocationIsInShouldWork() throws Exception {
+    public void getAllInventoriesByLastUpdatedAtIsGreaterThanSomething() throws Exception {
         // Initialize the database
         inventoryRepository.saveAndFlush(inventory);
 
-        // Get all the inventoryList where location in DEFAULT_LOCATION or UPDATED_LOCATION
-        defaultInventoryShouldBeFound("location.in=" + DEFAULT_LOCATION + "," + UPDATED_LOCATION);
+        // Get all the inventoryList where lastUpdatedAt is greater than DEFAULT_LAST_UPDATED_AT
+        defaultInventoryShouldNotBeFound("lastUpdatedAt.greaterThan=" + DEFAULT_LAST_UPDATED_AT);
 
-        // Get all the inventoryList where location equals to UPDATED_LOCATION
-        defaultInventoryShouldNotBeFound("location.in=" + UPDATED_LOCATION);
+        // Get all the inventoryList where lastUpdatedAt is greater than SMALLER_LAST_UPDATED_AT
+        defaultInventoryShouldBeFound("lastUpdatedAt.greaterThan=" + SMALLER_LAST_UPDATED_AT);
+    }
+
+
+    @Test
+    @Transactional
+    public void getAllInventoriesByStatusIsEqualToSomething() throws Exception {
+        // Initialize the database
+        inventoryRepository.saveAndFlush(inventory);
+
+        // Get all the inventoryList where status equals to DEFAULT_STATUS
+        defaultInventoryShouldBeFound("status.equals=" + DEFAULT_STATUS);
+
+        // Get all the inventoryList where status equals to UPDATED_STATUS
+        defaultInventoryShouldNotBeFound("status.equals=" + UPDATED_STATUS);
     }
 
     @Test
     @Transactional
-    public void getAllInventoriesByLocationIsNullOrNotNull() throws Exception {
+    public void getAllInventoriesByStatusIsNotEqualToSomething() throws Exception {
         // Initialize the database
         inventoryRepository.saveAndFlush(inventory);
 
-        // Get all the inventoryList where location is not null
-        defaultInventoryShouldBeFound("location.specified=true");
+        // Get all the inventoryList where status not equals to DEFAULT_STATUS
+        defaultInventoryShouldNotBeFound("status.notEquals=" + DEFAULT_STATUS);
 
-        // Get all the inventoryList where location is null
-        defaultInventoryShouldNotBeFound("location.specified=false");
+        // Get all the inventoryList where status not equals to UPDATED_STATUS
+        defaultInventoryShouldBeFound("status.notEquals=" + UPDATED_STATUS);
     }
 
     @Test
     @Transactional
-    public void getAllInventoriesByLocationContainsSomething() throws Exception {
+    public void getAllInventoriesByStatusIsInShouldWork() throws Exception {
         // Initialize the database
         inventoryRepository.saveAndFlush(inventory);
 
-        // Get all the inventoryList where location contains DEFAULT_LOCATION
-        defaultInventoryShouldBeFound("location.contains=" + DEFAULT_LOCATION);
+        // Get all the inventoryList where status in DEFAULT_STATUS or UPDATED_STATUS
+        defaultInventoryShouldBeFound("status.in=" + DEFAULT_STATUS + "," + UPDATED_STATUS);
 
-        // Get all the inventoryList where location contains UPDATED_LOCATION
-        defaultInventoryShouldNotBeFound("location.contains=" + UPDATED_LOCATION);
+        // Get all the inventoryList where status equals to UPDATED_STATUS
+        defaultInventoryShouldNotBeFound("status.in=" + UPDATED_STATUS);
     }
 
     @Test
     @Transactional
-    public void getAllInventoriesByLocationNotContainsSomething() throws Exception {
+    public void getAllInventoriesByStatusIsNullOrNotNull() throws Exception {
         // Initialize the database
         inventoryRepository.saveAndFlush(inventory);
 
-        // Get all the inventoryList where location does not contain DEFAULT_LOCATION
-        defaultInventoryShouldNotBeFound("location.doesNotContain=" + DEFAULT_LOCATION);
+        // Get all the inventoryList where status is not null
+        defaultInventoryShouldBeFound("status.specified=true");
 
-        // Get all the inventoryList where location does not contain UPDATED_LOCATION
-        defaultInventoryShouldBeFound("location.doesNotContain=" + UPDATED_LOCATION);
+        // Get all the inventoryList where status is null
+        defaultInventoryShouldNotBeFound("status.specified=false");
+    }
+                @Test
+    @Transactional
+    public void getAllInventoriesByStatusContainsSomething() throws Exception {
+        // Initialize the database
+        inventoryRepository.saveAndFlush(inventory);
+
+        // Get all the inventoryList where status contains DEFAULT_STATUS
+        defaultInventoryShouldBeFound("status.contains=" + DEFAULT_STATUS);
+
+        // Get all the inventoryList where status contains UPDATED_STATUS
+        defaultInventoryShouldNotBeFound("status.contains=" + UPDATED_STATUS);
     }
 
     @Test
     @Transactional
-    public void getAllInventoriesByLasterUpdatedIsEqualToSomething() throws Exception {
+    public void getAllInventoriesByStatusNotContainsSomething() throws Exception {
         // Initialize the database
         inventoryRepository.saveAndFlush(inventory);
 
-        // Get all the inventoryList where lasterUpdated equals to DEFAULT_LASTER_UPDATED
-        defaultInventoryShouldBeFound("lasterUpdated.equals=" + DEFAULT_LASTER_UPDATED);
+        // Get all the inventoryList where status does not contain DEFAULT_STATUS
+        defaultInventoryShouldNotBeFound("status.doesNotContain=" + DEFAULT_STATUS);
 
-        // Get all the inventoryList where lasterUpdated equals to UPDATED_LASTER_UPDATED
-        defaultInventoryShouldNotBeFound("lasterUpdated.equals=" + UPDATED_LASTER_UPDATED);
+        // Get all the inventoryList where status does not contain UPDATED_STATUS
+        defaultInventoryShouldBeFound("status.doesNotContain=" + UPDATED_STATUS);
     }
 
-    @Test
-    @Transactional
-    public void getAllInventoriesByLasterUpdatedIsNotEqualToSomething() throws Exception {
-        // Initialize the database
-        inventoryRepository.saveAndFlush(inventory);
-
-        // Get all the inventoryList where lasterUpdated not equals to DEFAULT_LASTER_UPDATED
-        defaultInventoryShouldNotBeFound("lasterUpdated.notEquals=" + DEFAULT_LASTER_UPDATED);
-
-        // Get all the inventoryList where lasterUpdated not equals to UPDATED_LASTER_UPDATED
-        defaultInventoryShouldBeFound("lasterUpdated.notEquals=" + UPDATED_LASTER_UPDATED);
-    }
-
-    @Test
-    @Transactional
-    public void getAllInventoriesByLasterUpdatedIsInShouldWork() throws Exception {
-        // Initialize the database
-        inventoryRepository.saveAndFlush(inventory);
-
-        // Get all the inventoryList where lasterUpdated in DEFAULT_LASTER_UPDATED or UPDATED_LASTER_UPDATED
-        defaultInventoryShouldBeFound("lasterUpdated.in=" + DEFAULT_LASTER_UPDATED + "," + UPDATED_LASTER_UPDATED);
-
-        // Get all the inventoryList where lasterUpdated equals to UPDATED_LASTER_UPDATED
-        defaultInventoryShouldNotBeFound("lasterUpdated.in=" + UPDATED_LASTER_UPDATED);
-    }
-
-    @Test
-    @Transactional
-    public void getAllInventoriesByLasterUpdatedIsNullOrNotNull() throws Exception {
-        // Initialize the database
-        inventoryRepository.saveAndFlush(inventory);
-
-        // Get all the inventoryList where lasterUpdated is not null
-        defaultInventoryShouldBeFound("lasterUpdated.specified=true");
-
-        // Get all the inventoryList where lasterUpdated is null
-        defaultInventoryShouldNotBeFound("lasterUpdated.specified=false");
-    }
-
-    @Test
-    @Transactional
-    public void getAllInventoriesByLasterUpdatedIsGreaterThanOrEqualToSomething() throws Exception {
-        // Initialize the database
-        inventoryRepository.saveAndFlush(inventory);
-
-        // Get all the inventoryList where lasterUpdated is greater than or equal to DEFAULT_LASTER_UPDATED
-        defaultInventoryShouldBeFound("lasterUpdated.greaterThanOrEqual=" + DEFAULT_LASTER_UPDATED);
-
-        // Get all the inventoryList where lasterUpdated is greater than or equal to UPDATED_LASTER_UPDATED
-        defaultInventoryShouldNotBeFound("lasterUpdated.greaterThanOrEqual=" + UPDATED_LASTER_UPDATED);
-    }
-
-    @Test
-    @Transactional
-    public void getAllInventoriesByLasterUpdatedIsLessThanOrEqualToSomething() throws Exception {
-        // Initialize the database
-        inventoryRepository.saveAndFlush(inventory);
-
-        // Get all the inventoryList where lasterUpdated is less than or equal to DEFAULT_LASTER_UPDATED
-        defaultInventoryShouldBeFound("lasterUpdated.lessThanOrEqual=" + DEFAULT_LASTER_UPDATED);
-
-        // Get all the inventoryList where lasterUpdated is less than or equal to SMALLER_LASTER_UPDATED
-        defaultInventoryShouldNotBeFound("lasterUpdated.lessThanOrEqual=" + SMALLER_LASTER_UPDATED);
-    }
-
-    @Test
-    @Transactional
-    public void getAllInventoriesByLasterUpdatedIsLessThanSomething() throws Exception {
-        // Initialize the database
-        inventoryRepository.saveAndFlush(inventory);
-
-        // Get all the inventoryList where lasterUpdated is less than DEFAULT_LASTER_UPDATED
-        defaultInventoryShouldNotBeFound("lasterUpdated.lessThan=" + DEFAULT_LASTER_UPDATED);
-
-        // Get all the inventoryList where lasterUpdated is less than UPDATED_LASTER_UPDATED
-        defaultInventoryShouldBeFound("lasterUpdated.lessThan=" + UPDATED_LASTER_UPDATED);
-    }
-
-    @Test
-    @Transactional
-    public void getAllInventoriesByLasterUpdatedIsGreaterThanSomething() throws Exception {
-        // Initialize the database
-        inventoryRepository.saveAndFlush(inventory);
-
-        // Get all the inventoryList where lasterUpdated is greater than DEFAULT_LASTER_UPDATED
-        defaultInventoryShouldNotBeFound("lasterUpdated.greaterThan=" + DEFAULT_LASTER_UPDATED);
-
-        // Get all the inventoryList where lasterUpdated is greater than SMALLER_LASTER_UPDATED
-        defaultInventoryShouldBeFound("lasterUpdated.greaterThan=" + SMALLER_LASTER_UPDATED);
-    }
 
     @Test
     @Transactional
@@ -1322,6 +1349,7 @@ public class InventoryResourceIT {
         // Get all the inventoryList where outlet equals to outletId + 1
         defaultInventoryShouldNotBeFound("outletId.equals=" + (outletId + 1));
     }
+
 
     @Test
     @Transactional
@@ -1346,28 +1374,24 @@ public class InventoryResourceIT {
      * Executes the search, and checks that the default entity is returned.
      */
     private void defaultInventoryShouldBeFound(String filter) throws Exception {
-        restInventoryMockMvc
-            .perform(get("/api/inventories?sort=id,desc&" + filter))
+        restInventoryMockMvc.perform(get("/api/inventories?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(inventory.getId().intValue())))
-            .andExpect(jsonPath("$.[*].inventoryId").value(hasItem(DEFAULT_INVENTORY_ID)))
-            .andExpect(jsonPath("$.[*].itemCode").value(hasItem(DEFAULT_ITEM_CODE)))
-            .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)))
-            .andExpect(jsonPath("$.[*].quantitiesInHand").value(hasItem(DEFAULT_QUANTITIES_IN_HAND)))
-            .andExpect(jsonPath("$.[*].quantitiesInTransit").value(hasItem(DEFAULT_QUANTITIES_IN_TRANSIT)))
+            .andExpect(jsonPath("$.[*].inventoryId").value(hasItem(DEFAULT_INVENTORY_ID.intValue())))
+            .andExpect(jsonPath("$.[*].quantitiesInHand").value(hasItem(DEFAULT_QUANTITIES_IN_HAND.doubleValue())))
+            .andExpect(jsonPath("$.[*].quantitiesInTransit").value(hasItem(DEFAULT_QUANTITIES_IN_TRANSIT.doubleValue())))
             .andExpect(jsonPath("$.[*].uom").value(hasItem(DEFAULT_UOM)))
-            .andExpect(jsonPath("$.[*].actualDailyConsumption").value(hasItem(DEFAULT_ACTUAL_DAILY_CONSUMPTION)))
-            .andExpect(jsonPath("$.[*].recordLevel").value(hasItem(DEFAULT_RECORD_LEVEL)))
-            .andExpect(jsonPath("$.[*].suggestedQuantity").value(hasItem(DEFAULT_SUGGESTED_QUANTITY)))
-            .andExpect(jsonPath("$.[*].expectedCoveringDay").value(hasItem(DEFAULT_EXPECTED_COVERING_DAY)))
-            .andExpect(jsonPath("$.[*].quantity").value(hasItem(DEFAULT_QUANTITY)))
-            .andExpect(jsonPath("$.[*].location").value(hasItem(DEFAULT_LOCATION)))
-            .andExpect(jsonPath("$.[*].lasterUpdated").value(hasItem(DEFAULT_LASTER_UPDATED.toString())));
+            .andExpect(jsonPath("$.[*].actualDailyConsumption").value(hasItem(DEFAULT_ACTUAL_DAILY_CONSUMPTION.doubleValue())))
+            .andExpect(jsonPath("$.[*].actualAvgConsumption").value(hasItem(DEFAULT_ACTUAL_AVG_CONSUMPTION.doubleValue())))
+            .andExpect(jsonPath("$.[*].reOrderLevel").value(hasItem(DEFAULT_RE_ORDER_LEVEL)))
+            .andExpect(jsonPath("$.[*].suggestedQuantity").value(hasItem(DEFAULT_SUGGESTED_QUANTITY.doubleValue())))
+            .andExpect(jsonPath("$.[*].expectedCoveringDay").value(hasItem(DEFAULT_EXPECTED_COVERING_DAY.doubleValue())))
+            .andExpect(jsonPath("$.[*].lastUpdatedAt").value(hasItem(DEFAULT_LAST_UPDATED_AT.toString())))
+            .andExpect(jsonPath("$.[*].status").value(hasItem(DEFAULT_STATUS)));
 
         // Check, that the count call also returns 1
-        restInventoryMockMvc
-            .perform(get("/api/inventories/count?sort=id,desc&" + filter))
+        restInventoryMockMvc.perform(get("/api/inventories/count?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().string("1"));
@@ -1377,16 +1401,14 @@ public class InventoryResourceIT {
      * Executes the search, and checks that the default entity is not returned.
      */
     private void defaultInventoryShouldNotBeFound(String filter) throws Exception {
-        restInventoryMockMvc
-            .perform(get("/api/inventories?sort=id,desc&" + filter))
+        restInventoryMockMvc.perform(get("/api/inventories?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$").isEmpty());
 
         // Check, that the count call also returns 0
-        restInventoryMockMvc
-            .perform(get("/api/inventories/count?sort=id,desc&" + filter))
+        restInventoryMockMvc.perform(get("/api/inventories/count?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().string("0"));
@@ -1396,7 +1418,8 @@ public class InventoryResourceIT {
     @Transactional
     public void getNonExistingInventory() throws Exception {
         // Get the inventory
-        restInventoryMockMvc.perform(get("/api/inventories/{id}", Long.MAX_VALUE)).andExpect(status().isNotFound());
+        restInventoryMockMvc.perform(get("/api/inventories/{id}", Long.MAX_VALUE))
+            .andExpect(status().isNotFound());
     }
 
     @Test
@@ -1413,23 +1436,20 @@ public class InventoryResourceIT {
         em.detach(updatedInventory);
         updatedInventory
             .inventoryId(UPDATED_INVENTORY_ID)
-            .itemCode(UPDATED_ITEM_CODE)
-            .description(UPDATED_DESCRIPTION)
             .quantitiesInHand(UPDATED_QUANTITIES_IN_HAND)
             .quantitiesInTransit(UPDATED_QUANTITIES_IN_TRANSIT)
             .uom(UPDATED_UOM)
             .actualDailyConsumption(UPDATED_ACTUAL_DAILY_CONSUMPTION)
-            .recordLevel(UPDATED_RECORD_LEVEL)
+            .actualAvgConsumption(UPDATED_ACTUAL_AVG_CONSUMPTION)
+            .reOrderLevel(UPDATED_RE_ORDER_LEVEL)
             .suggestedQuantity(UPDATED_SUGGESTED_QUANTITY)
             .expectedCoveringDay(UPDATED_EXPECTED_COVERING_DAY)
-            .quantity(UPDATED_QUANTITY)
-            .location(UPDATED_LOCATION)
-            .lasterUpdated(UPDATED_LASTER_UPDATED);
+            .lastUpdatedAt(UPDATED_LAST_UPDATED_AT)
+            .status(UPDATED_STATUS);
 
-        restInventoryMockMvc
-            .perform(
-                put("/api/inventories").contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(updatedInventory))
-            )
+        restInventoryMockMvc.perform(put("/api/inventories")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(TestUtil.convertObjectToJsonBytes(updatedInventory)))
             .andExpect(status().isOk());
 
         // Validate the Inventory in the database
@@ -1437,18 +1457,16 @@ public class InventoryResourceIT {
         assertThat(inventoryList).hasSize(databaseSizeBeforeUpdate);
         Inventory testInventory = inventoryList.get(inventoryList.size() - 1);
         assertThat(testInventory.getInventoryId()).isEqualTo(UPDATED_INVENTORY_ID);
-        assertThat(testInventory.getItemCode()).isEqualTo(UPDATED_ITEM_CODE);
-        assertThat(testInventory.getDescription()).isEqualTo(UPDATED_DESCRIPTION);
         assertThat(testInventory.getQuantitiesInHand()).isEqualTo(UPDATED_QUANTITIES_IN_HAND);
         assertThat(testInventory.getQuantitiesInTransit()).isEqualTo(UPDATED_QUANTITIES_IN_TRANSIT);
         assertThat(testInventory.getUom()).isEqualTo(UPDATED_UOM);
         assertThat(testInventory.getActualDailyConsumption()).isEqualTo(UPDATED_ACTUAL_DAILY_CONSUMPTION);
-        assertThat(testInventory.getRecordLevel()).isEqualTo(UPDATED_RECORD_LEVEL);
+        assertThat(testInventory.getActualAvgConsumption()).isEqualTo(UPDATED_ACTUAL_AVG_CONSUMPTION);
+        assertThat(testInventory.getReOrderLevel()).isEqualTo(UPDATED_RE_ORDER_LEVEL);
         assertThat(testInventory.getSuggestedQuantity()).isEqualTo(UPDATED_SUGGESTED_QUANTITY);
         assertThat(testInventory.getExpectedCoveringDay()).isEqualTo(UPDATED_EXPECTED_COVERING_DAY);
-        assertThat(testInventory.getQuantity()).isEqualTo(UPDATED_QUANTITY);
-        assertThat(testInventory.getLocation()).isEqualTo(UPDATED_LOCATION);
-        assertThat(testInventory.getLasterUpdated()).isEqualTo(UPDATED_LASTER_UPDATED);
+        assertThat(testInventory.getLastUpdatedAt()).isEqualTo(UPDATED_LAST_UPDATED_AT);
+        assertThat(testInventory.getStatus()).isEqualTo(UPDATED_STATUS);
     }
 
     @Test
@@ -1457,8 +1475,9 @@ public class InventoryResourceIT {
         int databaseSizeBeforeUpdate = inventoryRepository.findAll().size();
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
-        restInventoryMockMvc
-            .perform(put("/api/inventories").contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(inventory)))
+        restInventoryMockMvc.perform(put("/api/inventories")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(TestUtil.convertObjectToJsonBytes(inventory)))
             .andExpect(status().isBadRequest());
 
         // Validate the Inventory in the database
@@ -1475,8 +1494,8 @@ public class InventoryResourceIT {
         int databaseSizeBeforeDelete = inventoryRepository.findAll().size();
 
         // Delete the inventory
-        restInventoryMockMvc
-            .perform(delete("/api/inventories/{id}", inventory.getId()).accept(MediaType.APPLICATION_JSON))
+        restInventoryMockMvc.perform(delete("/api/inventories/{id}", inventory.getId())
+            .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item

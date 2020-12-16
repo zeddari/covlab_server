@@ -17,18 +17,16 @@
         "title": "Inventory"
       },
       "inventoryId": "Inventory Id",
-      "itemCode": "Item Code",
-      "description": "Description",
       "quantitiesInHand": "Quantities In Hand",
       "quantitiesInTransit": "Quantities In Transit",
       "uom": "Uom",
       "actualDailyConsumption": "Actual Daily Consumption",
-      "recordLevel": "Record Level",
+      "actualAvgConsumption": "Actual Avg Consumption",
+      "reOrderLevel": "Re Order Level",
       "suggestedQuantity": "Suggested Quantity",
       "expectedCoveringDay": "Expected Covering Day",
-      "quantity": "Quantity",
-      "location": "Location",
-      "lasterUpdated": "Laster Updated",
+      "lastUpdatedAt": "Last Updated At",
+      "status": "Status",
       "outlet": "Outlet",
       "product": "Product"
     }

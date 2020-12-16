@@ -1,9 +1,11 @@
 package com.axilog.cov.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import javax.persistence.*;
+
 import java.io.Serializable;
 import java.time.LocalDate;
-import javax.persistence.*;
 
 /**
  * A Inventory.
@@ -11,6 +13,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "inventory")
 public class Inventory implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -18,43 +21,37 @@ public class Inventory implements Serializable {
     private Long id;
 
     @Column(name = "inventory_id")
-    private String inventoryId;
-
-    @Column(name = "item_code")
-    private String itemCode;
-
-    @Column(name = "description")
-    private String description;
+    private Long inventoryId;
 
     @Column(name = "quantities_in_hand")
-    private String quantitiesInHand;
+    private Double quantitiesInHand;
 
     @Column(name = "quantities_in_transit")
-    private String quantitiesInTransit;
+    private Double quantitiesInTransit;
 
     @Column(name = "uom")
     private String uom;
 
     @Column(name = "actual_daily_consumption")
-    private String actualDailyConsumption;
+    private Double actualDailyConsumption;
 
-    @Column(name = "record_level")
-    private String recordLevel;
+    @Column(name = "actual_avg_consumption")
+    private Double actualAvgConsumption;
+
+    @Column(name = "re_order_level")
+    private String reOrderLevel;
 
     @Column(name = "suggested_quantity")
-    private String suggestedQuantity;
+    private Double suggestedQuantity;
 
     @Column(name = "expected_covering_day")
-    private String expectedCoveringDay;
+    private Double expectedCoveringDay;
 
-    @Column(name = "quantity")
-    private String quantity;
+    @Column(name = "last_updated_at")
+    private LocalDate lastUpdatedAt;
 
-    @Column(name = "location")
-    private String location;
-
-    @Column(name = "laster_updated")
-    private LocalDate lasterUpdated;
+    @Column(name = "status")
+    private String status;
 
     @ManyToOne
     @JsonIgnoreProperties(value = "inventories", allowSetters = true)
@@ -73,68 +70,42 @@ public class Inventory implements Serializable {
         this.id = id;
     }
 
-    public String getInventoryId() {
+    public Long getInventoryId() {
         return inventoryId;
     }
 
-    public Inventory inventoryId(String inventoryId) {
+    public Inventory inventoryId(Long inventoryId) {
         this.inventoryId = inventoryId;
         return this;
     }
 
-    public void setInventoryId(String inventoryId) {
+    public void setInventoryId(Long inventoryId) {
         this.inventoryId = inventoryId;
     }
 
-    public String getItemCode() {
-        return itemCode;
-    }
-
-    public Inventory itemCode(String itemCode) {
-        this.itemCode = itemCode;
-        return this;
-    }
-
-    public void setItemCode(String itemCode) {
-        this.itemCode = itemCode;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public Inventory description(String description) {
-        this.description = description;
-        return this;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getQuantitiesInHand() {
+    public Double getQuantitiesInHand() {
         return quantitiesInHand;
     }
 
-    public Inventory quantitiesInHand(String quantitiesInHand) {
+    public Inventory quantitiesInHand(Double quantitiesInHand) {
         this.quantitiesInHand = quantitiesInHand;
         return this;
     }
 
-    public void setQuantitiesInHand(String quantitiesInHand) {
+    public void setQuantitiesInHand(Double quantitiesInHand) {
         this.quantitiesInHand = quantitiesInHand;
     }
 
-    public String getQuantitiesInTransit() {
+    public Double getQuantitiesInTransit() {
         return quantitiesInTransit;
     }
 
-    public Inventory quantitiesInTransit(String quantitiesInTransit) {
+    public Inventory quantitiesInTransit(Double quantitiesInTransit) {
         this.quantitiesInTransit = quantitiesInTransit;
         return this;
     }
 
-    public void setQuantitiesInTransit(String quantitiesInTransit) {
+    public void setQuantitiesInTransit(Double quantitiesInTransit) {
         this.quantitiesInTransit = quantitiesInTransit;
     }
 
@@ -151,95 +122,95 @@ public class Inventory implements Serializable {
         this.uom = uom;
     }
 
-    public String getActualDailyConsumption() {
+    public Double getActualDailyConsumption() {
         return actualDailyConsumption;
     }
 
-    public Inventory actualDailyConsumption(String actualDailyConsumption) {
+    public Inventory actualDailyConsumption(Double actualDailyConsumption) {
         this.actualDailyConsumption = actualDailyConsumption;
         return this;
     }
 
-    public void setActualDailyConsumption(String actualDailyConsumption) {
+    public void setActualDailyConsumption(Double actualDailyConsumption) {
         this.actualDailyConsumption = actualDailyConsumption;
     }
 
-    public String getRecordLevel() {
-        return recordLevel;
+    public Double getActualAvgConsumption() {
+        return actualAvgConsumption;
     }
 
-    public Inventory recordLevel(String recordLevel) {
-        this.recordLevel = recordLevel;
+    public Inventory actualAvgConsumption(Double actualAvgConsumption) {
+        this.actualAvgConsumption = actualAvgConsumption;
         return this;
     }
 
-    public void setRecordLevel(String recordLevel) {
-        this.recordLevel = recordLevel;
+    public void setActualAvgConsumption(Double actualAvgConsumption) {
+        this.actualAvgConsumption = actualAvgConsumption;
     }
 
-    public String getSuggestedQuantity() {
+    public String getReOrderLevel() {
+        return reOrderLevel;
+    }
+
+    public Inventory reOrderLevel(String reOrderLevel) {
+        this.reOrderLevel = reOrderLevel;
+        return this;
+    }
+
+    public void setReOrderLevel(String reOrderLevel) {
+        this.reOrderLevel = reOrderLevel;
+    }
+
+    public Double getSuggestedQuantity() {
         return suggestedQuantity;
     }
 
-    public Inventory suggestedQuantity(String suggestedQuantity) {
+    public Inventory suggestedQuantity(Double suggestedQuantity) {
         this.suggestedQuantity = suggestedQuantity;
         return this;
     }
 
-    public void setSuggestedQuantity(String suggestedQuantity) {
+    public void setSuggestedQuantity(Double suggestedQuantity) {
         this.suggestedQuantity = suggestedQuantity;
     }
 
-    public String getExpectedCoveringDay() {
+    public Double getExpectedCoveringDay() {
         return expectedCoveringDay;
     }
 
-    public Inventory expectedCoveringDay(String expectedCoveringDay) {
+    public Inventory expectedCoveringDay(Double expectedCoveringDay) {
         this.expectedCoveringDay = expectedCoveringDay;
         return this;
     }
 
-    public void setExpectedCoveringDay(String expectedCoveringDay) {
+    public void setExpectedCoveringDay(Double expectedCoveringDay) {
         this.expectedCoveringDay = expectedCoveringDay;
     }
 
-    public String getQuantity() {
-        return quantity;
+    public LocalDate getLastUpdatedAt() {
+        return lastUpdatedAt;
     }
 
-    public Inventory quantity(String quantity) {
-        this.quantity = quantity;
+    public Inventory lastUpdatedAt(LocalDate lastUpdatedAt) {
+        this.lastUpdatedAt = lastUpdatedAt;
         return this;
     }
 
-    public void setQuantity(String quantity) {
-        this.quantity = quantity;
+    public void setLastUpdatedAt(LocalDate lastUpdatedAt) {
+        this.lastUpdatedAt = lastUpdatedAt;
     }
 
-    public String getLocation() {
-        return location;
+    public String getStatus() {
+        return status;
     }
 
-    public Inventory location(String location) {
-        this.location = location;
+    public Inventory status(String status) {
+        this.status = status;
         return this;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
-    }
-
-    public LocalDate getLasterUpdated() {
-        return lasterUpdated;
-    }
-
-    public Inventory lasterUpdated(LocalDate lasterUpdated) {
-        this.lasterUpdated = lasterUpdated;
-        return this;
-    }
-
-    public void setLasterUpdated(LocalDate lasterUpdated) {
-        this.lasterUpdated = lasterUpdated;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public Outlet getOutlet() {
@@ -267,7 +238,6 @@ public class Inventory implements Serializable {
     public void setProduct(Product product) {
         this.product = product;
     }
-
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -291,19 +261,17 @@ public class Inventory implements Serializable {
     public String toString() {
         return "Inventory{" +
             "id=" + getId() +
-            ", inventoryId='" + getInventoryId() + "'" +
-            ", itemCode='" + getItemCode() + "'" +
-            ", description='" + getDescription() + "'" +
-            ", quantitiesInHand='" + getQuantitiesInHand() + "'" +
-            ", quantitiesInTransit='" + getQuantitiesInTransit() + "'" +
+            ", inventoryId=" + getInventoryId() +
+            ", quantitiesInHand=" + getQuantitiesInHand() +
+            ", quantitiesInTransit=" + getQuantitiesInTransit() +
             ", uom='" + getUom() + "'" +
-            ", actualDailyConsumption='" + getActualDailyConsumption() + "'" +
-            ", recordLevel='" + getRecordLevel() + "'" +
-            ", suggestedQuantity='" + getSuggestedQuantity() + "'" +
-            ", expectedCoveringDay='" + getExpectedCoveringDay() + "'" +
-            ", quantity='" + getQuantity() + "'" +
-            ", location='" + getLocation() + "'" +
-            ", lasterUpdated='" + getLasterUpdated() + "'" +
+            ", actualDailyConsumption=" + getActualDailyConsumption() +
+            ", actualAvgConsumption=" + getActualAvgConsumption() +
+            ", reOrderLevel='" + getReOrderLevel() + "'" +
+            ", suggestedQuantity=" + getSuggestedQuantity() +
+            ", expectedCoveringDay=" + getExpectedCoveringDay() +
+            ", lastUpdatedAt='" + getLastUpdatedAt() + "'" +
+            ", status='" + getStatus() + "'" +
             "}";
     }
 }

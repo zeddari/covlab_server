@@ -3,7 +3,7 @@
   "fields": [
     {
       "fieldName": "productId",
-      "fieldType": "String"
+      "fieldType": "Long"
     },
     {
       "fieldName": "description",
@@ -22,11 +22,11 @@
       "relationshipName": "inventory"
     },
     {
-      "relationshipType": "one-to-one",
+      "relationshipType": "many-to-one",
       "otherEntityName": "category",
       "otherEntityRelationshipName": "product",
       "relationshipName": "category",
-      "ownerSide": false
+      "otherEntityField": "id"
     }
   ],
   "changelogDate": "20201215204907",

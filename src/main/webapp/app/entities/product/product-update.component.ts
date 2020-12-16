@@ -7,6 +7,8 @@ import { Observable } from 'rxjs';
 
 import { IProduct, Product } from 'app/shared/model/product.model';
 import { ProductService } from './product.service';
+import { ICategory } from 'app/shared/model/category.model';
+import { CategoryService } from 'app/entities/category/category.service';
 
 @Component({
   selector: 'jhi-product-update',
@@ -14,19 +16,28 @@ import { ProductService } from './product.service';
 })
 export class ProductUpdateComponent implements OnInit {
   isSaving = false;
+  categories: ICategory[] = [];
 
   editForm = this.fb.group({
     id: [],
     productId: [],
     description: [],
     productCode: [],
+    category: [],
   });
 
-  constructor(protected productService: ProductService, protected activatedRoute: ActivatedRoute, private fb: FormBuilder) {}
+  constructor(
+    protected productService: ProductService,
+    protected categoryService: CategoryService,
+    protected activatedRoute: ActivatedRoute,
+    private fb: FormBuilder
+  ) {}
 
   ngOnInit(): void {
     this.activatedRoute.data.subscribe(({ product }) => {
       this.updateForm(product);
+
+      this.categoryService.query().subscribe((res: HttpResponse<ICategory[]>) => (this.categories = res.body || []));
     });
   }
 
@@ -36,6 +47,7 @@ export class ProductUpdateComponent implements OnInit {
       productId: product.productId,
       description: product.description,
       productCode: product.productCode,
+      category: product.category,
     });
   }
 
@@ -60,6 +72,7 @@ export class ProductUpdateComponent implements OnInit {
       productId: this.editForm.get(['productId'])!.value,
       description: this.editForm.get(['description'])!.value,
       productCode: this.editForm.get(['productCode'])!.value,
+      category: this.editForm.get(['category'])!.value,
     };
   }
 
@@ -77,5 +90,9 @@ export class ProductUpdateComponent implements OnInit {
 
   protected onSaveError(): void {
     this.isSaving = false;
+  }
+
+  trackById(index: number, item: ICategory): any {
+    return item.id;
   }
 }

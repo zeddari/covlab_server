@@ -12,14 +12,6 @@
                 <dd>
                     <span>{{ inventory.inventoryId }}</span>
                 </dd>
-                <dt><span jhiTranslate="covlabServerApp.inventory.itemCode">Item Code</span></dt>
-                <dd>
-                    <span>{{ inventory.itemCode }}</span>
-                </dd>
-                <dt><span jhiTranslate="covlabServerApp.inventory.description">Description</span></dt>
-                <dd>
-                    <span>{{ inventory.description }}</span>
-                </dd>
                 <dt><span jhiTranslate="covlabServerApp.inventory.quantitiesInHand">Quantities In Hand</span></dt>
                 <dd>
                     <span>{{ inventory.quantitiesInHand }}</span>
@@ -36,9 +28,13 @@
                 <dd>
                     <span>{{ inventory.actualDailyConsumption }}</span>
                 </dd>
-                <dt><span jhiTranslate="covlabServerApp.inventory.recordLevel">Record Level</span></dt>
+                <dt><span jhiTranslate="covlabServerApp.inventory.actualAvgConsumption">Actual Avg Consumption</span></dt>
                 <dd>
-                    <span>{{ inventory.recordLevel }}</span>
+                    <span>{{ inventory.actualAvgConsumption }}</span>
+                </dd>
+                <dt><span jhiTranslate="covlabServerApp.inventory.reOrderLevel">Re Order Level</span></dt>
+                <dd>
+                    <span>{{ inventory.reOrderLevel }}</span>
                 </dd>
                 <dt><span jhiTranslate="covlabServerApp.inventory.suggestedQuantity">Suggested Quantity</span></dt>
                 <dd>
@@ -48,17 +44,13 @@
                 <dd>
                     <span>{{ inventory.expectedCoveringDay }}</span>
                 </dd>
-                <dt><span jhiTranslate="covlabServerApp.inventory.quantity">Quantity</span></dt>
+                <dt><span jhiTranslate="covlabServerApp.inventory.lastUpdatedAt">Last Updated At</span></dt>
                 <dd>
-                    <span>{{ inventory.quantity }}</span>
+                    <span>{{ inventory.lastUpdatedAt }}</span>
                 </dd>
-                <dt><span jhiTranslate="covlabServerApp.inventory.location">Location</span></dt>
+                <dt><span jhiTranslate="covlabServerApp.inventory.status">Status</span></dt>
                 <dd>
-                    <span>{{ inventory.location }}</span>
-                </dd>
-                <dt><span jhiTranslate="covlabServerApp.inventory.lasterUpdated">Laster Updated</span></dt>
-                <dd>
-                    <span>{{ inventory.lasterUpdated }}</span>
+                    <span>{{ inventory.status }}</span>
                 </dd>
                 <dt><span jhiTranslate="covlabServerApp.inventory.outlet">Outlet</span></dt>
                 <dd>

@@ -24,29 +24,14 @@ describe('Service Tests', () => {
       httpMock = injector.get(HttpTestingController);
       currentDate = moment();
 
-      elemDefault = new Inventory(
-        0,
-        'AAAAAAA',
-        'AAAAAAA',
-        'AAAAAAA',
-        'AAAAAAA',
-        'AAAAAAA',
-        'AAAAAAA',
-        'AAAAAAA',
-        'AAAAAAA',
-        'AAAAAAA',
-        'AAAAAAA',
-        'AAAAAAA',
-        'AAAAAAA',
-        currentDate
-      );
+      elemDefault = new Inventory(0, 0, 0, 0, 'AAAAAAA', 0, 0, 'AAAAAAA', 0, 0, currentDate, 'AAAAAAA');
     });
 
     describe('Service methods', () => {
       it('should find an element', () => {
         const returnedFromService = Object.assign(
           {
-            lasterUpdated: currentDate.format(DATE_FORMAT),
+            lastUpdatedAt: currentDate.format(DATE_FORMAT),
           },
           elemDefault
         );
@@ -62,14 +47,14 @@ describe('Service Tests', () => {
         const returnedFromService = Object.assign(
           {
             id: 0,
-            lasterUpdated: currentDate.format(DATE_FORMAT),
+            lastUpdatedAt: currentDate.format(DATE_FORMAT),
           },
           elemDefault
         );
 
         const expected = Object.assign(
           {
-            lasterUpdated: currentDate,
+            lastUpdatedAt: currentDate,
           },
           returnedFromService
         );
@@ -84,26 +69,24 @@ describe('Service Tests', () => {
       it('should update a Inventory', () => {
         const returnedFromService = Object.assign(
           {
-            inventoryId: 'BBBBBB',
-            itemCode: 'BBBBBB',
-            description: 'BBBBBB',
-            quantitiesInHand: 'BBBBBB',
-            quantitiesInTransit: 'BBBBBB',
+            inventoryId: 1,
+            quantitiesInHand: 1,
+            quantitiesInTransit: 1,
             uom: 'BBBBBB',
-            actualDailyConsumption: 'BBBBBB',
-            recordLevel: 'BBBBBB',
-            suggestedQuantity: 'BBBBBB',
-            expectedCoveringDay: 'BBBBBB',
-            quantity: 'BBBBBB',
-            location: 'BBBBBB',
-            lasterUpdated: currentDate.format(DATE_FORMAT),
+            actualDailyConsumption: 1,
+            actualAvgConsumption: 1,
+            reOrderLevel: 'BBBBBB',
+            suggestedQuantity: 1,
+            expectedCoveringDay: 1,
+            lastUpdatedAt: currentDate.format(DATE_FORMAT),
+            status: 'BBBBBB',
           },
           elemDefault
         );
 
         const expected = Object.assign(
           {
-            lasterUpdated: currentDate,
+            lastUpdatedAt: currentDate,
           },
           returnedFromService
         );
@@ -118,26 +101,24 @@ describe('Service Tests', () => {
       it('should return a list of Inventory', () => {
         const returnedFromService = Object.assign(
           {
-            inventoryId: 'BBBBBB',
-            itemCode: 'BBBBBB',
-            description: 'BBBBBB',
-            quantitiesInHand: 'BBBBBB',
-            quantitiesInTransit: 'BBBBBB',
+            inventoryId: 1,
+            quantitiesInHand: 1,
+            quantitiesInTransit: 1,
             uom: 'BBBBBB',
-            actualDailyConsumption: 'BBBBBB',
-            recordLevel: 'BBBBBB',
-            suggestedQuantity: 'BBBBBB',
-            expectedCoveringDay: 'BBBBBB',
-            quantity: 'BBBBBB',
-            location: 'BBBBBB',
-            lasterUpdated: currentDate.format(DATE_FORMAT),
+            actualDailyConsumption: 1,
+            actualAvgConsumption: 1,
+            reOrderLevel: 'BBBBBB',
+            suggestedQuantity: 1,
+            expectedCoveringDay: 1,
+            lastUpdatedAt: currentDate.format(DATE_FORMAT),
+            status: 'BBBBBB',
           },
           elemDefault
         );
 
         const expected = Object.assign(
           {
-            lasterUpdated: currentDate,
+            lastUpdatedAt: currentDate,
           },
           returnedFromService
         );

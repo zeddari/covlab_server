@@ -1,12 +1,9 @@
 package com.axilog.cov.service;
 
-import com.axilog.cov.domain.*; // for static metamodels
-import com.axilog.cov.domain.Category;
-import com.axilog.cov.repository.CategoryRepository;
-import com.axilog.cov.service.dto.CategoryCriteria;
-import io.github.jhipster.service.QueryService;
 import java.util.List;
+
 import javax.persistence.criteria.JoinType;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -14,6 +11,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import io.github.jhipster.service.QueryService;
+
+import com.axilog.cov.domain.Category;
+import com.axilog.cov.domain.*; // for static metamodels
+import com.axilog.cov.repository.CategoryRepository;
+import com.axilog.cov.service.dto.CategoryCriteria;
 
 /**
  * Service for executing complex queries for {@link Category} entities in the database.
@@ -24,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 public class CategoryQueryService extends QueryService<Category> {
+
     private final Logger log = LoggerFactory.getLogger(CategoryQueryService.class);
 
     private final CategoryRepository categoryRepository;
@@ -81,17 +86,14 @@ public class CategoryQueryService extends QueryService<Category> {
                 specification = specification.and(buildRangeSpecification(criteria.getId(), Category_.id));
             }
             if (criteria.getCategoryId() != null) {
-                specification = specification.and(buildStringSpecification(criteria.getCategoryId(), Category_.categoryId));
+                specification = specification.and(buildRangeSpecification(criteria.getCategoryId(), Category_.categoryId));
             }
             if (criteria.getDescriptionCategory() != null) {
-                specification =
-                    specification.and(buildStringSpecification(criteria.getDescriptionCategory(), Category_.descriptionCategory));
+                specification = specification.and(buildStringSpecification(criteria.getDescriptionCategory(), Category_.descriptionCategory));
             }
             if (criteria.getProductId() != null) {
-                specification =
-                    specification.and(
-                        buildSpecification(criteria.getProductId(), root -> root.join(Category_.product, JoinType.LEFT).get(Product_.id))
-                    );
+                specification = specification.and(buildSpecification(criteria.getProductId(),
+                    root -> root.join(Category_.products, JoinType.LEFT).get(Product_.id)));
             }
         }
         return specification;

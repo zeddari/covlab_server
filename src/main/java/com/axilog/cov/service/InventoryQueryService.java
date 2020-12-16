@@ -1,12 +1,9 @@
 package com.axilog.cov.service;
 
-import com.axilog.cov.domain.*; // for static metamodels
-import com.axilog.cov.domain.Inventory;
-import com.axilog.cov.repository.InventoryRepository;
-import com.axilog.cov.service.dto.InventoryCriteria;
-import io.github.jhipster.service.QueryService;
 import java.util.List;
+
 import javax.persistence.criteria.JoinType;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -14,6 +11,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import io.github.jhipster.service.QueryService;
+
+import com.axilog.cov.domain.Inventory;
+import com.axilog.cov.domain.*; // for static metamodels
+import com.axilog.cov.repository.InventoryRepository;
+import com.axilog.cov.service.dto.InventoryCriteria;
 
 /**
  * Service for executing complex queries for {@link Inventory} entities in the database.
@@ -24,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 public class InventoryQueryService extends QueryService<Inventory> {
+
     private final Logger log = LoggerFactory.getLogger(InventoryQueryService.class);
 
     private final InventoryRepository inventoryRepository;
@@ -81,58 +86,45 @@ public class InventoryQueryService extends QueryService<Inventory> {
                 specification = specification.and(buildRangeSpecification(criteria.getId(), Inventory_.id));
             }
             if (criteria.getInventoryId() != null) {
-                specification = specification.and(buildStringSpecification(criteria.getInventoryId(), Inventory_.inventoryId));
-            }
-            if (criteria.getItemCode() != null) {
-                specification = specification.and(buildStringSpecification(criteria.getItemCode(), Inventory_.itemCode));
-            }
-            if (criteria.getDescription() != null) {
-                specification = specification.and(buildStringSpecification(criteria.getDescription(), Inventory_.description));
+                specification = specification.and(buildRangeSpecification(criteria.getInventoryId(), Inventory_.inventoryId));
             }
             if (criteria.getQuantitiesInHand() != null) {
-                specification = specification.and(buildStringSpecification(criteria.getQuantitiesInHand(), Inventory_.quantitiesInHand));
+                specification = specification.and(buildRangeSpecification(criteria.getQuantitiesInHand(), Inventory_.quantitiesInHand));
             }
             if (criteria.getQuantitiesInTransit() != null) {
-                specification =
-                    specification.and(buildStringSpecification(criteria.getQuantitiesInTransit(), Inventory_.quantitiesInTransit));
+                specification = specification.and(buildRangeSpecification(criteria.getQuantitiesInTransit(), Inventory_.quantitiesInTransit));
             }
             if (criteria.getUom() != null) {
                 specification = specification.and(buildStringSpecification(criteria.getUom(), Inventory_.uom));
             }
             if (criteria.getActualDailyConsumption() != null) {
-                specification =
-                    specification.and(buildStringSpecification(criteria.getActualDailyConsumption(), Inventory_.actualDailyConsumption));
+                specification = specification.and(buildRangeSpecification(criteria.getActualDailyConsumption(), Inventory_.actualDailyConsumption));
             }
-            if (criteria.getRecordLevel() != null) {
-                specification = specification.and(buildStringSpecification(criteria.getRecordLevel(), Inventory_.recordLevel));
+            if (criteria.getActualAvgConsumption() != null) {
+                specification = specification.and(buildRangeSpecification(criteria.getActualAvgConsumption(), Inventory_.actualAvgConsumption));
+            }
+            if (criteria.getReOrderLevel() != null) {
+                specification = specification.and(buildStringSpecification(criteria.getReOrderLevel(), Inventory_.reOrderLevel));
             }
             if (criteria.getSuggestedQuantity() != null) {
-                specification = specification.and(buildStringSpecification(criteria.getSuggestedQuantity(), Inventory_.suggestedQuantity));
+                specification = specification.and(buildRangeSpecification(criteria.getSuggestedQuantity(), Inventory_.suggestedQuantity));
             }
             if (criteria.getExpectedCoveringDay() != null) {
-                specification =
-                    specification.and(buildStringSpecification(criteria.getExpectedCoveringDay(), Inventory_.expectedCoveringDay));
+                specification = specification.and(buildRangeSpecification(criteria.getExpectedCoveringDay(), Inventory_.expectedCoveringDay));
             }
-            if (criteria.getQuantity() != null) {
-                specification = specification.and(buildStringSpecification(criteria.getQuantity(), Inventory_.quantity));
+            if (criteria.getLastUpdatedAt() != null) {
+                specification = specification.and(buildRangeSpecification(criteria.getLastUpdatedAt(), Inventory_.lastUpdatedAt));
             }
-            if (criteria.getLocation() != null) {
-                specification = specification.and(buildStringSpecification(criteria.getLocation(), Inventory_.location));
-            }
-            if (criteria.getLasterUpdated() != null) {
-                specification = specification.and(buildRangeSpecification(criteria.getLasterUpdated(), Inventory_.lasterUpdated));
+            if (criteria.getStatus() != null) {
+                specification = specification.and(buildStringSpecification(criteria.getStatus(), Inventory_.status));
             }
             if (criteria.getOutletId() != null) {
-                specification =
-                    specification.and(
-                        buildSpecification(criteria.getOutletId(), root -> root.join(Inventory_.outlet, JoinType.LEFT).get(Outlet_.id))
-                    );
+                specification = specification.and(buildSpecification(criteria.getOutletId(),
+                    root -> root.join(Inventory_.outlet, JoinType.LEFT).get(Outlet_.id)));
             }
             if (criteria.getProductId() != null) {
-                specification =
-                    specification.and(
-                        buildSpecification(criteria.getProductId(), root -> root.join(Inventory_.product, JoinType.LEFT).get(Product_.id))
-                    );
+                specification = specification.and(buildSpecification(criteria.getProductId(),
+                    root -> root.join(Inventory_.product, JoinType.LEFT).get(Product_.id)));
             }
         }
         return specification;

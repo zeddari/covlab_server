@@ -1,6 +1,7 @@
 package com.axilog.cov.repository;
 
 import com.axilog.cov.domain.Category;
+
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 
@@ -9,4 +10,5 @@ import org.springframework.stereotype.Repository;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface CategoryRepository extends JpaRepository<Category, Long>, JpaSpecificationExecutor<Category> {}
+public interface CategoryRepository extends JpaRepository<Category, Long>, JpaSpecificationExecutor<Category> {
+}

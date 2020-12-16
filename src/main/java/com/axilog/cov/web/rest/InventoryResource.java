@@ -1,27 +1,32 @@
 package com.axilog.cov.web.rest;
 
 import com.axilog.cov.domain.Inventory;
-import com.axilog.cov.service.InventoryQueryService;
+import com.axilog.cov.dto.mapper.InventoryMapper;
+import com.axilog.cov.dto.representation.InventoryRepresentation;
 import com.axilog.cov.service.InventoryService;
-import com.axilog.cov.service.dto.InventoryCriteria;
 import com.axilog.cov.web.rest.errors.BadRequestAlertException;
+import com.axilog.cov.service.dto.InventoryCriteria;
+import com.axilog.cov.service.InventoryQueryService;
+
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * REST controller for managing {@link com.axilog.cov.domain.Inventory}.
@@ -29,6 +34,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 @RestController
 @RequestMapping("/api")
 public class InventoryResource {
+
     private final Logger log = LoggerFactory.getLogger(InventoryResource.class);
 
     private static final String ENTITY_NAME = "inventory";
@@ -40,6 +46,9 @@ public class InventoryResource {
 
     private final InventoryQueryService inventoryQueryService;
 
+    @Autowired
+    private InventoryMapper inventoryMapper;
+    
     public InventoryResource(InventoryService inventoryService, InventoryQueryService inventoryQueryService) {
         this.inventoryService = inventoryService;
         this.inventoryQueryService = inventoryQueryService;
@@ -59,8 +68,7 @@ public class InventoryResource {
             throw new BadRequestAlertException("A new inventory cannot already have an ID", ENTITY_NAME, "idexists");
         }
         Inventory result = inventoryService.save(inventory);
-        return ResponseEntity
-            .created(new URI("/api/inventories/" + result.getId()))
+        return ResponseEntity.created(new URI("/api/inventories/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
@@ -81,8 +89,7 @@ public class InventoryResource {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
         Inventory result = inventoryService.save(inventory);
-        return ResponseEntity
-            .ok()
+        return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, inventory.getId().toString()))
             .body(result);
     }
@@ -95,11 +102,13 @@ public class InventoryResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of inventories in body.
      */
     @GetMapping("/inventories")
-    public ResponseEntity<List<Inventory>> getAllInventories(InventoryCriteria criteria, Pageable pageable) {
+    public ResponseEntity<InventoryRepresentation> getAllInventories(InventoryCriteria criteria, Pageable pageable) {
         log.debug("REST request to get Inventories by criteria: {}", criteria);
         Page<Inventory> page = inventoryQueryService.findByCriteria(criteria, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-        return ResponseEntity.ok().headers(headers).body(page.getContent());
+        List<Inventory> inventories = page.getContent();
+        InventoryRepresentation inventoryRepresentation = inventoryMapper.toInventoryRepresentation(inventories);
+        return ResponseEntity.ok().headers(headers).body(inventoryRepresentation);
     }
 
     /**
@@ -137,9 +146,6 @@ public class InventoryResource {
     public ResponseEntity<Void> deleteInventory(@PathVariable Long id) {
         log.debug("REST request to delete Inventory : {}", id);
         inventoryService.delete(id);
-        return ResponseEntity
-            .noContent()
-            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
-            .build();
+        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
     }
 }

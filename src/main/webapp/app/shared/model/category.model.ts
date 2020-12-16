@@ -2,11 +2,11 @@ import { IProduct } from 'app/shared/model/product.model';
 
 export interface ICategory {
   id?: number;
-  categoryId?: string;
+  categoryId?: number;
   descriptionCategory?: string;
-  product?: IProduct;
+  products?: IProduct[];
 }
 
 export class Category implements ICategory {
-  constructor(public id?: number, public categoryId?: string, public descriptionCategory?: string, public product?: IProduct) {}
+  constructor(public id?: number, public categoryId?: number, public descriptionCategory?: string, public products?: IProduct[]) {}
 }

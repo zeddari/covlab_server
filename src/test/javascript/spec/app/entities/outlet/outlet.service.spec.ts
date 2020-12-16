@@ -20,7 +20,7 @@ describe('Service Tests', () => {
       service = injector.get(OutletService);
       httpMock = injector.get(HttpTestingController);
 
-      elemDefault = new Outlet(0, 'AAAAAAA', 'AAAAAAA', 'AAAAAAA', 'AAAAAAA', 'AAAAAAA');
+      elemDefault = new Outlet(0, 0, 'AAAAAAA', 'AAAAAAA', 'AAAAAAA', 0, 0);
     });
 
     describe('Service methods', () => {
@@ -54,11 +54,12 @@ describe('Service Tests', () => {
       it('should update a Outlet', () => {
         const returnedFromService = Object.assign(
           {
-            outletId: 'BBBBBB',
+            outletId: 1,
             outletName: 'BBBBBB',
-            outletLocation: 'BBBBBB',
-            outletLat: 'BBBBBB',
-            outletLong: 'BBBBBB',
+            outletRegion: 'BBBBBB',
+            outletAdress: 'BBBBBB',
+            outletLat: 1,
+            outletLng: 1,
           },
           elemDefault
         );
@@ -75,11 +76,12 @@ describe('Service Tests', () => {
       it('should return a list of Outlet', () => {
         const returnedFromService = Object.assign(
           {
-            outletId: 'BBBBBB',
+            outletId: 1,
             outletName: 'BBBBBB',
-            outletLocation: 'BBBBBB',
-            outletLat: 'BBBBBB',
-            outletLong: 'BBBBBB',
+            outletRegion: 'BBBBBB',
+            outletAdress: 'BBBBBB',
+            outletLat: 1,
+            outletLng: 1,
           },
           elemDefault
         );

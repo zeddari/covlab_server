@@ -4,19 +4,17 @@ import { IProduct } from 'app/shared/model/product.model';
 
 export interface IInventory {
   id?: number;
-  inventoryId?: string;
-  itemCode?: string;
-  description?: string;
-  quantitiesInHand?: string;
-  quantitiesInTransit?: string;
+  inventoryId?: number;
+  quantitiesInHand?: number;
+  quantitiesInTransit?: number;
   uom?: string;
-  actualDailyConsumption?: string;
-  recordLevel?: string;
-  suggestedQuantity?: string;
-  expectedCoveringDay?: string;
-  quantity?: string;
-  location?: string;
-  lasterUpdated?: Moment;
+  actualDailyConsumption?: number;
+  actualAvgConsumption?: number;
+  reOrderLevel?: string;
+  suggestedQuantity?: number;
+  expectedCoveringDay?: number;
+  lastUpdatedAt?: Moment;
+  status?: string;
   outlet?: IOutlet;
   product?: IProduct;
 }
@@ -24,19 +22,17 @@ export interface IInventory {
 export class Inventory implements IInventory {
   constructor(
     public id?: number,
-    public inventoryId?: string,
-    public itemCode?: string,
-    public description?: string,
-    public quantitiesInHand?: string,
-    public quantitiesInTransit?: string,
+    public inventoryId?: number,
+    public quantitiesInHand?: number,
+    public quantitiesInTransit?: number,
     public uom?: string,
-    public actualDailyConsumption?: string,
-    public recordLevel?: string,
-    public suggestedQuantity?: string,
-    public expectedCoveringDay?: string,
-    public quantity?: string,
-    public location?: string,
-    public lasterUpdated?: Moment,
+    public actualDailyConsumption?: number,
+    public actualAvgConsumption?: number,
+    public reOrderLevel?: string,
+    public suggestedQuantity?: number,
+    public expectedCoveringDay?: number,
+    public lastUpdatedAt?: Moment,
+    public status?: string,
     public outlet?: IOutlet,
     public product?: IProduct
   ) {}

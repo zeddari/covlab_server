@@ -1,15 +1,17 @@
 package com.axilog.cov.service.impl;
 
+import com.axilog.cov.service.InventoryService;
 import com.axilog.cov.domain.Inventory;
 import com.axilog.cov.repository.InventoryRepository;
-import com.axilog.cov.service.InventoryService;
-import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 /**
  * Service Implementation for managing {@link Inventory}.
@@ -17,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class InventoryServiceImpl implements InventoryService {
+
     private final Logger log = LoggerFactory.getLogger(InventoryServiceImpl.class);
 
     private final InventoryRepository inventoryRepository;
@@ -37,6 +40,7 @@ public class InventoryServiceImpl implements InventoryService {
         log.debug("Request to get all Inventories");
         return inventoryRepository.findAll(pageable);
     }
+
 
     @Override
     @Transactional(readOnly = true)

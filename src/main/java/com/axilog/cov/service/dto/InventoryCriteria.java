@@ -1,16 +1,16 @@
 package com.axilog.cov.service.dto;
 
+import java.io.Serializable;
+import java.util.Objects;
 import io.github.jhipster.service.Criteria;
 import io.github.jhipster.service.filter.BooleanFilter;
 import io.github.jhipster.service.filter.DoubleFilter;
 import io.github.jhipster.service.filter.Filter;
 import io.github.jhipster.service.filter.FloatFilter;
 import io.github.jhipster.service.filter.IntegerFilter;
-import io.github.jhipster.service.filter.LocalDateFilter;
 import io.github.jhipster.service.filter.LongFilter;
 import io.github.jhipster.service.filter.StringFilter;
-import java.io.Serializable;
-import java.util.Objects;
+import io.github.jhipster.service.filter.LocalDateFilter;
 
 /**
  * Criteria class for the {@link com.axilog.cov.domain.Inventory} entity. This class is used
@@ -22,57 +22,53 @@ import java.util.Objects;
  * fix type specific filters.
  */
 public class InventoryCriteria implements Serializable, Criteria {
+
     private static final long serialVersionUID = 1L;
 
     private LongFilter id;
 
-    private StringFilter inventoryId;
+    private LongFilter inventoryId;
 
-    private StringFilter itemCode;
+    private DoubleFilter quantitiesInHand;
 
-    private StringFilter description;
-
-    private StringFilter quantitiesInHand;
-
-    private StringFilter quantitiesInTransit;
+    private DoubleFilter quantitiesInTransit;
 
     private StringFilter uom;
 
-    private StringFilter actualDailyConsumption;
+    private DoubleFilter actualDailyConsumption;
 
-    private StringFilter recordLevel;
+    private DoubleFilter actualAvgConsumption;
 
-    private StringFilter suggestedQuantity;
+    private StringFilter reOrderLevel;
 
-    private StringFilter expectedCoveringDay;
+    private DoubleFilter suggestedQuantity;
 
-    private StringFilter quantity;
+    private DoubleFilter expectedCoveringDay;
 
-    private StringFilter location;
+    private LocalDateFilter lastUpdatedAt;
 
-    private LocalDateFilter lasterUpdated;
+    private StringFilter status;
 
     private LongFilter outletId;
 
     private LongFilter productId;
 
-    public InventoryCriteria() {}
+    public InventoryCriteria() {
+    }
 
     public InventoryCriteria(InventoryCriteria other) {
         this.id = other.id == null ? null : other.id.copy();
         this.inventoryId = other.inventoryId == null ? null : other.inventoryId.copy();
-        this.itemCode = other.itemCode == null ? null : other.itemCode.copy();
-        this.description = other.description == null ? null : other.description.copy();
         this.quantitiesInHand = other.quantitiesInHand == null ? null : other.quantitiesInHand.copy();
         this.quantitiesInTransit = other.quantitiesInTransit == null ? null : other.quantitiesInTransit.copy();
         this.uom = other.uom == null ? null : other.uom.copy();
         this.actualDailyConsumption = other.actualDailyConsumption == null ? null : other.actualDailyConsumption.copy();
-        this.recordLevel = other.recordLevel == null ? null : other.recordLevel.copy();
+        this.actualAvgConsumption = other.actualAvgConsumption == null ? null : other.actualAvgConsumption.copy();
+        this.reOrderLevel = other.reOrderLevel == null ? null : other.reOrderLevel.copy();
         this.suggestedQuantity = other.suggestedQuantity == null ? null : other.suggestedQuantity.copy();
         this.expectedCoveringDay = other.expectedCoveringDay == null ? null : other.expectedCoveringDay.copy();
-        this.quantity = other.quantity == null ? null : other.quantity.copy();
-        this.location = other.location == null ? null : other.location.copy();
-        this.lasterUpdated = other.lasterUpdated == null ? null : other.lasterUpdated.copy();
+        this.lastUpdatedAt = other.lastUpdatedAt == null ? null : other.lastUpdatedAt.copy();
+        this.status = other.status == null ? null : other.status.copy();
         this.outletId = other.outletId == null ? null : other.outletId.copy();
         this.productId = other.productId == null ? null : other.productId.copy();
     }
@@ -90,43 +86,27 @@ public class InventoryCriteria implements Serializable, Criteria {
         this.id = id;
     }
 
-    public StringFilter getInventoryId() {
+    public LongFilter getInventoryId() {
         return inventoryId;
     }
 
-    public void setInventoryId(StringFilter inventoryId) {
+    public void setInventoryId(LongFilter inventoryId) {
         this.inventoryId = inventoryId;
     }
 
-    public StringFilter getItemCode() {
-        return itemCode;
-    }
-
-    public void setItemCode(StringFilter itemCode) {
-        this.itemCode = itemCode;
-    }
-
-    public StringFilter getDescription() {
-        return description;
-    }
-
-    public void setDescription(StringFilter description) {
-        this.description = description;
-    }
-
-    public StringFilter getQuantitiesInHand() {
+    public DoubleFilter getQuantitiesInHand() {
         return quantitiesInHand;
     }
 
-    public void setQuantitiesInHand(StringFilter quantitiesInHand) {
+    public void setQuantitiesInHand(DoubleFilter quantitiesInHand) {
         this.quantitiesInHand = quantitiesInHand;
     }
 
-    public StringFilter getQuantitiesInTransit() {
+    public DoubleFilter getQuantitiesInTransit() {
         return quantitiesInTransit;
     }
 
-    public void setQuantitiesInTransit(StringFilter quantitiesInTransit) {
+    public void setQuantitiesInTransit(DoubleFilter quantitiesInTransit) {
         this.quantitiesInTransit = quantitiesInTransit;
     }
 
@@ -138,60 +118,60 @@ public class InventoryCriteria implements Serializable, Criteria {
         this.uom = uom;
     }
 
-    public StringFilter getActualDailyConsumption() {
+    public DoubleFilter getActualDailyConsumption() {
         return actualDailyConsumption;
     }
 
-    public void setActualDailyConsumption(StringFilter actualDailyConsumption) {
+    public void setActualDailyConsumption(DoubleFilter actualDailyConsumption) {
         this.actualDailyConsumption = actualDailyConsumption;
     }
 
-    public StringFilter getRecordLevel() {
-        return recordLevel;
+    public DoubleFilter getActualAvgConsumption() {
+        return actualAvgConsumption;
     }
 
-    public void setRecordLevel(StringFilter recordLevel) {
-        this.recordLevel = recordLevel;
+    public void setActualAvgConsumption(DoubleFilter actualAvgConsumption) {
+        this.actualAvgConsumption = actualAvgConsumption;
     }
 
-    public StringFilter getSuggestedQuantity() {
+    public StringFilter getReOrderLevel() {
+        return reOrderLevel;
+    }
+
+    public void setReOrderLevel(StringFilter reOrderLevel) {
+        this.reOrderLevel = reOrderLevel;
+    }
+
+    public DoubleFilter getSuggestedQuantity() {
         return suggestedQuantity;
     }
 
-    public void setSuggestedQuantity(StringFilter suggestedQuantity) {
+    public void setSuggestedQuantity(DoubleFilter suggestedQuantity) {
         this.suggestedQuantity = suggestedQuantity;
     }
 
-    public StringFilter getExpectedCoveringDay() {
+    public DoubleFilter getExpectedCoveringDay() {
         return expectedCoveringDay;
     }
 
-    public void setExpectedCoveringDay(StringFilter expectedCoveringDay) {
+    public void setExpectedCoveringDay(DoubleFilter expectedCoveringDay) {
         this.expectedCoveringDay = expectedCoveringDay;
     }
 
-    public StringFilter getQuantity() {
-        return quantity;
+    public LocalDateFilter getLastUpdatedAt() {
+        return lastUpdatedAt;
     }
 
-    public void setQuantity(StringFilter quantity) {
-        this.quantity = quantity;
+    public void setLastUpdatedAt(LocalDateFilter lastUpdatedAt) {
+        this.lastUpdatedAt = lastUpdatedAt;
     }
 
-    public StringFilter getLocation() {
-        return location;
+    public StringFilter getStatus() {
+        return status;
     }
 
-    public void setLocation(StringFilter location) {
-        this.location = location;
-    }
-
-    public LocalDateFilter getLasterUpdated() {
-        return lasterUpdated;
-    }
-
-    public void setLasterUpdated(LocalDateFilter lasterUpdated) {
-        this.lasterUpdated = lasterUpdated;
+    public void setStatus(StringFilter status) {
+        this.status = status;
     }
 
     public LongFilter getOutletId() {
@@ -210,6 +190,7 @@ public class InventoryCriteria implements Serializable, Criteria {
         this.productId = productId;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -219,45 +200,40 @@ public class InventoryCriteria implements Serializable, Criteria {
             return false;
         }
         final InventoryCriteria that = (InventoryCriteria) o;
-        return (
+        return
             Objects.equals(id, that.id) &&
             Objects.equals(inventoryId, that.inventoryId) &&
-            Objects.equals(itemCode, that.itemCode) &&
-            Objects.equals(description, that.description) &&
             Objects.equals(quantitiesInHand, that.quantitiesInHand) &&
             Objects.equals(quantitiesInTransit, that.quantitiesInTransit) &&
             Objects.equals(uom, that.uom) &&
             Objects.equals(actualDailyConsumption, that.actualDailyConsumption) &&
-            Objects.equals(recordLevel, that.recordLevel) &&
+            Objects.equals(actualAvgConsumption, that.actualAvgConsumption) &&
+            Objects.equals(reOrderLevel, that.reOrderLevel) &&
             Objects.equals(suggestedQuantity, that.suggestedQuantity) &&
             Objects.equals(expectedCoveringDay, that.expectedCoveringDay) &&
-            Objects.equals(quantity, that.quantity) &&
-            Objects.equals(location, that.location) &&
-            Objects.equals(lasterUpdated, that.lasterUpdated) &&
+            Objects.equals(lastUpdatedAt, that.lastUpdatedAt) &&
+            Objects.equals(status, that.status) &&
             Objects.equals(outletId, that.outletId) &&
-            Objects.equals(productId, that.productId)
-        );
+            Objects.equals(productId, that.productId);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(
-            id,
-            inventoryId,
-            itemCode,
-            description,
-            quantitiesInHand,
-            quantitiesInTransit,
-            uom,
-            actualDailyConsumption,
-            recordLevel,
-            suggestedQuantity,
-            expectedCoveringDay,
-            quantity,
-            location,
-            lasterUpdated,
-            outletId,
-            productId
+        id,
+        inventoryId,
+        quantitiesInHand,
+        quantitiesInTransit,
+        uom,
+        actualDailyConsumption,
+        actualAvgConsumption,
+        reOrderLevel,
+        suggestedQuantity,
+        expectedCoveringDay,
+        lastUpdatedAt,
+        status,
+        outletId,
+        productId
         );
     }
 
@@ -267,20 +243,19 @@ public class InventoryCriteria implements Serializable, Criteria {
         return "InventoryCriteria{" +
                 (id != null ? "id=" + id + ", " : "") +
                 (inventoryId != null ? "inventoryId=" + inventoryId + ", " : "") +
-                (itemCode != null ? "itemCode=" + itemCode + ", " : "") +
-                (description != null ? "description=" + description + ", " : "") +
                 (quantitiesInHand != null ? "quantitiesInHand=" + quantitiesInHand + ", " : "") +
                 (quantitiesInTransit != null ? "quantitiesInTransit=" + quantitiesInTransit + ", " : "") +
                 (uom != null ? "uom=" + uom + ", " : "") +
                 (actualDailyConsumption != null ? "actualDailyConsumption=" + actualDailyConsumption + ", " : "") +
-                (recordLevel != null ? "recordLevel=" + recordLevel + ", " : "") +
+                (actualAvgConsumption != null ? "actualAvgConsumption=" + actualAvgConsumption + ", " : "") +
+                (reOrderLevel != null ? "reOrderLevel=" + reOrderLevel + ", " : "") +
                 (suggestedQuantity != null ? "suggestedQuantity=" + suggestedQuantity + ", " : "") +
                 (expectedCoveringDay != null ? "expectedCoveringDay=" + expectedCoveringDay + ", " : "") +
-                (quantity != null ? "quantity=" + quantity + ", " : "") +
-                (location != null ? "location=" + location + ", " : "") +
-                (lasterUpdated != null ? "lasterUpdated=" + lasterUpdated + ", " : "") +
+                (lastUpdatedAt != null ? "lastUpdatedAt=" + lastUpdatedAt + ", " : "") +
+                (status != null ? "status=" + status + ", " : "") +
                 (outletId != null ? "outletId=" + outletId + ", " : "") +
                 (productId != null ? "productId=" + productId + ", " : "") +
             "}";
     }
+
 }

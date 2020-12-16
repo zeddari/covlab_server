@@ -51,14 +51,14 @@ export class InventoryService {
 
   protected convertDateFromClient(inventory: IInventory): IInventory {
     const copy: IInventory = Object.assign({}, inventory, {
-      lasterUpdated: inventory.lasterUpdated && inventory.lasterUpdated.isValid() ? inventory.lasterUpdated.format(DATE_FORMAT) : undefined,
+      lastUpdatedAt: inventory.lastUpdatedAt && inventory.lastUpdatedAt.isValid() ? inventory.lastUpdatedAt.format(DATE_FORMAT) : undefined,
     });
     return copy;
   }
 
   protected convertDateFromServer(res: EntityResponseType): EntityResponseType {
     if (res.body) {
-      res.body.lasterUpdated = res.body.lasterUpdated ? moment(res.body.lasterUpdated) : undefined;
+      res.body.lastUpdatedAt = res.body.lastUpdatedAt ? moment(res.body.lastUpdatedAt) : undefined;
     }
     return res;
   }
@@ -66,7 +66,7 @@ export class InventoryService {
   protected convertDateArrayFromServer(res: EntityArrayResponseType): EntityArrayResponseType {
     if (res.body) {
       res.body.forEach((inventory: IInventory) => {
-        inventory.lasterUpdated = inventory.lasterUpdated ? moment(inventory.lasterUpdated) : undefined;
+        inventory.lastUpdatedAt = inventory.lastUpdatedAt ? moment(inventory.lastUpdatedAt) : undefined;
       });
     }
     return res;

@@ -2,22 +2,24 @@ import { IInventory } from 'app/shared/model/inventory.model';
 
 export interface IOutlet {
   id?: number;
-  outletId?: string;
+  outletId?: number;
   outletName?: string;
-  outletLocation?: string;
-  outletLat?: string;
-  outletLong?: string;
+  outletRegion?: string;
+  outletAdress?: string;
+  outletLat?: number;
+  outletLng?: number;
   inventories?: IInventory[];
 }
 
 export class Outlet implements IOutlet {
   constructor(
     public id?: number,
-    public outletId?: string,
+    public outletId?: number,
     public outletName?: string,
-    public outletLocation?: string,
-    public outletLat?: string,
-    public outletLong?: string,
+    public outletRegion?: string,
+    public outletAdress?: string,
+    public outletLat?: number,
+    public outletLng?: number,
     public inventories?: IInventory[]
   ) {}
 }

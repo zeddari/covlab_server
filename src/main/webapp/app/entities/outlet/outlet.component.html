@@ -25,9 +25,10 @@
                     <th scope="col"  jhiSortBy="id"><span jhiTranslate="global.field.id">ID</span> <fa-icon icon="sort"></fa-icon></th>
                     <th scope="col"  jhiSortBy="outletId"><span jhiTranslate="covlabServerApp.outlet.outletId">Outlet Id</span> <fa-icon icon="sort"></fa-icon></th>
                     <th scope="col"  jhiSortBy="outletName"><span jhiTranslate="covlabServerApp.outlet.outletName">Outlet Name</span> <fa-icon icon="sort"></fa-icon></th>
-                    <th scope="col"  jhiSortBy="outletLocation"><span jhiTranslate="covlabServerApp.outlet.outletLocation">Outlet Location</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="outletRegion"><span jhiTranslate="covlabServerApp.outlet.outletRegion">Outlet Region</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="outletAdress"><span jhiTranslate="covlabServerApp.outlet.outletAdress">Outlet Adress</span> <fa-icon icon="sort"></fa-icon></th>
                     <th scope="col"  jhiSortBy="outletLat"><span jhiTranslate="covlabServerApp.outlet.outletLat">Outlet Lat</span> <fa-icon icon="sort"></fa-icon></th>
-                    <th scope="col"  jhiSortBy="outletLong"><span jhiTranslate="covlabServerApp.outlet.outletLong">Outlet Long</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="outletLng"><span jhiTranslate="covlabServerApp.outlet.outletLng">Outlet Lng</span> <fa-icon icon="sort"></fa-icon></th>
                     <th scope="col"></th>
                 </tr>
             </thead>
@@ -36,9 +37,10 @@
                     <td><a [routerLink]="['/outlet', outlet.id, 'view']">{{ outlet.id }}</a></td>
                     <td>{{ outlet.outletId }}</td>
                     <td>{{ outlet.outletName }}</td>
-                    <td>{{ outlet.outletLocation }}</td>
+                    <td>{{ outlet.outletRegion }}</td>
+                    <td>{{ outlet.outletAdress }}</td>
                     <td>{{ outlet.outletLat }}</td>
-                    <td>{{ outlet.outletLong }}</td>
+                    <td>{{ outlet.outletLng }}</td>
                     <td class="text-right">
                         <div class="btn-group">
                             <button type="submit"

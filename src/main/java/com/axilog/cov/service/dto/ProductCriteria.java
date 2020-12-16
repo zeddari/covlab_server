@@ -1,5 +1,7 @@
 package com.axilog.cov.service.dto;
 
+import java.io.Serializable;
+import java.util.Objects;
 import io.github.jhipster.service.Criteria;
 import io.github.jhipster.service.filter.BooleanFilter;
 import io.github.jhipster.service.filter.DoubleFilter;
@@ -8,8 +10,6 @@ import io.github.jhipster.service.filter.FloatFilter;
 import io.github.jhipster.service.filter.IntegerFilter;
 import io.github.jhipster.service.filter.LongFilter;
 import io.github.jhipster.service.filter.StringFilter;
-import java.io.Serializable;
-import java.util.Objects;
 
 /**
  * Criteria class for the {@link com.axilog.cov.domain.Product} entity. This class is used
@@ -21,11 +21,12 @@ import java.util.Objects;
  * fix type specific filters.
  */
 public class ProductCriteria implements Serializable, Criteria {
+
     private static final long serialVersionUID = 1L;
 
     private LongFilter id;
 
-    private StringFilter productId;
+    private LongFilter productId;
 
     private StringFilter description;
 
@@ -35,7 +36,8 @@ public class ProductCriteria implements Serializable, Criteria {
 
     private LongFilter categoryId;
 
-    public ProductCriteria() {}
+    public ProductCriteria() {
+    }
 
     public ProductCriteria(ProductCriteria other) {
         this.id = other.id == null ? null : other.id.copy();
@@ -59,11 +61,11 @@ public class ProductCriteria implements Serializable, Criteria {
         this.id = id;
     }
 
-    public StringFilter getProductId() {
+    public LongFilter getProductId() {
         return productId;
     }
 
-    public void setProductId(StringFilter productId) {
+    public void setProductId(LongFilter productId) {
         this.productId = productId;
     }
 
@@ -99,6 +101,7 @@ public class ProductCriteria implements Serializable, Criteria {
         this.categoryId = categoryId;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -108,19 +111,25 @@ public class ProductCriteria implements Serializable, Criteria {
             return false;
         }
         final ProductCriteria that = (ProductCriteria) o;
-        return (
+        return
             Objects.equals(id, that.id) &&
             Objects.equals(productId, that.productId) &&
             Objects.equals(description, that.description) &&
             Objects.equals(productCode, that.productCode) &&
             Objects.equals(inventoryId, that.inventoryId) &&
-            Objects.equals(categoryId, that.categoryId)
-        );
+            Objects.equals(categoryId, that.categoryId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, productId, description, productCode, inventoryId, categoryId);
+        return Objects.hash(
+        id,
+        productId,
+        description,
+        productCode,
+        inventoryId,
+        categoryId
+        );
     }
 
     // prettier-ignore
@@ -135,4 +144,5 @@ public class ProductCriteria implements Serializable, Criteria {
                 (categoryId != null ? "categoryId=" + categoryId + ", " : "") +
             "}";
     }
+
 }

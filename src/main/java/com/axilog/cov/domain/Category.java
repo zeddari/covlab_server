@@ -1,7 +1,11 @@
 package com.axilog.cov.domain;
 
-import java.io.Serializable;
+
 import javax.persistence.*;
+
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A Category.
@@ -9,6 +13,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "category")
 public class Category implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -16,14 +21,13 @@ public class Category implements Serializable {
     private Long id;
 
     @Column(name = "category_id")
-    private String categoryId;
+    private Long categoryId;
 
     @Column(name = "description_category")
     private String descriptionCategory;
 
-    @OneToOne
-    @JoinColumn(unique = true)
-    private Product product;
+    @OneToMany(mappedBy = "category")
+    private Set<Product> products = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
     public Long getId() {
@@ -34,16 +38,16 @@ public class Category implements Serializable {
         this.id = id;
     }
 
-    public String getCategoryId() {
+    public Long getCategoryId() {
         return categoryId;
     }
 
-    public Category categoryId(String categoryId) {
+    public Category categoryId(Long categoryId) {
         this.categoryId = categoryId;
         return this;
     }
 
-    public void setCategoryId(String categoryId) {
+    public void setCategoryId(Long categoryId) {
         this.categoryId = categoryId;
     }
 
@@ -60,19 +64,30 @@ public class Category implements Serializable {
         this.descriptionCategory = descriptionCategory;
     }
 
-    public Product getProduct() {
-        return product;
+    public Set<Product> getProducts() {
+        return products;
     }
 
-    public Category product(Product product) {
-        this.product = product;
+    public Category products(Set<Product> products) {
+        this.products = products;
         return this;
     }
 
-    public void setProduct(Product product) {
-        this.product = product;
+    public Category addProduct(Product product) {
+        this.products.add(product);
+        product.setCategory(this);
+        return this;
     }
 
+    public Category removeProduct(Product product) {
+        this.products.remove(product);
+        product.setCategory(null);
+        return this;
+    }
+
+    public void setProducts(Set<Product> products) {
+        this.products = products;
+    }
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -96,7 +111,7 @@ public class Category implements Serializable {
     public String toString() {
         return "Category{" +
             "id=" + getId() +
-            ", categoryId='" + getCategoryId() + "'" +
+            ", categoryId=" + getCategoryId() +
             ", descriptionCategory='" + getDescriptionCategory() + "'" +
             "}";
     }

@@ -1,11 +1,11 @@
-id;inventory_id;item_code;description;quantities_in_hand;quantities_in_transit;uom;actual_daily_consumption;record_level;suggested_quantity;expected_covering_day;quantity;location;laster_updated
-1;IB;Versatile drive;Toys Creative Home Loan Account;Fantastic Plastic Ball Rand Loti Buckinghamshire;generate;intangible;circuit teal;vortals;convergence capacitor;deposit Pines;transmitting Home wireless;Internal Rustic Generic Granite Fish;2020-12-15
-2;firewall;Savings Account payment Malagasy Ariary;Groves;back-end Bedfordshire;virtual Barbados Dollar;e-services microchip Accounts;front-end navigating;Malagasy Ariary programming system;cyan Lane;generating orange Salad;calculate payment withdrawal;Utah Cambridgeshire;2020-12-15
-3;Steel Baby quantify;bandwidth;copy Borders withdrawal;Secured implementation;Re-contextualized;Rustic parse matrices;Handcrafted;Electronics actuating Florida;Table haptic Tools;Personal Loan Account;Clothing;Tuna transmit;2020-12-15
-4;Wells driver Research;Views;IB;invoice Plastic;Specialist cultivate withdrawal;Hawaii teal;Associate;Car users;Auto Loan Account Games;Buckinghamshire;input Plains Usability;connecting Bacon models;2020-12-15
-5;Metal Knoll;Checking Account invoice Berkshire;compressing Assurance;copying;calculating Integration;Cedi Money Market Account Direct;transition Computer;Unbranded withdrawal;Liaison;Jewelery Engineer;overriding;firewall;2020-12-15
-6;Chief;Cambridgeshire Grove Function-based;Rubber Chilean Peso Unidades de fomento;Quality Integration Gorgeous Fresh Towels;Cambridgeshire;generating XML Iraqi Dinar;value-added Crossroad payment;Proactive Identity revolutionary;backing up;Tactics open-source;wireless;Fantastic Fresh Computer;2020-12-15
-7;cultivate Investor real-time;Licensed HDD Libyan Arab Jamahiriya;innovate index;Integration Facilitator;Checking Account;invoice Director;Electronics;RSS Shirt;calculate Usability Savings Account;pink;Borders Tugrik Strategist;Switchable Sleek Fresh Ball;2020-12-15
-8;Baby CSS;content Metal Multi-tiered;quantifying;value-added;well-modulated Delaware lime;Kids e-markets attitude;Functionality redundant turquoise;alliance purple;Money Market Account;Gloves Executive;markets reciprocal;scalable;2020-12-15
-9;payment New Hampshire;radical real-time;Specialist infrastructures;Rial Omani;redundant;portals Points generating;Tasty Compatible composite;Optimization;Ball system;Credit Card Account;Nakfa Cambridgeshire;contingency;2020-12-15
-10;Developer Trace SQL;deposit;Handcrafted Metal Fish payment Towels;Agent indigo California;knowledge base magenta;Optimization;Wells Cross-platform;transmit Mississippi;Sports withdrawal New Zealand Dollar;calculating;next-generation;Steel Avon Netherlands Antillian Guilder;2020-12-14
+id;inventory_id;quantities_in_hand;quantities_in_transit;uom;actual_daily_consumption;actual_avg_consumption;re_order_level;suggested_quantity;expected_covering_day;last_updated_at;status
+1;25090;85933;85231;Versatile drive;72478;3202;Creative Home Loan Account;87596;6330;2020-12-15;Public-key
+2;98108;48391;72627;generate;31351;27065;Road SSL;20189;30322;2020-12-15;Ireland Buckinghamshire
+3;93640;35825;66268;Pines;68274;82443;Home wireless JSON;85354;8821;2020-12-15;withdrawal
+4;73773;27807;32711;Cambridgeshire Savings Account payment;66961;51017;Groves;42090;80310;2020-12-15;Organic virtual
+5;69610;6802;90031;policy azure;77099;50592;South Dakota iterate;69655;51026;2020-12-15;system mission-critical Central
+6;42916;88092;82042;orange Salad;92988;74604;payment withdrawal;52676;56114;2020-12-14;SQL hacking
+7;5919;3081;66611;Savings Account bandwidth 1080p;30710;50980;withdrawal Money Market Account;79847;29710;2020-12-15;Re-contextualized
+8;95111;10723;15359;Tactics Colorado Handcrafted;75573;1142;actuating;57353;16048;2020-12-14;users
+9;55485;94;38209;Personal Loan Account;19317;952;strategic payment compressing;98138;46921;2020-12-14;Automotive Wooden Views
+10;24425;87824;85652;invoice Plastic;78808;97787;cultivate;66019;45600;2020-12-15;teal purple

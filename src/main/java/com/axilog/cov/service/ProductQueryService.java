@@ -1,12 +1,9 @@
 package com.axilog.cov.service;
 
-import com.axilog.cov.domain.*; // for static metamodels
-import com.axilog.cov.domain.Product;
-import com.axilog.cov.repository.ProductRepository;
-import com.axilog.cov.service.dto.ProductCriteria;
-import io.github.jhipster.service.QueryService;
 import java.util.List;
+
 import javax.persistence.criteria.JoinType;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -14,6 +11,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import io.github.jhipster.service.QueryService;
+
+import com.axilog.cov.domain.Product;
+import com.axilog.cov.domain.*; // for static metamodels
+import com.axilog.cov.repository.ProductRepository;
+import com.axilog.cov.service.dto.ProductCriteria;
 
 /**
  * Service for executing complex queries for {@link Product} entities in the database.
@@ -24,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 public class ProductQueryService extends QueryService<Product> {
+
     private final Logger log = LoggerFactory.getLogger(ProductQueryService.class);
 
     private final ProductRepository productRepository;
@@ -81,7 +86,7 @@ public class ProductQueryService extends QueryService<Product> {
                 specification = specification.and(buildRangeSpecification(criteria.getId(), Product_.id));
             }
             if (criteria.getProductId() != null) {
-                specification = specification.and(buildStringSpecification(criteria.getProductId(), Product_.productId));
+                specification = specification.and(buildRangeSpecification(criteria.getProductId(), Product_.productId));
             }
             if (criteria.getDescription() != null) {
                 specification = specification.and(buildStringSpecification(criteria.getDescription(), Product_.description));
@@ -90,19 +95,12 @@ public class ProductQueryService extends QueryService<Product> {
                 specification = specification.and(buildStringSpecification(criteria.getProductCode(), Product_.productCode));
             }
             if (criteria.getInventoryId() != null) {
-                specification =
-                    specification.and(
-                        buildSpecification(
-                            criteria.getInventoryId(),
-                            root -> root.join(Product_.inventories, JoinType.LEFT).get(Inventory_.id)
-                        )
-                    );
+                specification = specification.and(buildSpecification(criteria.getInventoryId(),
+                    root -> root.join(Product_.inventories, JoinType.LEFT).get(Inventory_.id)));
             }
             if (criteria.getCategoryId() != null) {
-                specification =
-                    specification.and(
-                        buildSpecification(criteria.getCategoryId(), root -> root.join(Product_.category, JoinType.LEFT).get(Category_.id))
-                    );
+                specification = specification.and(buildSpecification(criteria.getCategoryId(),
+                    root -> root.join(Product_.category, JoinType.LEFT).get(Category_.id)));
             }
         }
         return specification;

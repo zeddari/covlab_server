@@ -3,23 +3,27 @@
   "fields": [
     {
       "fieldName": "outletId",
-      "fieldType": "String"
+      "fieldType": "Long"
     },
     {
       "fieldName": "outletName",
       "fieldType": "String"
     },
     {
-      "fieldName": "outletLocation",
+      "fieldName": "outletRegion",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "outletAdress",
       "fieldType": "String"
     },
     {
       "fieldName": "outletLat",
-      "fieldType": "String"
+      "fieldType": "Double"
     },
     {
-      "fieldName": "outletLong",
-      "fieldType": "String"
+      "fieldName": "outletLng",
+      "fieldType": "Double"
     }
   ],
   "relationships": [

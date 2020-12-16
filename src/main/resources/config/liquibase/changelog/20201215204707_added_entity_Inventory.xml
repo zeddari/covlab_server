@@ -16,43 +16,37 @@
             <column name="id" type="bigint" autoIncrement="${autoIncrement}">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="inventory_id" type="varchar(255)">
+            <column name="inventory_id" type="bigint">
                 <constraints nullable="true" />
             </column>
-            <column name="item_code" type="varchar(255)">
+            <column name="quantities_in_hand" type="double">
                 <constraints nullable="true" />
             </column>
-            <column name="description" type="varchar(255)">
-                <constraints nullable="true" />
-            </column>
-            <column name="quantities_in_hand" type="varchar(255)">
-                <constraints nullable="true" />
-            </column>
-            <column name="quantities_in_transit" type="varchar(255)">
+            <column name="quantities_in_transit" type="double">
                 <constraints nullable="true" />
             </column>
             <column name="uom" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            <column name="actual_daily_consumption" type="varchar(255)">
+            <column name="actual_daily_consumption" type="double">
                 <constraints nullable="true" />
             </column>
-            <column name="record_level" type="varchar(255)">
+            <column name="actual_avg_consumption" type="double">
                 <constraints nullable="true" />
             </column>
-            <column name="suggested_quantity" type="varchar(255)">
+            <column name="re_order_level" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            <column name="expected_covering_day" type="varchar(255)">
+            <column name="suggested_quantity" type="double">
                 <constraints nullable="true" />
             </column>
-            <column name="quantity" type="varchar(255)">
+            <column name="expected_covering_day" type="double">
                 <constraints nullable="true" />
             </column>
-            <column name="location" type="varchar(255)">
+            <column name="last_updated_at" type="date">
                 <constraints nullable="true" />
             </column>
-            <column name="laster_updated" type="date">
+            <column name="status" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
             <column name="outlet_id" type="bigint">
@@ -84,19 +78,17 @@
                   separator=";"
                   tableName="inventory">
             <column name="id" type="numeric"/>
-            <column name="inventory_id" type="string"/>
-            <column name="item_code" type="string"/>
-            <column name="description" type="string"/>
-            <column name="quantities_in_hand" type="string"/>
-            <column name="quantities_in_transit" type="string"/>
+            <column name="inventory_id" type="numeric"/>
+            <column name="quantities_in_hand" type="numeric"/>
+            <column name="quantities_in_transit" type="numeric"/>
             <column name="uom" type="string"/>
-            <column name="actual_daily_consumption" type="string"/>
-            <column name="record_level" type="string"/>
-            <column name="suggested_quantity" type="string"/>
-            <column name="expected_covering_day" type="string"/>
-            <column name="quantity" type="string"/>
-            <column name="location" type="string"/>
-            <column name="laster_updated" type="date"/>
+            <column name="actual_daily_consumption" type="numeric"/>
+            <column name="actual_avg_consumption" type="numeric"/>
+            <column name="re_order_level" type="string"/>
+            <column name="suggested_quantity" type="numeric"/>
+            <column name="expected_covering_day" type="numeric"/>
+            <column name="last_updated_at" type="date"/>
+            <column name="status" type="string"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
         </loadData>
     </changeSet>

@@ -25,7 +25,6 @@
                     <th scope="col"  jhiSortBy="id"><span jhiTranslate="global.field.id">ID</span> <fa-icon icon="sort"></fa-icon></th>
                     <th scope="col"  jhiSortBy="categoryId"><span jhiTranslate="covlabServerApp.category.categoryId">Category Id</span> <fa-icon icon="sort"></fa-icon></th>
                     <th scope="col"  jhiSortBy="descriptionCategory"><span jhiTranslate="covlabServerApp.category.descriptionCategory">Description Category</span> <fa-icon icon="sort"></fa-icon></th>
-                    <th scope="col"  jhiSortBy="product.id"><span jhiTranslate="covlabServerApp.category.product">Product</span> <fa-icon icon="sort"></fa-icon></th>
                     <th scope="col"></th>
                 </tr>
             </thead>
@@ -34,11 +33,6 @@
                     <td><a [routerLink]="['/category', category.id, 'view']">{{ category.id }}</a></td>
                     <td>{{ category.categoryId }}</td>
                     <td>{{ category.descriptionCategory }}</td>
-                    <td>
-                        <div *ngIf="category.product">
-                            <a [routerLink]="['/product', category.product?.id, 'view']" >{{ category.product?.id }}</a>
-                        </div>
-                    </td>
                     <td class="text-right">
                         <div class="btn-group">
                             <button type="submit"

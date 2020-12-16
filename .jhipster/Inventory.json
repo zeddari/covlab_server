@@ -3,23 +3,15 @@
   "fields": [
     {
       "fieldName": "inventoryId",
-      "fieldType": "String"
-    },
-    {
-      "fieldName": "itemCode",
-      "fieldType": "String"
-    },
-    {
-      "fieldName": "description",
-      "fieldType": "String"
+      "fieldType": "Long"
     },
     {
       "fieldName": "quantitiesInHand",
-      "fieldType": "String"
+      "fieldType": "Double"
     },
     {
       "fieldName": "quantitiesInTransit",
-      "fieldType": "String"
+      "fieldType": "Double"
     },
     {
       "fieldName": "uom",
@@ -27,31 +19,31 @@
     },
     {
       "fieldName": "actualDailyConsumption",
-      "fieldType": "String"
+      "fieldType": "Double"
     },
     {
-      "fieldName": "recordLevel",
+      "fieldName": "actualAvgConsumption",
+      "fieldType": "Double"
+    },
+    {
+      "fieldName": "reOrderLevel",
       "fieldType": "String"
     },
     {
       "fieldName": "suggestedQuantity",
-      "fieldType": "String"
+      "fieldType": "Double"
     },
     {
       "fieldName": "expectedCoveringDay",
-      "fieldType": "String"
+      "fieldType": "Double"
     },
     {
-      "fieldName": "quantity",
-      "fieldType": "String"
-    },
-    {
-      "fieldName": "location",
-      "fieldType": "String"
-    },
-    {
-      "fieldName": "lasterUpdated",
+      "fieldName": "lastUpdatedAt",
       "fieldType": "LocalDate"
+    },
+    {
+      "fieldName": "status",
+      "fieldType": "String"
     }
   ],
   "relationships": [

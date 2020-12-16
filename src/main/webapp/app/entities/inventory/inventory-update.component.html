@@ -13,31 +13,19 @@
 
                 <div class="form-group">
                     <label class="form-control-label" jhiTranslate="covlabServerApp.inventory.inventoryId" for="field_inventoryId">Inventory Id</label>
-                    <input type="text" class="form-control" name="inventoryId" id="field_inventoryId"
+                    <input type="number" class="form-control" name="inventoryId" id="field_inventoryId"
                            formControlName="inventoryId"/>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-control-label" jhiTranslate="covlabServerApp.inventory.itemCode" for="field_itemCode">Item Code</label>
-                    <input type="text" class="form-control" name="itemCode" id="field_itemCode"
-                           formControlName="itemCode"/>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-control-label" jhiTranslate="covlabServerApp.inventory.description" for="field_description">Description</label>
-                    <input type="text" class="form-control" name="description" id="field_description"
-                           formControlName="description"/>
-                </div>
-
-                <div class="form-group">
                     <label class="form-control-label" jhiTranslate="covlabServerApp.inventory.quantitiesInHand" for="field_quantitiesInHand">Quantities In Hand</label>
-                    <input type="text" class="form-control" name="quantitiesInHand" id="field_quantitiesInHand"
+                    <input type="number" class="form-control" name="quantitiesInHand" id="field_quantitiesInHand"
                            formControlName="quantitiesInHand"/>
                 </div>
 
                 <div class="form-group">
                     <label class="form-control-label" jhiTranslate="covlabServerApp.inventory.quantitiesInTransit" for="field_quantitiesInTransit">Quantities In Transit</label>
-                    <input type="text" class="form-control" name="quantitiesInTransit" id="field_quantitiesInTransit"
+                    <input type="number" class="form-control" name="quantitiesInTransit" id="field_quantitiesInTransit"
                            formControlName="quantitiesInTransit"/>
                 </div>
 
@@ -49,48 +37,48 @@
 
                 <div class="form-group">
                     <label class="form-control-label" jhiTranslate="covlabServerApp.inventory.actualDailyConsumption" for="field_actualDailyConsumption">Actual Daily Consumption</label>
-                    <input type="text" class="form-control" name="actualDailyConsumption" id="field_actualDailyConsumption"
+                    <input type="number" class="form-control" name="actualDailyConsumption" id="field_actualDailyConsumption"
                            formControlName="actualDailyConsumption"/>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-control-label" jhiTranslate="covlabServerApp.inventory.recordLevel" for="field_recordLevel">Record Level</label>
-                    <input type="text" class="form-control" name="recordLevel" id="field_recordLevel"
-                           formControlName="recordLevel"/>
+                    <label class="form-control-label" jhiTranslate="covlabServerApp.inventory.actualAvgConsumption" for="field_actualAvgConsumption">Actual Avg Consumption</label>
+                    <input type="number" class="form-control" name="actualAvgConsumption" id="field_actualAvgConsumption"
+                           formControlName="actualAvgConsumption"/>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="covlabServerApp.inventory.reOrderLevel" for="field_reOrderLevel">Re Order Level</label>
+                    <input type="text" class="form-control" name="reOrderLevel" id="field_reOrderLevel"
+                           formControlName="reOrderLevel"/>
                 </div>
 
                 <div class="form-group">
                     <label class="form-control-label" jhiTranslate="covlabServerApp.inventory.suggestedQuantity" for="field_suggestedQuantity">Suggested Quantity</label>
-                    <input type="text" class="form-control" name="suggestedQuantity" id="field_suggestedQuantity"
+                    <input type="number" class="form-control" name="suggestedQuantity" id="field_suggestedQuantity"
                            formControlName="suggestedQuantity"/>
                 </div>
 
                 <div class="form-group">
                     <label class="form-control-label" jhiTranslate="covlabServerApp.inventory.expectedCoveringDay" for="field_expectedCoveringDay">Expected Covering Day</label>
-                    <input type="text" class="form-control" name="expectedCoveringDay" id="field_expectedCoveringDay"
+                    <input type="number" class="form-control" name="expectedCoveringDay" id="field_expectedCoveringDay"
                            formControlName="expectedCoveringDay"/>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-control-label" jhiTranslate="covlabServerApp.inventory.quantity" for="field_quantity">Quantity</label>
-                    <input type="text" class="form-control" name="quantity" id="field_quantity"
-                           formControlName="quantity"/>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-control-label" jhiTranslate="covlabServerApp.inventory.location" for="field_location">Location</label>
-                    <input type="text" class="form-control" name="location" id="field_location"
-                           formControlName="location"/>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-control-label" jhiTranslate="covlabServerApp.inventory.lasterUpdated" for="field_lasterUpdated">Laster Updated</label>
+                    <label class="form-control-label" jhiTranslate="covlabServerApp.inventory.lastUpdatedAt" for="field_lastUpdatedAt">Last Updated At</label>
                     <div class="input-group">
-                        <input id="field_lasterUpdated" type="text" class="form-control" name="lasterUpdated" ngbDatepicker #lasterUpdatedDp="ngbDatepicker" formControlName="lasterUpdated"/>
+                        <input id="field_lastUpdatedAt" type="text" class="form-control" name="lastUpdatedAt" ngbDatepicker #lastUpdatedAtDp="ngbDatepicker" formControlName="lastUpdatedAt"/>
                         <span class="input-group-append">
-                            <button type="button" class="btn btn-secondary" (click)="lasterUpdatedDp.toggle()"><fa-icon icon="calendar-alt"></fa-icon></button>
+                            <button type="button" class="btn btn-secondary" (click)="lastUpdatedAtDp.toggle()"><fa-icon icon="calendar-alt"></fa-icon></button>
                         </span>
                     </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="covlabServerApp.inventory.status" for="field_status">Status</label>
+                    <input type="text" class="form-control" name="status" id="field_status"
+                           formControlName="status"/>
                 </div>
 
                 <div class="form-group">

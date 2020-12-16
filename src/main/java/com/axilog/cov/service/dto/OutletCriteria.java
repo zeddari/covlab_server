@@ -1,5 +1,7 @@
 package com.axilog.cov.service.dto;
 
+import java.io.Serializable;
+import java.util.Objects;
 import io.github.jhipster.service.Criteria;
 import io.github.jhipster.service.filter.BooleanFilter;
 import io.github.jhipster.service.filter.DoubleFilter;
@@ -8,8 +10,6 @@ import io.github.jhipster.service.filter.FloatFilter;
 import io.github.jhipster.service.filter.IntegerFilter;
 import io.github.jhipster.service.filter.LongFilter;
 import io.github.jhipster.service.filter.StringFilter;
-import java.io.Serializable;
-import java.util.Objects;
 
 /**
  * Criteria class for the {@link com.axilog.cov.domain.Outlet} entity. This class is used
@@ -21,31 +21,36 @@ import java.util.Objects;
  * fix type specific filters.
  */
 public class OutletCriteria implements Serializable, Criteria {
+
     private static final long serialVersionUID = 1L;
 
     private LongFilter id;
 
-    private StringFilter outletId;
+    private LongFilter outletId;
 
     private StringFilter outletName;
 
-    private StringFilter outletLocation;
+    private StringFilter outletRegion;
 
-    private StringFilter outletLat;
+    private StringFilter outletAdress;
 
-    private StringFilter outletLong;
+    private DoubleFilter outletLat;
+
+    private DoubleFilter outletLng;
 
     private LongFilter inventoryId;
 
-    public OutletCriteria() {}
+    public OutletCriteria() {
+    }
 
     public OutletCriteria(OutletCriteria other) {
         this.id = other.id == null ? null : other.id.copy();
         this.outletId = other.outletId == null ? null : other.outletId.copy();
         this.outletName = other.outletName == null ? null : other.outletName.copy();
-        this.outletLocation = other.outletLocation == null ? null : other.outletLocation.copy();
+        this.outletRegion = other.outletRegion == null ? null : other.outletRegion.copy();
+        this.outletAdress = other.outletAdress == null ? null : other.outletAdress.copy();
         this.outletLat = other.outletLat == null ? null : other.outletLat.copy();
-        this.outletLong = other.outletLong == null ? null : other.outletLong.copy();
+        this.outletLng = other.outletLng == null ? null : other.outletLng.copy();
         this.inventoryId = other.inventoryId == null ? null : other.inventoryId.copy();
     }
 
@@ -62,11 +67,11 @@ public class OutletCriteria implements Serializable, Criteria {
         this.id = id;
     }
 
-    public StringFilter getOutletId() {
+    public LongFilter getOutletId() {
         return outletId;
     }
 
-    public void setOutletId(StringFilter outletId) {
+    public void setOutletId(LongFilter outletId) {
         this.outletId = outletId;
     }
 
@@ -78,28 +83,36 @@ public class OutletCriteria implements Serializable, Criteria {
         this.outletName = outletName;
     }
 
-    public StringFilter getOutletLocation() {
-        return outletLocation;
+    public StringFilter getOutletRegion() {
+        return outletRegion;
     }
 
-    public void setOutletLocation(StringFilter outletLocation) {
-        this.outletLocation = outletLocation;
+    public void setOutletRegion(StringFilter outletRegion) {
+        this.outletRegion = outletRegion;
     }
 
-    public StringFilter getOutletLat() {
+    public StringFilter getOutletAdress() {
+        return outletAdress;
+    }
+
+    public void setOutletAdress(StringFilter outletAdress) {
+        this.outletAdress = outletAdress;
+    }
+
+    public DoubleFilter getOutletLat() {
         return outletLat;
     }
 
-    public void setOutletLat(StringFilter outletLat) {
+    public void setOutletLat(DoubleFilter outletLat) {
         this.outletLat = outletLat;
     }
 
-    public StringFilter getOutletLong() {
-        return outletLong;
+    public DoubleFilter getOutletLng() {
+        return outletLng;
     }
 
-    public void setOutletLong(StringFilter outletLong) {
-        this.outletLong = outletLong;
+    public void setOutletLng(DoubleFilter outletLng) {
+        this.outletLng = outletLng;
     }
 
     public LongFilter getInventoryId() {
@@ -110,6 +123,7 @@ public class OutletCriteria implements Serializable, Criteria {
         this.inventoryId = inventoryId;
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -119,20 +133,29 @@ public class OutletCriteria implements Serializable, Criteria {
             return false;
         }
         final OutletCriteria that = (OutletCriteria) o;
-        return (
+        return
             Objects.equals(id, that.id) &&
             Objects.equals(outletId, that.outletId) &&
             Objects.equals(outletName, that.outletName) &&
-            Objects.equals(outletLocation, that.outletLocation) &&
+            Objects.equals(outletRegion, that.outletRegion) &&
+            Objects.equals(outletAdress, that.outletAdress) &&
             Objects.equals(outletLat, that.outletLat) &&
-            Objects.equals(outletLong, that.outletLong) &&
-            Objects.equals(inventoryId, that.inventoryId)
-        );
+            Objects.equals(outletLng, that.outletLng) &&
+            Objects.equals(inventoryId, that.inventoryId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, outletId, outletName, outletLocation, outletLat, outletLong, inventoryId);
+        return Objects.hash(
+        id,
+        outletId,
+        outletName,
+        outletRegion,
+        outletAdress,
+        outletLat,
+        outletLng,
+        inventoryId
+        );
     }
 
     // prettier-ignore
@@ -142,10 +165,12 @@ public class OutletCriteria implements Serializable, Criteria {
                 (id != null ? "id=" + id + ", " : "") +
                 (outletId != null ? "outletId=" + outletId + ", " : "") +
                 (outletName != null ? "outletName=" + outletName + ", " : "") +
-                (outletLocation != null ? "outletLocation=" + outletLocation + ", " : "") +
+                (outletRegion != null ? "outletRegion=" + outletRegion + ", " : "") +
+                (outletAdress != null ? "outletAdress=" + outletAdress + ", " : "") +
                 (outletLat != null ? "outletLat=" + outletLat + ", " : "") +
-                (outletLong != null ? "outletLong=" + outletLong + ", " : "") +
+                (outletLng != null ? "outletLng=" + outletLng + ", " : "") +
                 (inventoryId != null ? "inventoryId=" + inventoryId + ", " : "") +
             "}";
     }
+
 }

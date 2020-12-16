@@ -3,7 +3,7 @@
   "fields": [
     {
       "fieldName": "categoryId",
-      "fieldType": "String"
+      "fieldType": "Long"
     },
     {
       "fieldName": "descriptionCategory",
@@ -12,12 +12,10 @@
   ],
   "relationships": [
     {
-      "relationshipType": "one-to-one",
+      "relationshipType": "one-to-many",
       "otherEntityName": "product",
       "otherEntityRelationshipName": "category",
-      "relationshipName": "product",
-      "otherEntityField": "id",
-      "ownerSide": true
+      "relationshipName": "product"
     }
   ],
   "changelogDate": "20201215205007",

@@ -1,10 +1,12 @@
 package com.axilog.cov.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import javax.persistence.*;
+
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.*;
 
 /**
  * A Product.
@@ -12,6 +14,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "product")
 public class Product implements Serializable {
+
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -19,7 +22,7 @@ public class Product implements Serializable {
     private Long id;
 
     @Column(name = "product_id")
-    private String productId;
+    private Long productId;
 
     @Column(name = "description")
     private String description;
@@ -30,8 +33,8 @@ public class Product implements Serializable {
     @OneToMany(mappedBy = "product")
     private Set<Inventory> inventories = new HashSet<>();
 
-    @OneToOne(mappedBy = "product")
-    @JsonIgnore
+    @ManyToOne
+    @JsonIgnoreProperties(value = "products", allowSetters = true)
     private Category category;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -43,16 +46,16 @@ public class Product implements Serializable {
         this.id = id;
     }
 
-    public String getProductId() {
+    public Long getProductId() {
         return productId;
     }
 
-    public Product productId(String productId) {
+    public Product productId(Long productId) {
         this.productId = productId;
         return this;
     }
 
-    public void setProductId(String productId) {
+    public void setProductId(Long productId) {
         this.productId = productId;
     }
 
@@ -119,7 +122,6 @@ public class Product implements Serializable {
     public void setCategory(Category category) {
         this.category = category;
     }
-
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -143,7 +145,7 @@ public class Product implements Serializable {
     public String toString() {
         return "Product{" +
             "id=" + getId() +
-            ", productId='" + getProductId() + "'" +
+            ", productId=" + getProductId() +
             ", description='" + getDescription() + "'" +
             ", productCode='" + getProductCode() + "'" +
             "}";
