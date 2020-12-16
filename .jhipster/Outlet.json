@@ -1,0 +1,44 @@
+{
+  "name": "Outlet",
+  "fields": [
+    {
+      "fieldName": "outletId",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "outletName",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "outletLocation",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "outletLat",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "outletLong",
+      "fieldType": "String"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "one-to-many",
+      "otherEntityName": "inventory",
+      "otherEntityRelationshipName": "outlet",
+      "relationshipName": "inventory"
+    }
+  ],
+  "changelogDate": "20201215204807",
+  "entityTableName": "outlet",
+  "dto": "no",
+  "pagination": "pagination",
+  "service": "serviceImpl",
+  "jpaMetamodelFiltering": true,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "clientRootFolder": "",
+  "applications": "*"
+}

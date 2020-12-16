@@ -1,0 +1,84 @@
+{
+  "name": "Inventory",
+  "fields": [
+    {
+      "fieldName": "inventoryId",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "itemCode",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "description",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "quantitiesInHand",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "quantitiesInTransit",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "uom",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "actualDailyConsumption",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "recordLevel",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "suggestedQuantity",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "expectedCoveringDay",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "quantity",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "location",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "lasterUpdated",
+      "fieldType": "LocalDate"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "many-to-one",
+      "otherEntityName": "outlet",
+      "otherEntityRelationshipName": "inventory",
+      "relationshipName": "outlet",
+      "otherEntityField": "id"
+    },
+    {
+      "relationshipType": "many-to-one",
+      "otherEntityName": "product",
+      "otherEntityRelationshipName": "inventory",
+      "relationshipName": "product",
+      "otherEntityField": "id"
+    }
+  ],
+  "changelogDate": "20201215204707",
+  "entityTableName": "inventory",
+  "dto": "no",
+  "pagination": "pagination",
+  "service": "serviceImpl",
+  "jpaMetamodelFiltering": true,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "clientRootFolder": "",
+  "applications": "*"
+}

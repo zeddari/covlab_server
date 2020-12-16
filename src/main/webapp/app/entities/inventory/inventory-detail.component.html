@@ -1,0 +1,90 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <div *ngIf="inventory">
+            <h2><span jhiTranslate="covlabServerApp.inventory.detail.title">Inventory</span> {{ inventory.id }}</h2>
+
+            <hr>
+
+            <jhi-alert-error></jhi-alert-error>
+
+            <dl class="row-md jh-entity-details">
+                <dt><span jhiTranslate="covlabServerApp.inventory.inventoryId">Inventory Id</span></dt>
+                <dd>
+                    <span>{{ inventory.inventoryId }}</span>
+                </dd>
+                <dt><span jhiTranslate="covlabServerApp.inventory.itemCode">Item Code</span></dt>
+                <dd>
+                    <span>{{ inventory.itemCode }}</span>
+                </dd>
+                <dt><span jhiTranslate="covlabServerApp.inventory.description">Description</span></dt>
+                <dd>
+                    <span>{{ inventory.description }}</span>
+                </dd>
+                <dt><span jhiTranslate="covlabServerApp.inventory.quantitiesInHand">Quantities In Hand</span></dt>
+                <dd>
+                    <span>{{ inventory.quantitiesInHand }}</span>
+                </dd>
+                <dt><span jhiTranslate="covlabServerApp.inventory.quantitiesInTransit">Quantities In Transit</span></dt>
+                <dd>
+                    <span>{{ inventory.quantitiesInTransit }}</span>
+                </dd>
+                <dt><span jhiTranslate="covlabServerApp.inventory.uom">Uom</span></dt>
+                <dd>
+                    <span>{{ inventory.uom }}</span>
+                </dd>
+                <dt><span jhiTranslate="covlabServerApp.inventory.actualDailyConsumption">Actual Daily Consumption</span></dt>
+                <dd>
+                    <span>{{ inventory.actualDailyConsumption }}</span>
+                </dd>
+                <dt><span jhiTranslate="covlabServerApp.inventory.recordLevel">Record Level</span></dt>
+                <dd>
+                    <span>{{ inventory.recordLevel }}</span>
+                </dd>
+                <dt><span jhiTranslate="covlabServerApp.inventory.suggestedQuantity">Suggested Quantity</span></dt>
+                <dd>
+                    <span>{{ inventory.suggestedQuantity }}</span>
+                </dd>
+                <dt><span jhiTranslate="covlabServerApp.inventory.expectedCoveringDay">Expected Covering Day</span></dt>
+                <dd>
+                    <span>{{ inventory.expectedCoveringDay }}</span>
+                </dd>
+                <dt><span jhiTranslate="covlabServerApp.inventory.quantity">Quantity</span></dt>
+                <dd>
+                    <span>{{ inventory.quantity }}</span>
+                </dd>
+                <dt><span jhiTranslate="covlabServerApp.inventory.location">Location</span></dt>
+                <dd>
+                    <span>{{ inventory.location }}</span>
+                </dd>
+                <dt><span jhiTranslate="covlabServerApp.inventory.lasterUpdated">Laster Updated</span></dt>
+                <dd>
+                    <span>{{ inventory.lasterUpdated }}</span>
+                </dd>
+                <dt><span jhiTranslate="covlabServerApp.inventory.outlet">Outlet</span></dt>
+                <dd>
+                    <div *ngIf="inventory.outlet">
+                        <a [routerLink]="['/outlet', inventory.outlet?.id, 'view']">{{ inventory.outlet?.id }}</a>
+                    </div>
+                </dd>
+                <dt><span jhiTranslate="covlabServerApp.inventory.product">Product</span></dt>
+                <dd>
+                    <div *ngIf="inventory.product">
+                        <a [routerLink]="['/product', inventory.product?.id, 'view']">{{ inventory.product?.id }}</a>
+                    </div>
+                </dd>
+            </dl>
+
+            <button type="submit"
+                    (click)="previousState()"
+                    class="btn btn-info">
+                <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+            </button>
+
+            <button type="button"
+                    [routerLink]="['/inventory', inventory.id, 'edit']"
+                    class="btn btn-primary">
+                <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+            </button>
+        </div>
+    </div>
+</div>

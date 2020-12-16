@@ -1,0 +1,59 @@
+
+entity Inventory {
+	inventoryId       		String
+    itemCode         		String
+    description     		String
+    quantitiesInHand 		String
+    quantitiesInTransit 	String
+    uom 					String
+    actualDailyConsumption  String
+    recordLevel 			String
+    suggestedQuantity 		String
+    expectedCoveringDay     String
+    quantity         		String
+    location		        String
+    lasterUpdated			LocalDate
+}
+
+entity Outlet {
+	outletId 			String
+	outletName 			String
+    outletLocation 		String
+    outletLat 			String
+    outletLong 			String
+}
+	 entity Product {
+ 	productId 		String
+    description 	String
+    productCode 	String
+ }
+    entity Category {
+    categoryId 			String
+    descriptionCategory String
+  
+    }
+   
+//relationship
+relationship OneToMany {
+    Outlet{inventory} to Inventory{outlet}
+}
+relationship OneToOne {
+    Category{product} to Product{category}
+}
+relationship OneToMany {
+   Product{inventory} to Inventory{product}
+}
+
+
+// Set pagination options
+paginate all with pagination
+
+// Use Data Transfer Objects (DTO)
+
+// Set service options to all except few
+service all with serviceImpl
+
+filter all
+
+// Set an angular suffix
+// angularSuffix * with mySuffix

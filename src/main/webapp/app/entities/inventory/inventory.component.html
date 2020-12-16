@@ -1,0 +1,107 @@
+<div>
+    <h2 id="page-heading">
+        <span jhiTranslate="covlabServerApp.inventory.home.title">Inventories</span>
+
+        <button id="jh-create-entity" class="btn btn-primary float-right jh-create-entity create-inventory" [routerLink]="['/inventory/new']">
+            <fa-icon icon="plus"></fa-icon>
+            <span  jhiTranslate="covlabServerApp.inventory.home.createLabel">
+            Create a new Inventory
+            </span>
+        </button>
+    </h2>
+
+    <jhi-alert-error></jhi-alert-error>
+
+    <jhi-alert></jhi-alert>
+
+    <div class="alert alert-warning" id="no-result" *ngIf="inventories?.length === 0">
+        <span jhiTranslate="covlabServerApp.inventory.home.notFound">No inventories found</span>
+    </div>
+
+    <div class="table-responsive" id="entities" *ngIf="inventories && inventories.length > 0">
+        <table class="table table-striped" aria-describedby="page-heading">
+            <thead>
+                <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" [callback]="loadPage.bind(this)">
+                    <th scope="col"  jhiSortBy="id"><span jhiTranslate="global.field.id">ID</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="inventoryId"><span jhiTranslate="covlabServerApp.inventory.inventoryId">Inventory Id</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="itemCode"><span jhiTranslate="covlabServerApp.inventory.itemCode">Item Code</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="description"><span jhiTranslate="covlabServerApp.inventory.description">Description</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="quantitiesInHand"><span jhiTranslate="covlabServerApp.inventory.quantitiesInHand">Quantities In Hand</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="quantitiesInTransit"><span jhiTranslate="covlabServerApp.inventory.quantitiesInTransit">Quantities In Transit</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="uom"><span jhiTranslate="covlabServerApp.inventory.uom">Uom</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="actualDailyConsumption"><span jhiTranslate="covlabServerApp.inventory.actualDailyConsumption">Actual Daily Consumption</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="recordLevel"><span jhiTranslate="covlabServerApp.inventory.recordLevel">Record Level</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="suggestedQuantity"><span jhiTranslate="covlabServerApp.inventory.suggestedQuantity">Suggested Quantity</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="expectedCoveringDay"><span jhiTranslate="covlabServerApp.inventory.expectedCoveringDay">Expected Covering Day</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="quantity"><span jhiTranslate="covlabServerApp.inventory.quantity">Quantity</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="location"><span jhiTranslate="covlabServerApp.inventory.location">Location</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="lasterUpdated"><span jhiTranslate="covlabServerApp.inventory.lasterUpdated">Laster Updated</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="outlet.id"><span jhiTranslate="covlabServerApp.inventory.outlet">Outlet</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="product.id"><span jhiTranslate="covlabServerApp.inventory.product">Product</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let inventory of inventories ;trackBy: trackId">
+                    <td><a [routerLink]="['/inventory', inventory.id, 'view']">{{ inventory.id }}</a></td>
+                    <td>{{ inventory.inventoryId }}</td>
+                    <td>{{ inventory.itemCode }}</td>
+                    <td>{{ inventory.description }}</td>
+                    <td>{{ inventory.quantitiesInHand }}</td>
+                    <td>{{ inventory.quantitiesInTransit }}</td>
+                    <td>{{ inventory.uom }}</td>
+                    <td>{{ inventory.actualDailyConsumption }}</td>
+                    <td>{{ inventory.recordLevel }}</td>
+                    <td>{{ inventory.suggestedQuantity }}</td>
+                    <td>{{ inventory.expectedCoveringDay }}</td>
+                    <td>{{ inventory.quantity }}</td>
+                    <td>{{ inventory.location }}</td>
+                    <td>{{ inventory.lasterUpdated | date:'mediumDate' }}</td>
+                    <td>
+                        <div *ngIf="inventory.outlet">
+                            <a [routerLink]="['/outlet', inventory.outlet?.id, 'view']" >{{ inventory.outlet?.id }}</a>
+                        </div>
+                    </td>
+                    <td>
+                        <div *ngIf="inventory.product">
+                            <a [routerLink]="['/product', inventory.product?.id, 'view']" >{{ inventory.product?.id }}</a>
+                        </div>
+                    </td>
+                    <td class="text-right">
+                        <div class="btn-group">
+                            <button type="submit"
+                                    [routerLink]="['/inventory', inventory.id, 'view']"
+                                    class="btn btn-info btn-sm">
+                                <fa-icon icon="eye"></fa-icon>
+                                <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+                            </button>
+
+                            <button type="submit"
+                                    [routerLink]="['/inventory', inventory.id, 'edit']"
+                                    class="btn btn-primary btn-sm">
+                                <fa-icon icon="pencil-alt"></fa-icon>
+                                <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+                            </button>
+
+                            <button type="submit" (click)="delete(inventory)"
+                                    class="btn btn-danger btn-sm">
+                                <fa-icon icon="times"></fa-icon>
+                                <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div *ngIf="inventories && inventories.length > 0">
+        <div class="row justify-content-center">
+            <jhi-item-count [page]="page" [total]="totalItems" [itemsPerPage]="itemsPerPage"></jhi-item-count>
+        </div>
+
+        <div class="row justify-content-center">
+            <ngb-pagination [collectionSize]="totalItems" [(page)]="ngbPaginationPage" [pageSize]="itemsPerPage" [maxSize]="5" [rotate]="true" [boundaryLinks]="true" (pageChange)="loadPage($event)"></ngb-pagination>
+        </div>
+    </div>
+</div>

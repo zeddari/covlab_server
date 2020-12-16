@@ -1,0 +1,40 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <div *ngIf="category">
+            <h2><span jhiTranslate="covlabServerApp.category.detail.title">Category</span> {{ category.id }}</h2>
+
+            <hr>
+
+            <jhi-alert-error></jhi-alert-error>
+
+            <dl class="row-md jh-entity-details">
+                <dt><span jhiTranslate="covlabServerApp.category.categoryId">Category Id</span></dt>
+                <dd>
+                    <span>{{ category.categoryId }}</span>
+                </dd>
+                <dt><span jhiTranslate="covlabServerApp.category.descriptionCategory">Description Category</span></dt>
+                <dd>
+                    <span>{{ category.descriptionCategory }}</span>
+                </dd>
+                <dt><span jhiTranslate="covlabServerApp.category.product">Product</span></dt>
+                <dd>
+                    <div *ngIf="category.product">
+                        <a [routerLink]="['/product', category.product?.id, 'view']">{{ category.product?.id }}</a>
+                    </div>
+                </dd>
+            </dl>
+
+            <button type="submit"
+                    (click)="previousState()"
+                    class="btn btn-info">
+                <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+            </button>
+
+            <button type="button"
+                    [routerLink]="['/category', category.id, 'edit']"
+                    class="btn btn-primary">
+                <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+            </button>
+        </div>
+    </div>
+</div>

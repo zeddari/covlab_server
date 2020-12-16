@@ -1,0 +1,46 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <div *ngIf="outlet">
+            <h2><span jhiTranslate="covlabServerApp.outlet.detail.title">Outlet</span> {{ outlet.id }}</h2>
+
+            <hr>
+
+            <jhi-alert-error></jhi-alert-error>
+
+            <dl class="row-md jh-entity-details">
+                <dt><span jhiTranslate="covlabServerApp.outlet.outletId">Outlet Id</span></dt>
+                <dd>
+                    <span>{{ outlet.outletId }}</span>
+                </dd>
+                <dt><span jhiTranslate="covlabServerApp.outlet.outletName">Outlet Name</span></dt>
+                <dd>
+                    <span>{{ outlet.outletName }}</span>
+                </dd>
+                <dt><span jhiTranslate="covlabServerApp.outlet.outletLocation">Outlet Location</span></dt>
+                <dd>
+                    <span>{{ outlet.outletLocation }}</span>
+                </dd>
+                <dt><span jhiTranslate="covlabServerApp.outlet.outletLat">Outlet Lat</span></dt>
+                <dd>
+                    <span>{{ outlet.outletLat }}</span>
+                </dd>
+                <dt><span jhiTranslate="covlabServerApp.outlet.outletLong">Outlet Long</span></dt>
+                <dd>
+                    <span>{{ outlet.outletLong }}</span>
+                </dd>
+            </dl>
+
+            <button type="submit"
+                    (click)="previousState()"
+                    class="btn btn-info">
+                <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+            </button>
+
+            <button type="button"
+                    [routerLink]="['/outlet', outlet.id, 'edit']"
+                    class="btn btn-primary">
+                <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+            </button>
+        </div>
+    </div>
+</div>

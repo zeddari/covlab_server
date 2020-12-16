@@ -1,0 +1,56 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+            <h2 id="jhi-outlet-heading" jhiTranslate="covlabServerApp.outlet.home.createOrEditLabel">Create or edit a Outlet</h2>
+
+            <div>
+                <jhi-alert-error></jhi-alert-error>
+
+                <div class="form-group" [hidden]="!editForm.get('id')!.value">
+                    <label for="id" jhiTranslate="global.field.id">ID</label>
+                    <input type="text" class="form-control" id="id" name="id" formControlName="id" readonly />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="covlabServerApp.outlet.outletId" for="field_outletId">Outlet Id</label>
+                    <input type="text" class="form-control" name="outletId" id="field_outletId"
+                           formControlName="outletId"/>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="covlabServerApp.outlet.outletName" for="field_outletName">Outlet Name</label>
+                    <input type="text" class="form-control" name="outletName" id="field_outletName"
+                           formControlName="outletName"/>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="covlabServerApp.outlet.outletLocation" for="field_outletLocation">Outlet Location</label>
+                    <input type="text" class="form-control" name="outletLocation" id="field_outletLocation"
+                           formControlName="outletLocation"/>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="covlabServerApp.outlet.outletLat" for="field_outletLat">Outlet Lat</label>
+                    <input type="text" class="form-control" name="outletLat" id="field_outletLat"
+                           formControlName="outletLat"/>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="covlabServerApp.outlet.outletLong" for="field_outletLong">Outlet Long</label>
+                    <input type="text" class="form-control" name="outletLong" id="field_outletLong"
+                           formControlName="outletLong"/>
+                </div>
+            </div>
+
+            <div>
+                <button type="button" id="cancel-save" class="btn btn-secondary" (click)="previousState()">
+                    <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+                </button>
+
+                <button type="submit" id="save-entity" [disabled]="editForm.invalid || isSaving" class="btn btn-primary">
+                    <fa-icon icon="save"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
