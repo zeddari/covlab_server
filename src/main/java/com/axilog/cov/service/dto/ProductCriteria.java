@@ -32,7 +32,13 @@ public class ProductCriteria implements Serializable, Criteria {
 
     private StringFilter productCode;
 
-    private LongFilter inventoryId;
+    private StringFilter temperature;
+
+    private LongFilter inventoriesId;
+
+    private LongFilter purchaseOrdersId;
+
+    private LongFilter ticketsId;
 
     private LongFilter categoryId;
 
@@ -44,7 +50,10 @@ public class ProductCriteria implements Serializable, Criteria {
         this.productId = other.productId == null ? null : other.productId.copy();
         this.description = other.description == null ? null : other.description.copy();
         this.productCode = other.productCode == null ? null : other.productCode.copy();
-        this.inventoryId = other.inventoryId == null ? null : other.inventoryId.copy();
+        this.temperature = other.temperature == null ? null : other.temperature.copy();
+        this.inventoriesId = other.inventoriesId == null ? null : other.inventoriesId.copy();
+        this.purchaseOrdersId = other.purchaseOrdersId == null ? null : other.purchaseOrdersId.copy();
+        this.ticketsId = other.ticketsId == null ? null : other.ticketsId.copy();
         this.categoryId = other.categoryId == null ? null : other.categoryId.copy();
     }
 
@@ -85,12 +94,36 @@ public class ProductCriteria implements Serializable, Criteria {
         this.productCode = productCode;
     }
 
-    public LongFilter getInventoryId() {
-        return inventoryId;
+    public StringFilter getTemperature() {
+        return temperature;
     }
 
-    public void setInventoryId(LongFilter inventoryId) {
-        this.inventoryId = inventoryId;
+    public void setTemperature(StringFilter temperature) {
+        this.temperature = temperature;
+    }
+
+    public LongFilter getInventoriesId() {
+        return inventoriesId;
+    }
+
+    public void setInventoriesId(LongFilter inventoriesId) {
+        this.inventoriesId = inventoriesId;
+    }
+
+    public LongFilter getPurchaseOrdersId() {
+        return purchaseOrdersId;
+    }
+
+    public void setPurchaseOrdersId(LongFilter purchaseOrdersId) {
+        this.purchaseOrdersId = purchaseOrdersId;
+    }
+
+    public LongFilter getTicketsId() {
+        return ticketsId;
+    }
+
+    public void setTicketsId(LongFilter ticketsId) {
+        this.ticketsId = ticketsId;
     }
 
     public LongFilter getCategoryId() {
@@ -116,7 +149,10 @@ public class ProductCriteria implements Serializable, Criteria {
             Objects.equals(productId, that.productId) &&
             Objects.equals(description, that.description) &&
             Objects.equals(productCode, that.productCode) &&
-            Objects.equals(inventoryId, that.inventoryId) &&
+            Objects.equals(temperature, that.temperature) &&
+            Objects.equals(inventoriesId, that.inventoriesId) &&
+            Objects.equals(purchaseOrdersId, that.purchaseOrdersId) &&
+            Objects.equals(ticketsId, that.ticketsId) &&
             Objects.equals(categoryId, that.categoryId);
     }
 
@@ -127,7 +163,10 @@ public class ProductCriteria implements Serializable, Criteria {
         productId,
         description,
         productCode,
-        inventoryId,
+        temperature,
+        inventoriesId,
+        purchaseOrdersId,
+        ticketsId,
         categoryId
         );
     }
@@ -140,7 +179,10 @@ public class ProductCriteria implements Serializable, Criteria {
                 (productId != null ? "productId=" + productId + ", " : "") +
                 (description != null ? "description=" + description + ", " : "") +
                 (productCode != null ? "productCode=" + productCode + ", " : "") +
-                (inventoryId != null ? "inventoryId=" + inventoryId + ", " : "") +
+                (temperature != null ? "temperature=" + temperature + ", " : "") +
+                (inventoriesId != null ? "inventoriesId=" + inventoriesId + ", " : "") +
+                (purchaseOrdersId != null ? "purchaseOrdersId=" + purchaseOrdersId + ", " : "") +
+                (ticketsId != null ? "ticketsId=" + ticketsId + ", " : "") +
                 (categoryId != null ? "categoryId=" + categoryId + ", " : "") +
             "}";
     }

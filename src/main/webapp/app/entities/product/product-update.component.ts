@@ -23,6 +23,7 @@ export class ProductUpdateComponent implements OnInit {
     productId: [],
     description: [],
     productCode: [],
+    temperature: [],
     category: [],
   });
 
@@ -47,6 +48,7 @@ export class ProductUpdateComponent implements OnInit {
       productId: product.productId,
       description: product.description,
       productCode: product.productCode,
+      temperature: product.temperature,
       category: product.category,
     });
   }
@@ -72,6 +74,7 @@ export class ProductUpdateComponent implements OnInit {
       productId: this.editForm.get(['productId'])!.value,
       description: this.editForm.get(['description'])!.value,
       productCode: this.editForm.get(['productCode'])!.value,
+      temperature: this.editForm.get(['temperature'])!.value,
       category: this.editForm.get(['category'])!.value,
     };
   }

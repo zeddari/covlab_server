@@ -36,7 +36,8 @@ public class InventoryMapper {
 				.outletAddress(inventory.getOutlet().getOutletAdress())
 				.outletLat(inventory.getOutlet().getOutletLat())
 				.outletLng(inventory.getOutlet().getOutletLng())
-				.category(inventory.getProduct().getCategory().getDescriptionCategory())
+				.category(inventory.getProduct().getCategory().getCategoryCode())
+				.temperature(inventory.getProduct().getTemperature())
 				.build();
 	}
 	

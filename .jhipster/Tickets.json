@@ -1,0 +1,60 @@
+{
+  "name": "Tickets",
+  "fields": [
+    {
+      "fieldName": "ticketNo",
+      "fieldType": "Long"
+    },
+    {
+      "fieldName": "ticketType",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "ticketStatus",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "ticketDueDate",
+      "fieldType": "LocalDate"
+    },
+    {
+      "fieldName": "ticketPriority",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "ticketCreatedOn",
+      "fieldType": "LocalDate"
+    },
+    {
+      "fieldName": "ticketUpdateAt",
+      "fieldType": "LocalDate"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "many-to-one",
+      "otherEntityName": "outlet",
+      "otherEntityRelationshipName": "tickets",
+      "relationshipName": "outlet",
+      "otherEntityField": "id"
+    },
+    {
+      "relationshipType": "many-to-one",
+      "otherEntityName": "product",
+      "otherEntityRelationshipName": "tickets",
+      "relationshipName": "product",
+      "otherEntityField": "id"
+    }
+  ],
+  "changelogDate": "20201217114036",
+  "entityTableName": "tickets",
+  "dto": "no",
+  "pagination": "pagination",
+  "service": "serviceImpl",
+  "jpaMetamodelFiltering": true,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "clientRootFolder": "",
+  "applications": "*"
+}

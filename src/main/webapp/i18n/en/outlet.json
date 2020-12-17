@@ -22,7 +22,9 @@
       "outletAdress": "Outlet Adress",
       "outletLat": "Outlet Lat",
       "outletLng": "Outlet Lng",
-      "inventory": "Inventory"
+      "inventories": "Inventories",
+      "purchaseOrders": "Purchase Orders",
+      "tickets": "Tickets"
     }
   }
 }

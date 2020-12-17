@@ -1,0 +1,40 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <div *ngIf="statusPO">
+            <h2><span jhiTranslate="covlabServerApp.statusPO.detail.title">Status PO</span> {{ statusPO.id }}</h2>
+
+            <hr>
+
+            <jhi-alert-error></jhi-alert-error>
+
+            <dl class="row-md jh-entity-details">
+                <dt><span jhiTranslate="covlabServerApp.statusPO.statusPoId">Status Po Id</span></dt>
+                <dd>
+                    <span>{{ statusPO.statusPoId }}</span>
+                </dd>
+                <dt><span jhiTranslate="covlabServerApp.statusPO.statusPoName">Status Po Name</span></dt>
+                <dd>
+                    <span>{{ statusPO.statusPoName }}</span>
+                </dd>
+                <dt><span jhiTranslate="covlabServerApp.statusPO.purchaseOrder">Purchase Order</span></dt>
+                <dd>
+                    <div *ngIf="statusPO.purchaseOrder">
+                        <a [routerLink]="['/purchase-order', statusPO.purchaseOrder?.id, 'view']">{{ statusPO.purchaseOrder?.id }}</a>
+                    </div>
+                </dd>
+            </dl>
+
+            <button type="submit"
+                    (click)="previousState()"
+                    class="btn btn-info">
+                <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+            </button>
+
+            <button type="button"
+                    [routerLink]="['/status-po', statusPO.id, 'edit']"
+                    class="btn btn-primary">
+                <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+            </button>
+        </div>
+    </div>
+</div>

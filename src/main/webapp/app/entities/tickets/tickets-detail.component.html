@@ -1,0 +1,66 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <div *ngIf="tickets">
+            <h2><span jhiTranslate="covlabServerApp.tickets.detail.title">Tickets</span> {{ tickets.id }}</h2>
+
+            <hr>
+
+            <jhi-alert-error></jhi-alert-error>
+
+            <dl class="row-md jh-entity-details">
+                <dt><span jhiTranslate="covlabServerApp.tickets.ticketNo">Ticket No</span></dt>
+                <dd>
+                    <span>{{ tickets.ticketNo }}</span>
+                </dd>
+                <dt><span jhiTranslate="covlabServerApp.tickets.ticketType">Ticket Type</span></dt>
+                <dd>
+                    <span>{{ tickets.ticketType }}</span>
+                </dd>
+                <dt><span jhiTranslate="covlabServerApp.tickets.ticketStatus">Ticket Status</span></dt>
+                <dd>
+                    <span>{{ tickets.ticketStatus }}</span>
+                </dd>
+                <dt><span jhiTranslate="covlabServerApp.tickets.ticketDueDate">Ticket Due Date</span></dt>
+                <dd>
+                    <span>{{ tickets.ticketDueDate }}</span>
+                </dd>
+                <dt><span jhiTranslate="covlabServerApp.tickets.ticketPriority">Ticket Priority</span></dt>
+                <dd>
+                    <span>{{ tickets.ticketPriority }}</span>
+                </dd>
+                <dt><span jhiTranslate="covlabServerApp.tickets.ticketCreatedOn">Ticket Created On</span></dt>
+                <dd>
+                    <span>{{ tickets.ticketCreatedOn }}</span>
+                </dd>
+                <dt><span jhiTranslate="covlabServerApp.tickets.ticketUpdateAt">Ticket Update At</span></dt>
+                <dd>
+                    <span>{{ tickets.ticketUpdateAt }}</span>
+                </dd>
+                <dt><span jhiTranslate="covlabServerApp.tickets.outlet">Outlet</span></dt>
+                <dd>
+                    <div *ngIf="tickets.outlet">
+                        <a [routerLink]="['/outlet', tickets.outlet?.id, 'view']">{{ tickets.outlet?.id }}</a>
+                    </div>
+                </dd>
+                <dt><span jhiTranslate="covlabServerApp.tickets.product">Product</span></dt>
+                <dd>
+                    <div *ngIf="tickets.product">
+                        <a [routerLink]="['/product', tickets.product?.id, 'view']">{{ tickets.product?.id }}</a>
+                    </div>
+                </dd>
+            </dl>
+
+            <button type="submit"
+                    (click)="previousState()"
+                    class="btn btn-info">
+                <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+            </button>
+
+            <button type="button"
+                    [routerLink]="['/tickets', tickets.id, 'edit']"
+                    class="btn btn-primary">
+                <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+            </button>
+        </div>
+    </div>
+</div>

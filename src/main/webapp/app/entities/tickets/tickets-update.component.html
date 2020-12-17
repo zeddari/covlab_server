@@ -1,0 +1,96 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+            <h2 id="jhi-tickets-heading" jhiTranslate="covlabServerApp.tickets.home.createOrEditLabel">Create or edit a Tickets</h2>
+
+            <div>
+                <jhi-alert-error></jhi-alert-error>
+
+                <div class="form-group" [hidden]="!editForm.get('id')!.value">
+                    <label for="id" jhiTranslate="global.field.id">ID</label>
+                    <input type="text" class="form-control" id="id" name="id" formControlName="id" readonly />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="covlabServerApp.tickets.ticketNo" for="field_ticketNo">Ticket No</label>
+                    <input type="number" class="form-control" name="ticketNo" id="field_ticketNo"
+                           formControlName="ticketNo"/>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="covlabServerApp.tickets.ticketType" for="field_ticketType">Ticket Type</label>
+                    <input type="text" class="form-control" name="ticketType" id="field_ticketType"
+                           formControlName="ticketType"/>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="covlabServerApp.tickets.ticketStatus" for="field_ticketStatus">Ticket Status</label>
+                    <input type="text" class="form-control" name="ticketStatus" id="field_ticketStatus"
+                           formControlName="ticketStatus"/>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="covlabServerApp.tickets.ticketDueDate" for="field_ticketDueDate">Ticket Due Date</label>
+                    <div class="input-group">
+                        <input id="field_ticketDueDate" type="text" class="form-control" name="ticketDueDate" ngbDatepicker #ticketDueDateDp="ngbDatepicker" formControlName="ticketDueDate"/>
+                        <span class="input-group-append">
+                            <button type="button" class="btn btn-secondary" (click)="ticketDueDateDp.toggle()"><fa-icon icon="calendar-alt"></fa-icon></button>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="covlabServerApp.tickets.ticketPriority" for="field_ticketPriority">Ticket Priority</label>
+                    <input type="text" class="form-control" name="ticketPriority" id="field_ticketPriority"
+                           formControlName="ticketPriority"/>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="covlabServerApp.tickets.ticketCreatedOn" for="field_ticketCreatedOn">Ticket Created On</label>
+                    <div class="input-group">
+                        <input id="field_ticketCreatedOn" type="text" class="form-control" name="ticketCreatedOn" ngbDatepicker #ticketCreatedOnDp="ngbDatepicker" formControlName="ticketCreatedOn"/>
+                        <span class="input-group-append">
+                            <button type="button" class="btn btn-secondary" (click)="ticketCreatedOnDp.toggle()"><fa-icon icon="calendar-alt"></fa-icon></button>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="covlabServerApp.tickets.ticketUpdateAt" for="field_ticketUpdateAt">Ticket Update At</label>
+                    <div class="input-group">
+                        <input id="field_ticketUpdateAt" type="text" class="form-control" name="ticketUpdateAt" ngbDatepicker #ticketUpdateAtDp="ngbDatepicker" formControlName="ticketUpdateAt"/>
+                        <span class="input-group-append">
+                            <button type="button" class="btn btn-secondary" (click)="ticketUpdateAtDp.toggle()"><fa-icon icon="calendar-alt"></fa-icon></button>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="covlabServerApp.tickets.outlet" for="field_outlet">Outlet</label>
+                    <select class="form-control" id="field_outlet" name="outlet" formControlName="outlet">
+                        <option [ngValue]="null"></option>
+                        <option [ngValue]="outletOption.id === editForm.get('outlet')!.value?.id ? editForm.get('outlet')!.value : outletOption" *ngFor="let outletOption of outlets; trackBy: trackById">{{ outletOption.id }}</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="covlabServerApp.tickets.product" for="field_product">Product</label>
+                    <select class="form-control" id="field_product" name="product" formControlName="product">
+                        <option [ngValue]="null"></option>
+                        <option [ngValue]="productOption.id === editForm.get('product')!.value?.id ? editForm.get('product')!.value : productOption" *ngFor="let productOption of products; trackBy: trackById">{{ productOption.id }}</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <button type="button" id="cancel-save" class="btn btn-secondary" (click)="previousState()">
+                    <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+                </button>
+
+                <button type="submit" id="save-entity" [disabled]="editForm.invalid || isSaving" class="btn btn-primary">
+                    <fa-icon icon="save"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

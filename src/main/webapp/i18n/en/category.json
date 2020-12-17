@@ -17,8 +17,9 @@
         "title": "Category"
       },
       "categoryId": "Category Id",
-      "descriptionCategory": "Description Category",
-      "product": "Product"
+      "categoryCode": "Category Code",
+      "categoryDescription": "Category Description",
+      "products": "Products"
     }
   }
 }

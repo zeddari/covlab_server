@@ -3,6 +3,8 @@ package com.axilog.cov.web.rest;
 import com.axilog.cov.CovlabServerApp;
 import com.axilog.cov.domain.Outlet;
 import com.axilog.cov.domain.Inventory;
+import com.axilog.cov.domain.PurchaseOrder;
+import com.axilog.cov.domain.Tickets;
 import com.axilog.cov.repository.OutletRepository;
 import com.axilog.cov.service.OutletService;
 import com.axilog.cov.service.dto.OutletCriteria;
@@ -760,21 +762,61 @@ public class OutletResourceIT {
 
     @Test
     @Transactional
-    public void getAllOutletsByInventoryIsEqualToSomething() throws Exception {
+    public void getAllOutletsByInventoriesIsEqualToSomething() throws Exception {
         // Initialize the database
         outletRepository.saveAndFlush(outlet);
-        Inventory inventory = InventoryResourceIT.createEntity(em);
-        em.persist(inventory);
+        Inventory inventories = InventoryResourceIT.createEntity(em);
+        em.persist(inventories);
         em.flush();
-        outlet.addInventory(inventory);
+        outlet.addInventories(inventories);
         outletRepository.saveAndFlush(outlet);
-        Long inventoryId = inventory.getId();
+        Long inventoriesId = inventories.getId();
 
-        // Get all the outletList where inventory equals to inventoryId
-        defaultOutletShouldBeFound("inventoryId.equals=" + inventoryId);
+        // Get all the outletList where inventories equals to inventoriesId
+        defaultOutletShouldBeFound("inventoriesId.equals=" + inventoriesId);
 
-        // Get all the outletList where inventory equals to inventoryId + 1
-        defaultOutletShouldNotBeFound("inventoryId.equals=" + (inventoryId + 1));
+        // Get all the outletList where inventories equals to inventoriesId + 1
+        defaultOutletShouldNotBeFound("inventoriesId.equals=" + (inventoriesId + 1));
+    }
+
+
+    @Test
+    @Transactional
+    public void getAllOutletsByPurchaseOrdersIsEqualToSomething() throws Exception {
+        // Initialize the database
+        outletRepository.saveAndFlush(outlet);
+        PurchaseOrder purchaseOrders = PurchaseOrderResourceIT.createEntity(em);
+        em.persist(purchaseOrders);
+        em.flush();
+        outlet.addPurchaseOrders(purchaseOrders);
+        outletRepository.saveAndFlush(outlet);
+        Long purchaseOrdersId = purchaseOrders.getId();
+
+        // Get all the outletList where purchaseOrders equals to purchaseOrdersId
+        defaultOutletShouldBeFound("purchaseOrdersId.equals=" + purchaseOrdersId);
+
+        // Get all the outletList where purchaseOrders equals to purchaseOrdersId + 1
+        defaultOutletShouldNotBeFound("purchaseOrdersId.equals=" + (purchaseOrdersId + 1));
+    }
+
+
+    @Test
+    @Transactional
+    public void getAllOutletsByTicketsIsEqualToSomething() throws Exception {
+        // Initialize the database
+        outletRepository.saveAndFlush(outlet);
+        Tickets tickets = TicketsResourceIT.createEntity(em);
+        em.persist(tickets);
+        em.flush();
+        outlet.addTickets(tickets);
+        outletRepository.saveAndFlush(outlet);
+        Long ticketsId = tickets.getId();
+
+        // Get all the outletList where tickets equals to ticketsId
+        defaultOutletShouldBeFound("ticketsId.equals=" + ticketsId);
+
+        // Get all the outletList where tickets equals to ticketsId + 1
+        defaultOutletShouldNotBeFound("ticketsId.equals=" + (ticketsId + 1));
     }
 
     /**

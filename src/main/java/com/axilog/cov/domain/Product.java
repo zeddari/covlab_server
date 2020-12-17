@@ -30,8 +30,17 @@ public class Product implements Serializable {
     @Column(name = "product_code")
     private String productCode;
 
+    @Column(name = "temperature")
+    private String temperature;
+
     @OneToMany(mappedBy = "product")
     private Set<Inventory> inventories = new HashSet<>();
+
+    @OneToMany(mappedBy = "product")
+    private Set<PurchaseOrder> purchaseOrders = new HashSet<>();
+
+    @OneToMany(mappedBy = "product")
+    private Set<Tickets> tickets = new HashSet<>();
 
     @ManyToOne
     @JsonIgnoreProperties(value = "products", allowSetters = true)
@@ -85,6 +94,19 @@ public class Product implements Serializable {
         this.productCode = productCode;
     }
 
+    public String getTemperature() {
+        return temperature;
+    }
+
+    public Product temperature(String temperature) {
+        this.temperature = temperature;
+        return this;
+    }
+
+    public void setTemperature(String temperature) {
+        this.temperature = temperature;
+    }
+
     public Set<Inventory> getInventories() {
         return inventories;
     }
@@ -94,13 +116,13 @@ public class Product implements Serializable {
         return this;
     }
 
-    public Product addInventory(Inventory inventory) {
+    public Product addInventories(Inventory inventory) {
         this.inventories.add(inventory);
         inventory.setProduct(this);
         return this;
     }
 
-    public Product removeInventory(Inventory inventory) {
+    public Product removeInventories(Inventory inventory) {
         this.inventories.remove(inventory);
         inventory.setProduct(null);
         return this;
@@ -108,6 +130,56 @@ public class Product implements Serializable {
 
     public void setInventories(Set<Inventory> inventories) {
         this.inventories = inventories;
+    }
+
+    public Set<PurchaseOrder> getPurchaseOrders() {
+        return purchaseOrders;
+    }
+
+    public Product purchaseOrders(Set<PurchaseOrder> purchaseOrders) {
+        this.purchaseOrders = purchaseOrders;
+        return this;
+    }
+
+    public Product addPurchaseOrders(PurchaseOrder purchaseOrder) {
+        this.purchaseOrders.add(purchaseOrder);
+        purchaseOrder.setProduct(this);
+        return this;
+    }
+
+    public Product removePurchaseOrders(PurchaseOrder purchaseOrder) {
+        this.purchaseOrders.remove(purchaseOrder);
+        purchaseOrder.setProduct(null);
+        return this;
+    }
+
+    public void setPurchaseOrders(Set<PurchaseOrder> purchaseOrders) {
+        this.purchaseOrders = purchaseOrders;
+    }
+
+    public Set<Tickets> getTickets() {
+        return tickets;
+    }
+
+    public Product tickets(Set<Tickets> tickets) {
+        this.tickets = tickets;
+        return this;
+    }
+
+    public Product addTickets(Tickets tickets) {
+        this.tickets.add(tickets);
+        tickets.setProduct(this);
+        return this;
+    }
+
+    public Product removeTickets(Tickets tickets) {
+        this.tickets.remove(tickets);
+        tickets.setProduct(null);
+        return this;
+    }
+
+    public void setTickets(Set<Tickets> tickets) {
+        this.tickets = tickets;
     }
 
     public Category getCategory() {
@@ -148,6 +220,7 @@ public class Product implements Serializable {
             ", productId=" + getProductId() +
             ", description='" + getDescription() + "'" +
             ", productCode='" + getProductCode() + "'" +
+            ", temperature='" + getTemperature() + "'" +
             "}";
     }
 }

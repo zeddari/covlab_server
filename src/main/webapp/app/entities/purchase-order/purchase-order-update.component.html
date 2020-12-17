@@ -1,0 +1,100 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+            <h2 id="jhi-purchase-order-heading" jhiTranslate="covlabServerApp.purchaseOrder.home.createOrEditLabel">Create or edit a Purchase Order</h2>
+
+            <div>
+                <jhi-alert-error></jhi-alert-error>
+
+                <div class="form-group" [hidden]="!editForm.get('id')!.value">
+                    <label for="id" jhiTranslate="global.field.id">ID</label>
+                    <input type="text" class="form-control" id="id" name="id" formControlName="id" readonly />
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="covlabServerApp.purchaseOrder.orderNo" for="field_orderNo">Order No</label>
+                    <input type="number" class="form-control" name="orderNo" id="field_orderNo"
+                           formControlName="orderNo"/>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="covlabServerApp.purchaseOrder.quantity" for="field_quantity">Quantity</label>
+                    <input type="number" class="form-control" name="quantity" id="field_quantity"
+                           formControlName="quantity"/>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="covlabServerApp.purchaseOrder.createdBy" for="field_createdBy">Created By</label>
+                    <input type="text" class="form-control" name="createdBy" id="field_createdBy"
+                           formControlName="createdBy"/>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="covlabServerApp.purchaseOrder.createdOn" for="field_createdOn">Created On</label>
+                    <div class="input-group">
+                        <input id="field_createdOn" type="text" class="form-control" name="createdOn" ngbDatepicker #createdOnDp="ngbDatepicker" formControlName="createdOn"/>
+                        <span class="input-group-append">
+                            <button type="button" class="btn btn-secondary" (click)="createdOnDp.toggle()"><fa-icon icon="calendar-alt"></fa-icon></button>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="covlabServerApp.purchaseOrder.deliveredDate" for="field_deliveredDate">Delivered Date</label>
+                    <div class="input-group">
+                        <input id="field_deliveredDate" type="text" class="form-control" name="deliveredDate" ngbDatepicker #deliveredDateDp="ngbDatepicker" formControlName="deliveredDate"/>
+                        <span class="input-group-append">
+                            <button type="button" class="btn btn-secondary" (click)="deliveredDateDp.toggle()"><fa-icon icon="calendar-alt"></fa-icon></button>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="covlabServerApp.purchaseOrder.updatedAt" for="field_updatedAt">Updated At</label>
+                    <div class="input-group">
+                        <input id="field_updatedAt" type="text" class="form-control" name="updatedAt" ngbDatepicker #updatedAtDp="ngbDatepicker" formControlName="updatedAt"/>
+                        <span class="input-group-append">
+                            <button type="button" class="btn btn-secondary" (click)="updatedAtDp.toggle()"><fa-icon icon="calendar-alt"></fa-icon></button>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="covlabServerApp.purchaseOrder.createdAt" for="field_createdAt">Created At</label>
+                    <div class="input-group">
+                        <input id="field_createdAt" type="text" class="form-control" name="createdAt" ngbDatepicker #createdAtDp="ngbDatepicker" formControlName="createdAt"/>
+                        <span class="input-group-append">
+                            <button type="button" class="btn btn-secondary" (click)="createdAtDp.toggle()"><fa-icon icon="calendar-alt"></fa-icon></button>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="covlabServerApp.purchaseOrder.outlet" for="field_outlet">Outlet</label>
+                    <select class="form-control" id="field_outlet" name="outlet" formControlName="outlet">
+                        <option [ngValue]="null"></option>
+                        <option [ngValue]="outletOption.id === editForm.get('outlet')!.value?.id ? editForm.get('outlet')!.value : outletOption" *ngFor="let outletOption of outlets; trackBy: trackById">{{ outletOption.id }}</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="covlabServerApp.purchaseOrder.product" for="field_product">Product</label>
+                    <select class="form-control" id="field_product" name="product" formControlName="product">
+                        <option [ngValue]="null"></option>
+                        <option [ngValue]="productOption.id === editForm.get('product')!.value?.id ? editForm.get('product')!.value : productOption" *ngFor="let productOption of products; trackBy: trackById">{{ productOption.id }}</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <button type="button" id="cancel-save" class="btn btn-secondary" (click)="previousState()">
+                    <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+                </button>
+
+                <button type="submit" id="save-entity" [disabled]="editForm.invalid || isSaving" class="btn btn-primary">
+                    <fa-icon icon="save"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

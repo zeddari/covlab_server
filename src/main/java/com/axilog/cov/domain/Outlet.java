@@ -41,6 +41,12 @@ public class Outlet implements Serializable {
     @OneToMany(mappedBy = "outlet")
     private Set<Inventory> inventories = new HashSet<>();
 
+    @OneToMany(mappedBy = "outlet")
+    private Set<PurchaseOrder> purchaseOrders = new HashSet<>();
+
+    @OneToMany(mappedBy = "outlet")
+    private Set<Tickets> tickets = new HashSet<>();
+
     // jhipster-needle-entity-add-field - JHipster will add fields here
     public Long getId() {
         return id;
@@ -137,13 +143,13 @@ public class Outlet implements Serializable {
         return this;
     }
 
-    public Outlet addInventory(Inventory inventory) {
+    public Outlet addInventories(Inventory inventory) {
         this.inventories.add(inventory);
         inventory.setOutlet(this);
         return this;
     }
 
-    public Outlet removeInventory(Inventory inventory) {
+    public Outlet removeInventories(Inventory inventory) {
         this.inventories.remove(inventory);
         inventory.setOutlet(null);
         return this;
@@ -151,6 +157,56 @@ public class Outlet implements Serializable {
 
     public void setInventories(Set<Inventory> inventories) {
         this.inventories = inventories;
+    }
+
+    public Set<PurchaseOrder> getPurchaseOrders() {
+        return purchaseOrders;
+    }
+
+    public Outlet purchaseOrders(Set<PurchaseOrder> purchaseOrders) {
+        this.purchaseOrders = purchaseOrders;
+        return this;
+    }
+
+    public Outlet addPurchaseOrders(PurchaseOrder purchaseOrder) {
+        this.purchaseOrders.add(purchaseOrder);
+        purchaseOrder.setOutlet(this);
+        return this;
+    }
+
+    public Outlet removePurchaseOrders(PurchaseOrder purchaseOrder) {
+        this.purchaseOrders.remove(purchaseOrder);
+        purchaseOrder.setOutlet(null);
+        return this;
+    }
+
+    public void setPurchaseOrders(Set<PurchaseOrder> purchaseOrders) {
+        this.purchaseOrders = purchaseOrders;
+    }
+
+    public Set<Tickets> getTickets() {
+        return tickets;
+    }
+
+    public Outlet tickets(Set<Tickets> tickets) {
+        this.tickets = tickets;
+        return this;
+    }
+
+    public Outlet addTickets(Tickets tickets) {
+        this.tickets.add(tickets);
+        tickets.setOutlet(this);
+        return this;
+    }
+
+    public Outlet removeTickets(Tickets tickets) {
+        this.tickets.remove(tickets);
+        tickets.setOutlet(null);
+        return this;
+    }
+
+    public void setTickets(Set<Tickets> tickets) {
+        this.tickets = tickets;
     }
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 

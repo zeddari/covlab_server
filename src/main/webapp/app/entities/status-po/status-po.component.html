@@ -1,0 +1,79 @@
+<div>
+    <h2 id="page-heading">
+        <span jhiTranslate="covlabServerApp.statusPO.home.title">Status POS</span>
+
+        <button id="jh-create-entity" class="btn btn-primary float-right jh-create-entity create-status-po" [routerLink]="['/status-po/new']">
+            <fa-icon icon="plus"></fa-icon>
+            <span  jhiTranslate="covlabServerApp.statusPO.home.createLabel">
+            Create a new Status PO
+            </span>
+        </button>
+    </h2>
+
+    <jhi-alert-error></jhi-alert-error>
+
+    <jhi-alert></jhi-alert>
+
+    <div class="alert alert-warning" id="no-result" *ngIf="statusPOS?.length === 0">
+        <span jhiTranslate="covlabServerApp.statusPO.home.notFound">No statusPOS found</span>
+    </div>
+
+    <div class="table-responsive" id="entities" *ngIf="statusPOS && statusPOS.length > 0">
+        <table class="table table-striped" aria-describedby="page-heading">
+            <thead>
+                <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" [callback]="loadPage.bind(this)">
+                    <th scope="col"  jhiSortBy="id"><span jhiTranslate="global.field.id">ID</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="statusPoId"><span jhiTranslate="covlabServerApp.statusPO.statusPoId">Status Po Id</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="statusPoName"><span jhiTranslate="covlabServerApp.statusPO.statusPoName">Status Po Name</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="purchaseOrder.id"><span jhiTranslate="covlabServerApp.statusPO.purchaseOrder">Purchase Order</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let statusPO of statusPOS ;trackBy: trackId">
+                    <td><a [routerLink]="['/status-po', statusPO.id, 'view']">{{ statusPO.id }}</a></td>
+                    <td>{{ statusPO.statusPoId }}</td>
+                    <td>{{ statusPO.statusPoName }}</td>
+                    <td>
+                        <div *ngIf="statusPO.purchaseOrder">
+                            <a [routerLink]="['/purchase-order', statusPO.purchaseOrder?.id, 'view']" >{{ statusPO.purchaseOrder?.id }}</a>
+                        </div>
+                    </td>
+                    <td class="text-right">
+                        <div class="btn-group">
+                            <button type="submit"
+                                    [routerLink]="['/status-po', statusPO.id, 'view']"
+                                    class="btn btn-info btn-sm">
+                                <fa-icon icon="eye"></fa-icon>
+                                <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+                            </button>
+
+                            <button type="submit"
+                                    [routerLink]="['/status-po', statusPO.id, 'edit']"
+                                    class="btn btn-primary btn-sm">
+                                <fa-icon icon="pencil-alt"></fa-icon>
+                                <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+                            </button>
+
+                            <button type="submit" (click)="delete(statusPO)"
+                                    class="btn btn-danger btn-sm">
+                                <fa-icon icon="times"></fa-icon>
+                                <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div *ngIf="statusPOS && statusPOS.length > 0">
+        <div class="row justify-content-center">
+            <jhi-item-count [page]="page" [total]="totalItems" [itemsPerPage]="itemsPerPage"></jhi-item-count>
+        </div>
+
+        <div class="row justify-content-center">
+            <ngb-pagination [collectionSize]="totalItems" [(page)]="ngbPaginationPage" [pageSize]="itemsPerPage" [maxSize]="5" [rotate]="true" [boundaryLinks]="true" (pageChange)="loadPage($event)"></ngb-pagination>
+        </div>
+    </div>
+</div>

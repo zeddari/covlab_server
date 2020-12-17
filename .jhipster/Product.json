@@ -12,6 +12,10 @@
     {
       "fieldName": "productCode",
       "fieldType": "String"
+    },
+    {
+      "fieldName": "temperature",
+      "fieldType": "String"
     }
   ],
   "relationships": [
@@ -19,12 +23,24 @@
       "relationshipType": "one-to-many",
       "otherEntityName": "inventory",
       "otherEntityRelationshipName": "product",
-      "relationshipName": "inventory"
+      "relationshipName": "inventories"
+    },
+    {
+      "relationshipType": "one-to-many",
+      "otherEntityName": "purchaseOrder",
+      "otherEntityRelationshipName": "product",
+      "relationshipName": "purchaseOrders"
+    },
+    {
+      "relationshipType": "one-to-many",
+      "otherEntityName": "tickets",
+      "otherEntityRelationshipName": "product",
+      "relationshipName": "tickets"
     },
     {
       "relationshipType": "many-to-one",
       "otherEntityName": "category",
-      "otherEntityRelationshipName": "product",
+      "otherEntityRelationshipName": "products",
       "relationshipName": "category",
       "otherEntityField": "id"
     }

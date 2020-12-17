@@ -38,7 +38,11 @@ public class OutletCriteria implements Serializable, Criteria {
 
     private DoubleFilter outletLng;
 
-    private LongFilter inventoryId;
+    private LongFilter inventoriesId;
+
+    private LongFilter purchaseOrdersId;
+
+    private LongFilter ticketsId;
 
     public OutletCriteria() {
     }
@@ -51,7 +55,9 @@ public class OutletCriteria implements Serializable, Criteria {
         this.outletAdress = other.outletAdress == null ? null : other.outletAdress.copy();
         this.outletLat = other.outletLat == null ? null : other.outletLat.copy();
         this.outletLng = other.outletLng == null ? null : other.outletLng.copy();
-        this.inventoryId = other.inventoryId == null ? null : other.inventoryId.copy();
+        this.inventoriesId = other.inventoriesId == null ? null : other.inventoriesId.copy();
+        this.purchaseOrdersId = other.purchaseOrdersId == null ? null : other.purchaseOrdersId.copy();
+        this.ticketsId = other.ticketsId == null ? null : other.ticketsId.copy();
     }
 
     @Override
@@ -115,12 +121,28 @@ public class OutletCriteria implements Serializable, Criteria {
         this.outletLng = outletLng;
     }
 
-    public LongFilter getInventoryId() {
-        return inventoryId;
+    public LongFilter getInventoriesId() {
+        return inventoriesId;
     }
 
-    public void setInventoryId(LongFilter inventoryId) {
-        this.inventoryId = inventoryId;
+    public void setInventoriesId(LongFilter inventoriesId) {
+        this.inventoriesId = inventoriesId;
+    }
+
+    public LongFilter getPurchaseOrdersId() {
+        return purchaseOrdersId;
+    }
+
+    public void setPurchaseOrdersId(LongFilter purchaseOrdersId) {
+        this.purchaseOrdersId = purchaseOrdersId;
+    }
+
+    public LongFilter getTicketsId() {
+        return ticketsId;
+    }
+
+    public void setTicketsId(LongFilter ticketsId) {
+        this.ticketsId = ticketsId;
     }
 
 
@@ -141,7 +163,9 @@ public class OutletCriteria implements Serializable, Criteria {
             Objects.equals(outletAdress, that.outletAdress) &&
             Objects.equals(outletLat, that.outletLat) &&
             Objects.equals(outletLng, that.outletLng) &&
-            Objects.equals(inventoryId, that.inventoryId);
+            Objects.equals(inventoriesId, that.inventoriesId) &&
+            Objects.equals(purchaseOrdersId, that.purchaseOrdersId) &&
+            Objects.equals(ticketsId, that.ticketsId);
     }
 
     @Override
@@ -154,7 +178,9 @@ public class OutletCriteria implements Serializable, Criteria {
         outletAdress,
         outletLat,
         outletLng,
-        inventoryId
+        inventoriesId,
+        purchaseOrdersId,
+        ticketsId
         );
     }
 
@@ -169,7 +195,9 @@ public class OutletCriteria implements Serializable, Criteria {
                 (outletAdress != null ? "outletAdress=" + outletAdress + ", " : "") +
                 (outletLat != null ? "outletLat=" + outletLat + ", " : "") +
                 (outletLng != null ? "outletLng=" + outletLng + ", " : "") +
-                (inventoryId != null ? "inventoryId=" + inventoryId + ", " : "") +
+                (inventoriesId != null ? "inventoriesId=" + inventoriesId + ", " : "") +
+                (purchaseOrdersId != null ? "purchaseOrdersId=" + purchaseOrdersId + ", " : "") +
+                (ticketsId != null ? "ticketsId=" + ticketsId + ", " : "") +
             "}";
     }
 

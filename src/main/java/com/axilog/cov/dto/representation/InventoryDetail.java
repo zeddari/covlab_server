@@ -29,4 +29,5 @@ public class InventoryDetail {
 	 private Double outletLat;
 	 private Double outletLng;
 	 private String category;
+	 private String temperature;
 }

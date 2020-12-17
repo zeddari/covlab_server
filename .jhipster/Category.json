@@ -6,7 +6,11 @@
       "fieldType": "Long"
     },
     {
-      "fieldName": "descriptionCategory",
+      "fieldName": "categoryCode",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "categoryDescription",
       "fieldType": "String"
     }
   ],
@@ -15,7 +19,7 @@
       "relationshipType": "one-to-many",
       "otherEntityName": "product",
       "otherEntityRelationshipName": "category",
-      "relationshipName": "product"
+      "relationshipName": "products"
     }
   ],
   "changelogDate": "20201215205007",

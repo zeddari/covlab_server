@@ -19,7 +19,10 @@
       "productId": "Product Id",
       "description": "Description",
       "productCode": "Product Code",
-      "inventory": "Inventory",
+      "temperature": "Temperature",
+      "inventories": "Inventories",
+      "purchaseOrders": "Purchase Orders",
+      "tickets": "Tickets",
       "category": "Category"
     }
   }

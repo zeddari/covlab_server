@@ -3,6 +3,8 @@ package com.axilog.cov.web.rest;
 import com.axilog.cov.CovlabServerApp;
 import com.axilog.cov.domain.Product;
 import com.axilog.cov.domain.Inventory;
+import com.axilog.cov.domain.PurchaseOrder;
+import com.axilog.cov.domain.Tickets;
 import com.axilog.cov.domain.Category;
 import com.axilog.cov.repository.ProductRepository;
 import com.axilog.cov.service.ProductService;
@@ -44,6 +46,9 @@ public class ProductResourceIT {
     private static final String DEFAULT_PRODUCT_CODE = "AAAAAAAAAA";
     private static final String UPDATED_PRODUCT_CODE = "BBBBBBBBBB";
 
+    private static final String DEFAULT_TEMPERATURE = "AAAAAAAAAA";
+    private static final String UPDATED_TEMPERATURE = "BBBBBBBBBB";
+
     @Autowired
     private ProductRepository productRepository;
 
@@ -71,7 +76,8 @@ public class ProductResourceIT {
         Product product = new Product()
             .productId(DEFAULT_PRODUCT_ID)
             .description(DEFAULT_DESCRIPTION)
-            .productCode(DEFAULT_PRODUCT_CODE);
+            .productCode(DEFAULT_PRODUCT_CODE)
+            .temperature(DEFAULT_TEMPERATURE);
         return product;
     }
     /**
@@ -84,7 +90,8 @@ public class ProductResourceIT {
         Product product = new Product()
             .productId(UPDATED_PRODUCT_ID)
             .description(UPDATED_DESCRIPTION)
-            .productCode(UPDATED_PRODUCT_CODE);
+            .productCode(UPDATED_PRODUCT_CODE)
+            .temperature(UPDATED_TEMPERATURE);
         return product;
     }
 
@@ -110,6 +117,7 @@ public class ProductResourceIT {
         assertThat(testProduct.getProductId()).isEqualTo(DEFAULT_PRODUCT_ID);
         assertThat(testProduct.getDescription()).isEqualTo(DEFAULT_DESCRIPTION);
         assertThat(testProduct.getProductCode()).isEqualTo(DEFAULT_PRODUCT_CODE);
+        assertThat(testProduct.getTemperature()).isEqualTo(DEFAULT_TEMPERATURE);
     }
 
     @Test
@@ -145,7 +153,8 @@ public class ProductResourceIT {
             .andExpect(jsonPath("$.[*].id").value(hasItem(product.getId().intValue())))
             .andExpect(jsonPath("$.[*].productId").value(hasItem(DEFAULT_PRODUCT_ID.intValue())))
             .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)))
-            .andExpect(jsonPath("$.[*].productCode").value(hasItem(DEFAULT_PRODUCT_CODE)));
+            .andExpect(jsonPath("$.[*].productCode").value(hasItem(DEFAULT_PRODUCT_CODE)))
+            .andExpect(jsonPath("$.[*].temperature").value(hasItem(DEFAULT_TEMPERATURE)));
     }
     
     @Test
@@ -161,7 +170,8 @@ public class ProductResourceIT {
             .andExpect(jsonPath("$.id").value(product.getId().intValue()))
             .andExpect(jsonPath("$.productId").value(DEFAULT_PRODUCT_ID.intValue()))
             .andExpect(jsonPath("$.description").value(DEFAULT_DESCRIPTION))
-            .andExpect(jsonPath("$.productCode").value(DEFAULT_PRODUCT_CODE));
+            .andExpect(jsonPath("$.productCode").value(DEFAULT_PRODUCT_CODE))
+            .andExpect(jsonPath("$.temperature").value(DEFAULT_TEMPERATURE));
     }
 
 
@@ -447,21 +457,139 @@ public class ProductResourceIT {
 
     @Test
     @Transactional
-    public void getAllProductsByInventoryIsEqualToSomething() throws Exception {
+    public void getAllProductsByTemperatureIsEqualToSomething() throws Exception {
         // Initialize the database
         productRepository.saveAndFlush(product);
-        Inventory inventory = InventoryResourceIT.createEntity(em);
-        em.persist(inventory);
-        em.flush();
-        product.addInventory(inventory);
+
+        // Get all the productList where temperature equals to DEFAULT_TEMPERATURE
+        defaultProductShouldBeFound("temperature.equals=" + DEFAULT_TEMPERATURE);
+
+        // Get all the productList where temperature equals to UPDATED_TEMPERATURE
+        defaultProductShouldNotBeFound("temperature.equals=" + UPDATED_TEMPERATURE);
+    }
+
+    @Test
+    @Transactional
+    public void getAllProductsByTemperatureIsNotEqualToSomething() throws Exception {
+        // Initialize the database
         productRepository.saveAndFlush(product);
-        Long inventoryId = inventory.getId();
 
-        // Get all the productList where inventory equals to inventoryId
-        defaultProductShouldBeFound("inventoryId.equals=" + inventoryId);
+        // Get all the productList where temperature not equals to DEFAULT_TEMPERATURE
+        defaultProductShouldNotBeFound("temperature.notEquals=" + DEFAULT_TEMPERATURE);
 
-        // Get all the productList where inventory equals to inventoryId + 1
-        defaultProductShouldNotBeFound("inventoryId.equals=" + (inventoryId + 1));
+        // Get all the productList where temperature not equals to UPDATED_TEMPERATURE
+        defaultProductShouldBeFound("temperature.notEquals=" + UPDATED_TEMPERATURE);
+    }
+
+    @Test
+    @Transactional
+    public void getAllProductsByTemperatureIsInShouldWork() throws Exception {
+        // Initialize the database
+        productRepository.saveAndFlush(product);
+
+        // Get all the productList where temperature in DEFAULT_TEMPERATURE or UPDATED_TEMPERATURE
+        defaultProductShouldBeFound("temperature.in=" + DEFAULT_TEMPERATURE + "," + UPDATED_TEMPERATURE);
+
+        // Get all the productList where temperature equals to UPDATED_TEMPERATURE
+        defaultProductShouldNotBeFound("temperature.in=" + UPDATED_TEMPERATURE);
+    }
+
+    @Test
+    @Transactional
+    public void getAllProductsByTemperatureIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        productRepository.saveAndFlush(product);
+
+        // Get all the productList where temperature is not null
+        defaultProductShouldBeFound("temperature.specified=true");
+
+        // Get all the productList where temperature is null
+        defaultProductShouldNotBeFound("temperature.specified=false");
+    }
+                @Test
+    @Transactional
+    public void getAllProductsByTemperatureContainsSomething() throws Exception {
+        // Initialize the database
+        productRepository.saveAndFlush(product);
+
+        // Get all the productList where temperature contains DEFAULT_TEMPERATURE
+        defaultProductShouldBeFound("temperature.contains=" + DEFAULT_TEMPERATURE);
+
+        // Get all the productList where temperature contains UPDATED_TEMPERATURE
+        defaultProductShouldNotBeFound("temperature.contains=" + UPDATED_TEMPERATURE);
+    }
+
+    @Test
+    @Transactional
+    public void getAllProductsByTemperatureNotContainsSomething() throws Exception {
+        // Initialize the database
+        productRepository.saveAndFlush(product);
+
+        // Get all the productList where temperature does not contain DEFAULT_TEMPERATURE
+        defaultProductShouldNotBeFound("temperature.doesNotContain=" + DEFAULT_TEMPERATURE);
+
+        // Get all the productList where temperature does not contain UPDATED_TEMPERATURE
+        defaultProductShouldBeFound("temperature.doesNotContain=" + UPDATED_TEMPERATURE);
+    }
+
+
+    @Test
+    @Transactional
+    public void getAllProductsByInventoriesIsEqualToSomething() throws Exception {
+        // Initialize the database
+        productRepository.saveAndFlush(product);
+        Inventory inventories = InventoryResourceIT.createEntity(em);
+        em.persist(inventories);
+        em.flush();
+        product.addInventories(inventories);
+        productRepository.saveAndFlush(product);
+        Long inventoriesId = inventories.getId();
+
+        // Get all the productList where inventories equals to inventoriesId
+        defaultProductShouldBeFound("inventoriesId.equals=" + inventoriesId);
+
+        // Get all the productList where inventories equals to inventoriesId + 1
+        defaultProductShouldNotBeFound("inventoriesId.equals=" + (inventoriesId + 1));
+    }
+
+
+    @Test
+    @Transactional
+    public void getAllProductsByPurchaseOrdersIsEqualToSomething() throws Exception {
+        // Initialize the database
+        productRepository.saveAndFlush(product);
+        PurchaseOrder purchaseOrders = PurchaseOrderResourceIT.createEntity(em);
+        em.persist(purchaseOrders);
+        em.flush();
+        product.addPurchaseOrders(purchaseOrders);
+        productRepository.saveAndFlush(product);
+        Long purchaseOrdersId = purchaseOrders.getId();
+
+        // Get all the productList where purchaseOrders equals to purchaseOrdersId
+        defaultProductShouldBeFound("purchaseOrdersId.equals=" + purchaseOrdersId);
+
+        // Get all the productList where purchaseOrders equals to purchaseOrdersId + 1
+        defaultProductShouldNotBeFound("purchaseOrdersId.equals=" + (purchaseOrdersId + 1));
+    }
+
+
+    @Test
+    @Transactional
+    public void getAllProductsByTicketsIsEqualToSomething() throws Exception {
+        // Initialize the database
+        productRepository.saveAndFlush(product);
+        Tickets tickets = TicketsResourceIT.createEntity(em);
+        em.persist(tickets);
+        em.flush();
+        product.addTickets(tickets);
+        productRepository.saveAndFlush(product);
+        Long ticketsId = tickets.getId();
+
+        // Get all the productList where tickets equals to ticketsId
+        defaultProductShouldBeFound("ticketsId.equals=" + ticketsId);
+
+        // Get all the productList where tickets equals to ticketsId + 1
+        defaultProductShouldNotBeFound("ticketsId.equals=" + (ticketsId + 1));
     }
 
 
@@ -494,7 +622,8 @@ public class ProductResourceIT {
             .andExpect(jsonPath("$.[*].id").value(hasItem(product.getId().intValue())))
             .andExpect(jsonPath("$.[*].productId").value(hasItem(DEFAULT_PRODUCT_ID.intValue())))
             .andExpect(jsonPath("$.[*].description").value(hasItem(DEFAULT_DESCRIPTION)))
-            .andExpect(jsonPath("$.[*].productCode").value(hasItem(DEFAULT_PRODUCT_CODE)));
+            .andExpect(jsonPath("$.[*].productCode").value(hasItem(DEFAULT_PRODUCT_CODE)))
+            .andExpect(jsonPath("$.[*].temperature").value(hasItem(DEFAULT_TEMPERATURE)));
 
         // Check, that the count call also returns 1
         restProductMockMvc.perform(get("/api/products/count?sort=id,desc&" + filter))
@@ -543,7 +672,8 @@ public class ProductResourceIT {
         updatedProduct
             .productId(UPDATED_PRODUCT_ID)
             .description(UPDATED_DESCRIPTION)
-            .productCode(UPDATED_PRODUCT_CODE);
+            .productCode(UPDATED_PRODUCT_CODE)
+            .temperature(UPDATED_TEMPERATURE);
 
         restProductMockMvc.perform(put("/api/products")
             .contentType(MediaType.APPLICATION_JSON)
@@ -557,6 +687,7 @@ public class ProductResourceIT {
         assertThat(testProduct.getProductId()).isEqualTo(UPDATED_PRODUCT_ID);
         assertThat(testProduct.getDescription()).isEqualTo(UPDATED_DESCRIPTION);
         assertThat(testProduct.getProductCode()).isEqualTo(UPDATED_PRODUCT_CODE);
+        assertThat(testProduct.getTemperature()).isEqualTo(UPDATED_TEMPERATURE);
     }
 
     @Test
