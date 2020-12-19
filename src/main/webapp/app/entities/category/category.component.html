@@ -24,7 +24,8 @@
                 <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" [callback]="loadPage.bind(this)">
                     <th scope="col"  jhiSortBy="id"><span jhiTranslate="global.field.id">ID</span> <fa-icon icon="sort"></fa-icon></th>
                     <th scope="col"  jhiSortBy="categoryId"><span jhiTranslate="covlabServerApp.category.categoryId">Category Id</span> <fa-icon icon="sort"></fa-icon></th>
-                    <th scope="col"  jhiSortBy="descriptionCategory"><span jhiTranslate="covlabServerApp.category.descriptionCategory">Description Category</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="categoryCode"><span jhiTranslate="covlabServerApp.category.categoryCode">Category Code</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="categoryDescription"><span jhiTranslate="covlabServerApp.category.categoryDescription">Category Description</span> <fa-icon icon="sort"></fa-icon></th>
                     <th scope="col"></th>
                 </tr>
             </thead>
@@ -32,7 +33,8 @@
                 <tr *ngFor="let category of categories ;trackBy: trackId">
                     <td><a [routerLink]="['/category', category.id, 'view']">{{ category.id }}</a></td>
                     <td>{{ category.categoryId }}</td>
-                    <td>{{ category.descriptionCategory }}</td>
+                    <td>{{ category.categoryCode }}</td>
+                    <td>{{ category.categoryDescription }}</td>
                     <td class="text-right">
                         <div class="btn-group">
                             <button type="submit"

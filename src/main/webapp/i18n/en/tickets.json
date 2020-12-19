@@ -1,0 +1,30 @@
+{
+  "covlabServerApp": {
+    "tickets": {
+      "home": {
+        "title": "Tickets",
+        "createLabel": "Create a new Tickets",
+        "createOrEditLabel": "Create or edit a Tickets",
+        "notFound": "No Tickets found"
+      },
+      "created": "A new Tickets is created with identifier {{ param }}",
+      "updated": "A Tickets is updated with identifier {{ param }}",
+      "deleted": "A Tickets is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Tickets {{ id }}?"
+      },
+      "detail": {
+        "title": "Tickets"
+      },
+      "ticketNo": "Ticket No",
+      "ticketType": "Ticket Type",
+      "ticketStatus": "Ticket Status",
+      "ticketDueDate": "Ticket Due Date",
+      "ticketPriority": "Ticket Priority",
+      "ticketCreatedOn": "Ticket Created On",
+      "ticketUpdateAt": "Ticket Update At",
+      "outlet": "Outlet",
+      "product": "Product"
+    }
+  }
+}

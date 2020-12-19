@@ -26,6 +26,12 @@
                         <a [routerLink]="['/category', product.category?.id, 'view']">{{ product.category?.id }}</a>
                     </div>
                 </dd>
+                <dt><span jhiTranslate="covlabServerApp.product.deviceOverviewStats">Device Overview Stats</span></dt>
+                <dd>
+                    <div *ngIf="product.deviceOverviewStats">
+                        <a [routerLink]="['/device-overview-stats', product.deviceOverviewStats?.id, 'view']">{{ product.deviceOverviewStats?.id }}</a>
+                    </div>
+                </dd>
             </dl>
 
             <button type="submit"

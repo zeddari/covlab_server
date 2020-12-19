@@ -1,0 +1,33 @@
+{
+  "name": "PoStatus",
+  "fields": [
+    {
+      "fieldName": "status",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "updatedAt",
+      "fieldType": "LocalDate"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "many-to-one",
+      "otherEntityName": "purchaseOrder",
+      "otherEntityRelationshipName": "poStatus",
+      "relationshipName": "purchaseOrder",
+      "otherEntityField": "id"
+    }
+  ],
+  "changelogDate": "20201217145648",
+  "entityTableName": "po_status",
+  "dto": "no",
+  "pagination": "pagination",
+  "service": "serviceImpl",
+  "jpaMetamodelFiltering": true,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "clientRootFolder": "",
+  "applications": "*"
+}

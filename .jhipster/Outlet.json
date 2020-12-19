@@ -31,7 +31,25 @@
       "relationshipType": "one-to-many",
       "otherEntityName": "inventory",
       "otherEntityRelationshipName": "outlet",
-      "relationshipName": "inventory"
+      "relationshipName": "inventories"
+    },
+    {
+      "relationshipType": "one-to-many",
+      "otherEntityName": "purchaseOrder",
+      "otherEntityRelationshipName": "outlet",
+      "relationshipName": "purchaseOrders"
+    },
+    {
+      "relationshipType": "one-to-many",
+      "otherEntityName": "tickets",
+      "otherEntityRelationshipName": "outlet",
+      "relationshipName": "tickets"
+    },
+    {
+      "relationshipType": "one-to-many",
+      "otherEntityName": "deviceOverviewStats",
+      "otherEntityRelationshipName": "outlet",
+      "relationshipName": "deviceOverviewStats"
     }
   ],
   "changelogDate": "20201215204807",

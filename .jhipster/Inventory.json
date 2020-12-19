@@ -50,14 +50,14 @@
     {
       "relationshipType": "many-to-one",
       "otherEntityName": "outlet",
-      "otherEntityRelationshipName": "inventory",
+      "otherEntityRelationshipName": "inventories",
       "relationshipName": "outlet",
       "otherEntityField": "id"
     },
     {
       "relationshipType": "many-to-one",
       "otherEntityName": "product",
-      "otherEntityRelationshipName": "inventory",
+      "otherEntityRelationshipName": "inventories",
       "relationshipName": "product",
       "otherEntityField": "id"
     }

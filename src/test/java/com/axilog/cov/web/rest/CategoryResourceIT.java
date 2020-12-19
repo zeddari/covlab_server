@@ -37,8 +37,11 @@ public class CategoryResourceIT {
     private static final Long UPDATED_CATEGORY_ID = 2L;
     private static final Long SMALLER_CATEGORY_ID = 1L - 1L;
 
-    private static final String DEFAULT_DESCRIPTION_CATEGORY = "AAAAAAAAAA";
-    private static final String UPDATED_DESCRIPTION_CATEGORY = "BBBBBBBBBB";
+    private static final String DEFAULT_CATEGORY_CODE = "AAAAAAAAAA";
+    private static final String UPDATED_CATEGORY_CODE = "BBBBBBBBBB";
+
+    private static final String DEFAULT_CATEGORY_DESCRIPTION = "AAAAAAAAAA";
+    private static final String UPDATED_CATEGORY_DESCRIPTION = "BBBBBBBBBB";
 
     @Autowired
     private CategoryRepository categoryRepository;
@@ -66,7 +69,8 @@ public class CategoryResourceIT {
     public static Category createEntity(EntityManager em) {
         Category category = new Category()
             .categoryId(DEFAULT_CATEGORY_ID)
-            .descriptionCategory(DEFAULT_DESCRIPTION_CATEGORY);
+            .categoryCode(DEFAULT_CATEGORY_CODE)
+            .categoryDescription(DEFAULT_CATEGORY_DESCRIPTION);
         return category;
     }
     /**
@@ -78,7 +82,8 @@ public class CategoryResourceIT {
     public static Category createUpdatedEntity(EntityManager em) {
         Category category = new Category()
             .categoryId(UPDATED_CATEGORY_ID)
-            .descriptionCategory(UPDATED_DESCRIPTION_CATEGORY);
+            .categoryCode(UPDATED_CATEGORY_CODE)
+            .categoryDescription(UPDATED_CATEGORY_DESCRIPTION);
         return category;
     }
 
@@ -102,7 +107,8 @@ public class CategoryResourceIT {
         assertThat(categoryList).hasSize(databaseSizeBeforeCreate + 1);
         Category testCategory = categoryList.get(categoryList.size() - 1);
         assertThat(testCategory.getCategoryId()).isEqualTo(DEFAULT_CATEGORY_ID);
-        assertThat(testCategory.getDescriptionCategory()).isEqualTo(DEFAULT_DESCRIPTION_CATEGORY);
+        assertThat(testCategory.getCategoryCode()).isEqualTo(DEFAULT_CATEGORY_CODE);
+        assertThat(testCategory.getCategoryDescription()).isEqualTo(DEFAULT_CATEGORY_DESCRIPTION);
     }
 
     @Test
@@ -137,7 +143,8 @@ public class CategoryResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(category.getId().intValue())))
             .andExpect(jsonPath("$.[*].categoryId").value(hasItem(DEFAULT_CATEGORY_ID.intValue())))
-            .andExpect(jsonPath("$.[*].descriptionCategory").value(hasItem(DEFAULT_DESCRIPTION_CATEGORY)));
+            .andExpect(jsonPath("$.[*].categoryCode").value(hasItem(DEFAULT_CATEGORY_CODE)))
+            .andExpect(jsonPath("$.[*].categoryDescription").value(hasItem(DEFAULT_CATEGORY_DESCRIPTION)));
     }
     
     @Test
@@ -152,7 +159,8 @@ public class CategoryResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(category.getId().intValue()))
             .andExpect(jsonPath("$.categoryId").value(DEFAULT_CATEGORY_ID.intValue()))
-            .andExpect(jsonPath("$.descriptionCategory").value(DEFAULT_DESCRIPTION_CATEGORY));
+            .andExpect(jsonPath("$.categoryCode").value(DEFAULT_CATEGORY_CODE))
+            .andExpect(jsonPath("$.categoryDescription").value(DEFAULT_CATEGORY_DESCRIPTION));
     }
 
 
@@ -282,99 +290,177 @@ public class CategoryResourceIT {
 
     @Test
     @Transactional
-    public void getAllCategoriesByDescriptionCategoryIsEqualToSomething() throws Exception {
+    public void getAllCategoriesByCategoryCodeIsEqualToSomething() throws Exception {
         // Initialize the database
         categoryRepository.saveAndFlush(category);
 
-        // Get all the categoryList where descriptionCategory equals to DEFAULT_DESCRIPTION_CATEGORY
-        defaultCategoryShouldBeFound("descriptionCategory.equals=" + DEFAULT_DESCRIPTION_CATEGORY);
+        // Get all the categoryList where categoryCode equals to DEFAULT_CATEGORY_CODE
+        defaultCategoryShouldBeFound("categoryCode.equals=" + DEFAULT_CATEGORY_CODE);
 
-        // Get all the categoryList where descriptionCategory equals to UPDATED_DESCRIPTION_CATEGORY
-        defaultCategoryShouldNotBeFound("descriptionCategory.equals=" + UPDATED_DESCRIPTION_CATEGORY);
+        // Get all the categoryList where categoryCode equals to UPDATED_CATEGORY_CODE
+        defaultCategoryShouldNotBeFound("categoryCode.equals=" + UPDATED_CATEGORY_CODE);
     }
 
     @Test
     @Transactional
-    public void getAllCategoriesByDescriptionCategoryIsNotEqualToSomething() throws Exception {
+    public void getAllCategoriesByCategoryCodeIsNotEqualToSomething() throws Exception {
         // Initialize the database
         categoryRepository.saveAndFlush(category);
 
-        // Get all the categoryList where descriptionCategory not equals to DEFAULT_DESCRIPTION_CATEGORY
-        defaultCategoryShouldNotBeFound("descriptionCategory.notEquals=" + DEFAULT_DESCRIPTION_CATEGORY);
+        // Get all the categoryList where categoryCode not equals to DEFAULT_CATEGORY_CODE
+        defaultCategoryShouldNotBeFound("categoryCode.notEquals=" + DEFAULT_CATEGORY_CODE);
 
-        // Get all the categoryList where descriptionCategory not equals to UPDATED_DESCRIPTION_CATEGORY
-        defaultCategoryShouldBeFound("descriptionCategory.notEquals=" + UPDATED_DESCRIPTION_CATEGORY);
+        // Get all the categoryList where categoryCode not equals to UPDATED_CATEGORY_CODE
+        defaultCategoryShouldBeFound("categoryCode.notEquals=" + UPDATED_CATEGORY_CODE);
     }
 
     @Test
     @Transactional
-    public void getAllCategoriesByDescriptionCategoryIsInShouldWork() throws Exception {
+    public void getAllCategoriesByCategoryCodeIsInShouldWork() throws Exception {
         // Initialize the database
         categoryRepository.saveAndFlush(category);
 
-        // Get all the categoryList where descriptionCategory in DEFAULT_DESCRIPTION_CATEGORY or UPDATED_DESCRIPTION_CATEGORY
-        defaultCategoryShouldBeFound("descriptionCategory.in=" + DEFAULT_DESCRIPTION_CATEGORY + "," + UPDATED_DESCRIPTION_CATEGORY);
+        // Get all the categoryList where categoryCode in DEFAULT_CATEGORY_CODE or UPDATED_CATEGORY_CODE
+        defaultCategoryShouldBeFound("categoryCode.in=" + DEFAULT_CATEGORY_CODE + "," + UPDATED_CATEGORY_CODE);
 
-        // Get all the categoryList where descriptionCategory equals to UPDATED_DESCRIPTION_CATEGORY
-        defaultCategoryShouldNotBeFound("descriptionCategory.in=" + UPDATED_DESCRIPTION_CATEGORY);
+        // Get all the categoryList where categoryCode equals to UPDATED_CATEGORY_CODE
+        defaultCategoryShouldNotBeFound("categoryCode.in=" + UPDATED_CATEGORY_CODE);
     }
 
     @Test
     @Transactional
-    public void getAllCategoriesByDescriptionCategoryIsNullOrNotNull() throws Exception {
+    public void getAllCategoriesByCategoryCodeIsNullOrNotNull() throws Exception {
         // Initialize the database
         categoryRepository.saveAndFlush(category);
 
-        // Get all the categoryList where descriptionCategory is not null
-        defaultCategoryShouldBeFound("descriptionCategory.specified=true");
+        // Get all the categoryList where categoryCode is not null
+        defaultCategoryShouldBeFound("categoryCode.specified=true");
 
-        // Get all the categoryList where descriptionCategory is null
-        defaultCategoryShouldNotBeFound("descriptionCategory.specified=false");
+        // Get all the categoryList where categoryCode is null
+        defaultCategoryShouldNotBeFound("categoryCode.specified=false");
     }
                 @Test
     @Transactional
-    public void getAllCategoriesByDescriptionCategoryContainsSomething() throws Exception {
+    public void getAllCategoriesByCategoryCodeContainsSomething() throws Exception {
         // Initialize the database
         categoryRepository.saveAndFlush(category);
 
-        // Get all the categoryList where descriptionCategory contains DEFAULT_DESCRIPTION_CATEGORY
-        defaultCategoryShouldBeFound("descriptionCategory.contains=" + DEFAULT_DESCRIPTION_CATEGORY);
+        // Get all the categoryList where categoryCode contains DEFAULT_CATEGORY_CODE
+        defaultCategoryShouldBeFound("categoryCode.contains=" + DEFAULT_CATEGORY_CODE);
 
-        // Get all the categoryList where descriptionCategory contains UPDATED_DESCRIPTION_CATEGORY
-        defaultCategoryShouldNotBeFound("descriptionCategory.contains=" + UPDATED_DESCRIPTION_CATEGORY);
+        // Get all the categoryList where categoryCode contains UPDATED_CATEGORY_CODE
+        defaultCategoryShouldNotBeFound("categoryCode.contains=" + UPDATED_CATEGORY_CODE);
     }
 
     @Test
     @Transactional
-    public void getAllCategoriesByDescriptionCategoryNotContainsSomething() throws Exception {
+    public void getAllCategoriesByCategoryCodeNotContainsSomething() throws Exception {
         // Initialize the database
         categoryRepository.saveAndFlush(category);
 
-        // Get all the categoryList where descriptionCategory does not contain DEFAULT_DESCRIPTION_CATEGORY
-        defaultCategoryShouldNotBeFound("descriptionCategory.doesNotContain=" + DEFAULT_DESCRIPTION_CATEGORY);
+        // Get all the categoryList where categoryCode does not contain DEFAULT_CATEGORY_CODE
+        defaultCategoryShouldNotBeFound("categoryCode.doesNotContain=" + DEFAULT_CATEGORY_CODE);
 
-        // Get all the categoryList where descriptionCategory does not contain UPDATED_DESCRIPTION_CATEGORY
-        defaultCategoryShouldBeFound("descriptionCategory.doesNotContain=" + UPDATED_DESCRIPTION_CATEGORY);
+        // Get all the categoryList where categoryCode does not contain UPDATED_CATEGORY_CODE
+        defaultCategoryShouldBeFound("categoryCode.doesNotContain=" + UPDATED_CATEGORY_CODE);
     }
 
 
     @Test
     @Transactional
-    public void getAllCategoriesByProductIsEqualToSomething() throws Exception {
+    public void getAllCategoriesByCategoryDescriptionIsEqualToSomething() throws Exception {
         // Initialize the database
         categoryRepository.saveAndFlush(category);
-        Product product = ProductResourceIT.createEntity(em);
-        em.persist(product);
+
+        // Get all the categoryList where categoryDescription equals to DEFAULT_CATEGORY_DESCRIPTION
+        defaultCategoryShouldBeFound("categoryDescription.equals=" + DEFAULT_CATEGORY_DESCRIPTION);
+
+        // Get all the categoryList where categoryDescription equals to UPDATED_CATEGORY_DESCRIPTION
+        defaultCategoryShouldNotBeFound("categoryDescription.equals=" + UPDATED_CATEGORY_DESCRIPTION);
+    }
+
+    @Test
+    @Transactional
+    public void getAllCategoriesByCategoryDescriptionIsNotEqualToSomething() throws Exception {
+        // Initialize the database
+        categoryRepository.saveAndFlush(category);
+
+        // Get all the categoryList where categoryDescription not equals to DEFAULT_CATEGORY_DESCRIPTION
+        defaultCategoryShouldNotBeFound("categoryDescription.notEquals=" + DEFAULT_CATEGORY_DESCRIPTION);
+
+        // Get all the categoryList where categoryDescription not equals to UPDATED_CATEGORY_DESCRIPTION
+        defaultCategoryShouldBeFound("categoryDescription.notEquals=" + UPDATED_CATEGORY_DESCRIPTION);
+    }
+
+    @Test
+    @Transactional
+    public void getAllCategoriesByCategoryDescriptionIsInShouldWork() throws Exception {
+        // Initialize the database
+        categoryRepository.saveAndFlush(category);
+
+        // Get all the categoryList where categoryDescription in DEFAULT_CATEGORY_DESCRIPTION or UPDATED_CATEGORY_DESCRIPTION
+        defaultCategoryShouldBeFound("categoryDescription.in=" + DEFAULT_CATEGORY_DESCRIPTION + "," + UPDATED_CATEGORY_DESCRIPTION);
+
+        // Get all the categoryList where categoryDescription equals to UPDATED_CATEGORY_DESCRIPTION
+        defaultCategoryShouldNotBeFound("categoryDescription.in=" + UPDATED_CATEGORY_DESCRIPTION);
+    }
+
+    @Test
+    @Transactional
+    public void getAllCategoriesByCategoryDescriptionIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        categoryRepository.saveAndFlush(category);
+
+        // Get all the categoryList where categoryDescription is not null
+        defaultCategoryShouldBeFound("categoryDescription.specified=true");
+
+        // Get all the categoryList where categoryDescription is null
+        defaultCategoryShouldNotBeFound("categoryDescription.specified=false");
+    }
+                @Test
+    @Transactional
+    public void getAllCategoriesByCategoryDescriptionContainsSomething() throws Exception {
+        // Initialize the database
+        categoryRepository.saveAndFlush(category);
+
+        // Get all the categoryList where categoryDescription contains DEFAULT_CATEGORY_DESCRIPTION
+        defaultCategoryShouldBeFound("categoryDescription.contains=" + DEFAULT_CATEGORY_DESCRIPTION);
+
+        // Get all the categoryList where categoryDescription contains UPDATED_CATEGORY_DESCRIPTION
+        defaultCategoryShouldNotBeFound("categoryDescription.contains=" + UPDATED_CATEGORY_DESCRIPTION);
+    }
+
+    @Test
+    @Transactional
+    public void getAllCategoriesByCategoryDescriptionNotContainsSomething() throws Exception {
+        // Initialize the database
+        categoryRepository.saveAndFlush(category);
+
+        // Get all the categoryList where categoryDescription does not contain DEFAULT_CATEGORY_DESCRIPTION
+        defaultCategoryShouldNotBeFound("categoryDescription.doesNotContain=" + DEFAULT_CATEGORY_DESCRIPTION);
+
+        // Get all the categoryList where categoryDescription does not contain UPDATED_CATEGORY_DESCRIPTION
+        defaultCategoryShouldBeFound("categoryDescription.doesNotContain=" + UPDATED_CATEGORY_DESCRIPTION);
+    }
+
+
+    @Test
+    @Transactional
+    public void getAllCategoriesByProductsIsEqualToSomething() throws Exception {
+        // Initialize the database
+        categoryRepository.saveAndFlush(category);
+        Product products = ProductResourceIT.createEntity(em);
+        em.persist(products);
         em.flush();
-        category.addProduct(product);
+        category.addProducts(products);
         categoryRepository.saveAndFlush(category);
-        Long productId = product.getId();
+        Long productsId = products.getId();
 
-        // Get all the categoryList where product equals to productId
-        defaultCategoryShouldBeFound("productId.equals=" + productId);
+        // Get all the categoryList where products equals to productsId
+        defaultCategoryShouldBeFound("productsId.equals=" + productsId);
 
-        // Get all the categoryList where product equals to productId + 1
-        defaultCategoryShouldNotBeFound("productId.equals=" + (productId + 1));
+        // Get all the categoryList where products equals to productsId + 1
+        defaultCategoryShouldNotBeFound("productsId.equals=" + (productsId + 1));
     }
 
     /**
@@ -386,7 +472,8 @@ public class CategoryResourceIT {
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(category.getId().intValue())))
             .andExpect(jsonPath("$.[*].categoryId").value(hasItem(DEFAULT_CATEGORY_ID.intValue())))
-            .andExpect(jsonPath("$.[*].descriptionCategory").value(hasItem(DEFAULT_DESCRIPTION_CATEGORY)));
+            .andExpect(jsonPath("$.[*].categoryCode").value(hasItem(DEFAULT_CATEGORY_CODE)))
+            .andExpect(jsonPath("$.[*].categoryDescription").value(hasItem(DEFAULT_CATEGORY_DESCRIPTION)));
 
         // Check, that the count call also returns 1
         restCategoryMockMvc.perform(get("/api/categories/count?sort=id,desc&" + filter))
@@ -434,7 +521,8 @@ public class CategoryResourceIT {
         em.detach(updatedCategory);
         updatedCategory
             .categoryId(UPDATED_CATEGORY_ID)
-            .descriptionCategory(UPDATED_DESCRIPTION_CATEGORY);
+            .categoryCode(UPDATED_CATEGORY_CODE)
+            .categoryDescription(UPDATED_CATEGORY_DESCRIPTION);
 
         restCategoryMockMvc.perform(put("/api/categories")
             .contentType(MediaType.APPLICATION_JSON)
@@ -446,7 +534,8 @@ public class CategoryResourceIT {
         assertThat(categoryList).hasSize(databaseSizeBeforeUpdate);
         Category testCategory = categoryList.get(categoryList.size() - 1);
         assertThat(testCategory.getCategoryId()).isEqualTo(UPDATED_CATEGORY_ID);
-        assertThat(testCategory.getDescriptionCategory()).isEqualTo(UPDATED_DESCRIPTION_CATEGORY);
+        assertThat(testCategory.getCategoryCode()).isEqualTo(UPDATED_CATEGORY_CODE);
+        assertThat(testCategory.getCategoryDescription()).isEqualTo(UPDATED_CATEGORY_DESCRIPTION);
     }
 
     @Test

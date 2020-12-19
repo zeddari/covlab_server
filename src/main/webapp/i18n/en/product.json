@@ -19,8 +19,11 @@
       "productId": "Product Id",
       "description": "Description",
       "productCode": "Product Code",
-      "inventory": "Inventory",
-      "category": "Category"
+      "inventories": "Inventories",
+      "purchaseOrders": "Purchase Orders",
+      "tickets": "Tickets",
+      "category": "Category",
+      "deviceOverviewStats": "Device Overview Stats"
     }
   }
 }

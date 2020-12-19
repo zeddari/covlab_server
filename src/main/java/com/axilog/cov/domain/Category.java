@@ -23,8 +23,11 @@ public class Category implements Serializable {
     @Column(name = "category_id")
     private Long categoryId;
 
-    @Column(name = "description_category")
-    private String descriptionCategory;
+    @Column(name = "category_code")
+    private String categoryCode;
+
+    @Column(name = "category_description")
+    private String categoryDescription;
 
     @OneToMany(mappedBy = "category")
     private Set<Product> products = new HashSet<>();
@@ -51,17 +54,30 @@ public class Category implements Serializable {
         this.categoryId = categoryId;
     }
 
-    public String getDescriptionCategory() {
-        return descriptionCategory;
+    public String getCategoryCode() {
+        return categoryCode;
     }
 
-    public Category descriptionCategory(String descriptionCategory) {
-        this.descriptionCategory = descriptionCategory;
+    public Category categoryCode(String categoryCode) {
+        this.categoryCode = categoryCode;
         return this;
     }
 
-    public void setDescriptionCategory(String descriptionCategory) {
-        this.descriptionCategory = descriptionCategory;
+    public void setCategoryCode(String categoryCode) {
+        this.categoryCode = categoryCode;
+    }
+
+    public String getCategoryDescription() {
+        return categoryDescription;
+    }
+
+    public Category categoryDescription(String categoryDescription) {
+        this.categoryDescription = categoryDescription;
+        return this;
+    }
+
+    public void setCategoryDescription(String categoryDescription) {
+        this.categoryDescription = categoryDescription;
     }
 
     public Set<Product> getProducts() {
@@ -73,13 +89,13 @@ public class Category implements Serializable {
         return this;
     }
 
-    public Category addProduct(Product product) {
+    public Category addProducts(Product product) {
         this.products.add(product);
         product.setCategory(this);
         return this;
     }
 
-    public Category removeProduct(Product product) {
+    public Category removeProducts(Product product) {
         this.products.remove(product);
         product.setCategory(null);
         return this;
@@ -112,7 +128,8 @@ public class Category implements Serializable {
         return "Category{" +
             "id=" + getId() +
             ", categoryId=" + getCategoryId() +
-            ", descriptionCategory='" + getDescriptionCategory() + "'" +
+            ", categoryCode='" + getCategoryCode() + "'" +
+            ", categoryDescription='" + getCategoryDescription() + "'" +
             "}";
     }
 }

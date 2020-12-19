@@ -48,12 +48,6 @@ public class InventoryQueryService extends QueryService<Inventory> {
         final Specification<Inventory> specification = createSpecification(criteria);
         return inventoryRepository.findAll(specification);
     }
-    
-    @Transactional(readOnly = true)
-    public List<Inventory> findAll() {
-        log.debug("find All");
-        return inventoryRepository.findAll();
-    }
 
     /**
      * Return a {@link Page} of {@link Inventory} which matches the criteria from the database.

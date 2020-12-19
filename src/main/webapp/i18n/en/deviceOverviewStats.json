@@ -1,0 +1,31 @@
+{
+  "covlabServerApp": {
+    "deviceOverviewStats": {
+      "home": {
+        "title": "Device Overview Stats",
+        "createLabel": "Create a new Device Overview Stats",
+        "createOrEditLabel": "Create or edit a Device Overview Stats",
+        "notFound": "No Device Overview Stats found"
+      },
+      "created": "A new Device Overview Stats is created with identifier {{ param }}",
+      "updated": "A Device Overview Stats is updated with identifier {{ param }}",
+      "deleted": "A Device Overview Stats is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Device Overview Stats {{ id }}?"
+      },
+      "detail": {
+        "title": "Device Overview Stats"
+      },
+      "deviceId": "Device Id",
+      "timestamp": "Timestamp",
+      "serialNumber": "Serial Number",
+      "humidity": "Humidity",
+      "temperature": "Temperature",
+      "co2": "Co 2",
+      "pressure": "Pressure",
+      "differentialPressure": "Differential Pressure",
+      "product": "Product",
+      "outlet": "Outlet"
+    }
+  }
+}

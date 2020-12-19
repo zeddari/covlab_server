@@ -3,7 +3,10 @@ package com.axilog.cov.web.rest;
 import com.axilog.cov.CovlabServerApp;
 import com.axilog.cov.domain.Product;
 import com.axilog.cov.domain.Inventory;
+import com.axilog.cov.domain.PurchaseOrder;
+import com.axilog.cov.domain.Tickets;
 import com.axilog.cov.domain.Category;
+import com.axilog.cov.domain.DeviceOverviewStats;
 import com.axilog.cov.repository.ProductRepository;
 import com.axilog.cov.service.ProductService;
 import com.axilog.cov.service.dto.ProductCriteria;
@@ -447,21 +450,61 @@ public class ProductResourceIT {
 
     @Test
     @Transactional
-    public void getAllProductsByInventoryIsEqualToSomething() throws Exception {
+    public void getAllProductsByInventoriesIsEqualToSomething() throws Exception {
         // Initialize the database
         productRepository.saveAndFlush(product);
-        Inventory inventory = InventoryResourceIT.createEntity(em);
-        em.persist(inventory);
+        Inventory inventories = InventoryResourceIT.createEntity(em);
+        em.persist(inventories);
         em.flush();
-        product.addInventory(inventory);
+        product.addInventories(inventories);
         productRepository.saveAndFlush(product);
-        Long inventoryId = inventory.getId();
+        Long inventoriesId = inventories.getId();
 
-        // Get all the productList where inventory equals to inventoryId
-        defaultProductShouldBeFound("inventoryId.equals=" + inventoryId);
+        // Get all the productList where inventories equals to inventoriesId
+        defaultProductShouldBeFound("inventoriesId.equals=" + inventoriesId);
 
-        // Get all the productList where inventory equals to inventoryId + 1
-        defaultProductShouldNotBeFound("inventoryId.equals=" + (inventoryId + 1));
+        // Get all the productList where inventories equals to inventoriesId + 1
+        defaultProductShouldNotBeFound("inventoriesId.equals=" + (inventoriesId + 1));
+    }
+
+
+    @Test
+    @Transactional
+    public void getAllProductsByPurchaseOrdersIsEqualToSomething() throws Exception {
+        // Initialize the database
+        productRepository.saveAndFlush(product);
+        PurchaseOrder purchaseOrders = PurchaseOrderResourceIT.createEntity(em);
+        em.persist(purchaseOrders);
+        em.flush();
+        product.addPurchaseOrders(purchaseOrders);
+        productRepository.saveAndFlush(product);
+        Long purchaseOrdersId = purchaseOrders.getId();
+
+        // Get all the productList where purchaseOrders equals to purchaseOrdersId
+        defaultProductShouldBeFound("purchaseOrdersId.equals=" + purchaseOrdersId);
+
+        // Get all the productList where purchaseOrders equals to purchaseOrdersId + 1
+        defaultProductShouldNotBeFound("purchaseOrdersId.equals=" + (purchaseOrdersId + 1));
+    }
+
+
+    @Test
+    @Transactional
+    public void getAllProductsByTicketsIsEqualToSomething() throws Exception {
+        // Initialize the database
+        productRepository.saveAndFlush(product);
+        Tickets tickets = TicketsResourceIT.createEntity(em);
+        em.persist(tickets);
+        em.flush();
+        product.addTickets(tickets);
+        productRepository.saveAndFlush(product);
+        Long ticketsId = tickets.getId();
+
+        // Get all the productList where tickets equals to ticketsId
+        defaultProductShouldBeFound("ticketsId.equals=" + ticketsId);
+
+        // Get all the productList where tickets equals to ticketsId + 1
+        defaultProductShouldNotBeFound("ticketsId.equals=" + (ticketsId + 1));
     }
 
 
@@ -482,6 +525,26 @@ public class ProductResourceIT {
 
         // Get all the productList where category equals to categoryId + 1
         defaultProductShouldNotBeFound("categoryId.equals=" + (categoryId + 1));
+    }
+
+
+    @Test
+    @Transactional
+    public void getAllProductsByDeviceOverviewStatsIsEqualToSomething() throws Exception {
+        // Initialize the database
+        productRepository.saveAndFlush(product);
+        DeviceOverviewStats deviceOverviewStats = DeviceOverviewStatsResourceIT.createEntity(em);
+        em.persist(deviceOverviewStats);
+        em.flush();
+        product.setDeviceOverviewStats(deviceOverviewStats);
+        productRepository.saveAndFlush(product);
+        Long deviceOverviewStatsId = deviceOverviewStats.getId();
+
+        // Get all the productList where deviceOverviewStats equals to deviceOverviewStatsId
+        defaultProductShouldBeFound("deviceOverviewStatsId.equals=" + deviceOverviewStatsId);
+
+        // Get all the productList where deviceOverviewStats equals to deviceOverviewStatsId + 1
+        defaultProductShouldNotBeFound("deviceOverviewStatsId.equals=" + (deviceOverviewStatsId + 1));
     }
 
     /**

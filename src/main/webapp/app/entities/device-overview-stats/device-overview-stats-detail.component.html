@@ -1,0 +1,64 @@
+<div class="row justify-content-center">
+    <div class="col-8">
+        <div *ngIf="deviceOverviewStats">
+            <h2><span jhiTranslate="covlabServerApp.deviceOverviewStats.detail.title">Device Overview Stats</span> {{ deviceOverviewStats.id }}</h2>
+
+            <hr>
+
+            <jhi-alert-error></jhi-alert-error>
+
+            <dl class="row-md jh-entity-details">
+                <dt><span jhiTranslate="covlabServerApp.deviceOverviewStats.deviceId">Device Id</span></dt>
+                <dd>
+                    <span>{{ deviceOverviewStats.deviceId }}</span>
+                </dd>
+                <dt><span jhiTranslate="covlabServerApp.deviceOverviewStats.timestamp">Timestamp</span></dt>
+                <dd>
+                    <span>{{ deviceOverviewStats.timestamp }}</span>
+                </dd>
+                <dt><span jhiTranslate="covlabServerApp.deviceOverviewStats.serialNumber">Serial Number</span></dt>
+                <dd>
+                    <span>{{ deviceOverviewStats.serialNumber }}</span>
+                </dd>
+                <dt><span jhiTranslate="covlabServerApp.deviceOverviewStats.humidity">Humidity</span></dt>
+                <dd>
+                    <span>{{ deviceOverviewStats.humidity }}</span>
+                </dd>
+                <dt><span jhiTranslate="covlabServerApp.deviceOverviewStats.temperature">Temperature</span></dt>
+                <dd>
+                    <span>{{ deviceOverviewStats.temperature }}</span>
+                </dd>
+                <dt><span jhiTranslate="covlabServerApp.deviceOverviewStats.co2">Co 2</span></dt>
+                <dd>
+                    <span>{{ deviceOverviewStats.co2 }}</span>
+                </dd>
+                <dt><span jhiTranslate="covlabServerApp.deviceOverviewStats.pressure">Pressure</span></dt>
+                <dd>
+                    <span>{{ deviceOverviewStats.pressure }}</span>
+                </dd>
+                <dt><span jhiTranslate="covlabServerApp.deviceOverviewStats.differentialPressure">Differential Pressure</span></dt>
+                <dd>
+                    <span>{{ deviceOverviewStats.differentialPressure }}</span>
+                </dd>
+                <dt><span jhiTranslate="covlabServerApp.deviceOverviewStats.outlet">Outlet</span></dt>
+                <dd>
+                    <div *ngIf="deviceOverviewStats.outlet">
+                        <a [routerLink]="['/outlet', deviceOverviewStats.outlet?.id, 'view']">{{ deviceOverviewStats.outlet?.id }}</a>
+                    </div>
+                </dd>
+            </dl>
+
+            <button type="submit"
+                    (click)="previousState()"
+                    class="btn btn-info">
+                <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+            </button>
+
+            <button type="button"
+                    [routerLink]="['/device-overview-stats', deviceOverviewStats.id, 'edit']"
+                    class="btn btn-primary">
+                <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+            </button>
+        </div>
+    </div>
+</div>

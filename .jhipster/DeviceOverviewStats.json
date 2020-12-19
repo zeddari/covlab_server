@@ -1,0 +1,63 @@
+{
+  "name": "DeviceOverviewStats",
+  "fields": [
+    {
+      "fieldName": "deviceId",
+      "fieldType": "Long"
+    },
+    {
+      "fieldName": "timestamp",
+      "fieldType": "LocalDate"
+    },
+    {
+      "fieldName": "serialNumber",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "humidity",
+      "fieldType": "Double"
+    },
+    {
+      "fieldName": "temperature",
+      "fieldType": "Double"
+    },
+    {
+      "fieldName": "co2",
+      "fieldType": "Double"
+    },
+    {
+      "fieldName": "pressure",
+      "fieldType": "Double"
+    },
+    {
+      "fieldName": "differentialPressure",
+      "fieldType": "Double"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "one-to-many",
+      "otherEntityName": "product",
+      "otherEntityRelationshipName": "deviceOverviewStats",
+      "relationshipName": "product"
+    },
+    {
+      "relationshipType": "many-to-one",
+      "otherEntityName": "outlet",
+      "otherEntityRelationshipName": "deviceOverviewStats",
+      "relationshipName": "outlet",
+      "otherEntityField": "id"
+    }
+  ],
+  "changelogDate": "20201219112514",
+  "entityTableName": "device_overview_stats",
+  "dto": "no",
+  "pagination": "pagination",
+  "service": "serviceImpl",
+  "jpaMetamodelFiltering": true,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "clientRootFolder": "",
+  "applications": "*"
+}

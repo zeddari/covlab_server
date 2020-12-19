@@ -28,9 +28,11 @@ public class CategoryCriteria implements Serializable, Criteria {
 
     private LongFilter categoryId;
 
-    private StringFilter descriptionCategory;
+    private StringFilter categoryCode;
 
-    private LongFilter productId;
+    private StringFilter categoryDescription;
+
+    private LongFilter productsId;
 
     public CategoryCriteria() {
     }
@@ -38,8 +40,9 @@ public class CategoryCriteria implements Serializable, Criteria {
     public CategoryCriteria(CategoryCriteria other) {
         this.id = other.id == null ? null : other.id.copy();
         this.categoryId = other.categoryId == null ? null : other.categoryId.copy();
-        this.descriptionCategory = other.descriptionCategory == null ? null : other.descriptionCategory.copy();
-        this.productId = other.productId == null ? null : other.productId.copy();
+        this.categoryCode = other.categoryCode == null ? null : other.categoryCode.copy();
+        this.categoryDescription = other.categoryDescription == null ? null : other.categoryDescription.copy();
+        this.productsId = other.productsId == null ? null : other.productsId.copy();
     }
 
     @Override
@@ -63,20 +66,28 @@ public class CategoryCriteria implements Serializable, Criteria {
         this.categoryId = categoryId;
     }
 
-    public StringFilter getDescriptionCategory() {
-        return descriptionCategory;
+    public StringFilter getCategoryCode() {
+        return categoryCode;
     }
 
-    public void setDescriptionCategory(StringFilter descriptionCategory) {
-        this.descriptionCategory = descriptionCategory;
+    public void setCategoryCode(StringFilter categoryCode) {
+        this.categoryCode = categoryCode;
     }
 
-    public LongFilter getProductId() {
-        return productId;
+    public StringFilter getCategoryDescription() {
+        return categoryDescription;
     }
 
-    public void setProductId(LongFilter productId) {
-        this.productId = productId;
+    public void setCategoryDescription(StringFilter categoryDescription) {
+        this.categoryDescription = categoryDescription;
+    }
+
+    public LongFilter getProductsId() {
+        return productsId;
+    }
+
+    public void setProductsId(LongFilter productsId) {
+        this.productsId = productsId;
     }
 
 
@@ -92,8 +103,9 @@ public class CategoryCriteria implements Serializable, Criteria {
         return
             Objects.equals(id, that.id) &&
             Objects.equals(categoryId, that.categoryId) &&
-            Objects.equals(descriptionCategory, that.descriptionCategory) &&
-            Objects.equals(productId, that.productId);
+            Objects.equals(categoryCode, that.categoryCode) &&
+            Objects.equals(categoryDescription, that.categoryDescription) &&
+            Objects.equals(productsId, that.productsId);
     }
 
     @Override
@@ -101,8 +113,9 @@ public class CategoryCriteria implements Serializable, Criteria {
         return Objects.hash(
         id,
         categoryId,
-        descriptionCategory,
-        productId
+        categoryCode,
+        categoryDescription,
+        productsId
         );
     }
 
@@ -112,8 +125,9 @@ public class CategoryCriteria implements Serializable, Criteria {
         return "CategoryCriteria{" +
                 (id != null ? "id=" + id + ", " : "") +
                 (categoryId != null ? "categoryId=" + categoryId + ", " : "") +
-                (descriptionCategory != null ? "descriptionCategory=" + descriptionCategory + ", " : "") +
-                (productId != null ? "productId=" + productId + ", " : "") +
+                (categoryCode != null ? "categoryCode=" + categoryCode + ", " : "") +
+                (categoryDescription != null ? "categoryDescription=" + categoryDescription + ", " : "") +
+                (productsId != null ? "productsId=" + productsId + ", " : "") +
             "}";
     }
 

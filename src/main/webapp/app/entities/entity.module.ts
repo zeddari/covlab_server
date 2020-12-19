@@ -20,6 +20,27 @@ import { RouterModule } from '@angular/router';
         path: 'category',
         loadChildren: () => import('./category/category.module').then(m => m.CovlabServerCategoryModule),
       },
+      {
+        path: 'purchase-order',
+        loadChildren: () => import('./purchase-order/purchase-order.module').then(m => m.CovlabServerPurchaseOrderModule),
+      },
+      {
+        path: 'status-po',
+        loadChildren: () => import('./status-po/status-po.module').then(m => m.CovlabServerStatusPOModule),
+      },
+      {
+        path: 'tickets',
+        loadChildren: () => import('./tickets/tickets.module').then(m => m.CovlabServerTicketsModule),
+      },
+      {
+        path: 'po-status',
+        loadChildren: () => import('./po-status/po-status.module').then(m => m.CovlabServerPoStatusModule),
+      },
+      {
+        path: 'device-overview-stats',
+        loadChildren: () =>
+          import('./device-overview-stats/device-overview-stats.module').then(m => m.CovlabServerDeviceOverviewStatsModule),
+      },
       /* jhipster-needle-add-entity-route - JHipster will add entity modules routes here */
     ]),
   ],

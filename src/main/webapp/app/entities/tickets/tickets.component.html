@@ -1,0 +1,95 @@
+<div>
+    <h2 id="page-heading">
+        <span jhiTranslate="covlabServerApp.tickets.home.title">Tickets</span>
+
+        <button id="jh-create-entity" class="btn btn-primary float-right jh-create-entity create-tickets" [routerLink]="['/tickets/new']">
+            <fa-icon icon="plus"></fa-icon>
+            <span  jhiTranslate="covlabServerApp.tickets.home.createLabel">
+            Create a new Tickets
+            </span>
+        </button>
+    </h2>
+
+    <jhi-alert-error></jhi-alert-error>
+
+    <jhi-alert></jhi-alert>
+
+    <div class="alert alert-warning" id="no-result" *ngIf="tickets?.length === 0">
+        <span jhiTranslate="covlabServerApp.tickets.home.notFound">No tickets found</span>
+    </div>
+
+    <div class="table-responsive" id="entities" *ngIf="tickets && tickets.length > 0">
+        <table class="table table-striped" aria-describedby="page-heading">
+            <thead>
+                <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" [callback]="loadPage.bind(this)">
+                    <th scope="col"  jhiSortBy="id"><span jhiTranslate="global.field.id">ID</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="ticketNo"><span jhiTranslate="covlabServerApp.tickets.ticketNo">Ticket No</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="ticketType"><span jhiTranslate="covlabServerApp.tickets.ticketType">Ticket Type</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="ticketStatus"><span jhiTranslate="covlabServerApp.tickets.ticketStatus">Ticket Status</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="ticketDueDate"><span jhiTranslate="covlabServerApp.tickets.ticketDueDate">Ticket Due Date</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="ticketPriority"><span jhiTranslate="covlabServerApp.tickets.ticketPriority">Ticket Priority</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="ticketCreatedOn"><span jhiTranslate="covlabServerApp.tickets.ticketCreatedOn">Ticket Created On</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="ticketUpdateAt"><span jhiTranslate="covlabServerApp.tickets.ticketUpdateAt">Ticket Update At</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="outlet.id"><span jhiTranslate="covlabServerApp.tickets.outlet">Outlet</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="product.id"><span jhiTranslate="covlabServerApp.tickets.product">Product</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let tickets of tickets ;trackBy: trackId">
+                    <td><a [routerLink]="['/tickets', tickets.id, 'view']">{{ tickets.id }}</a></td>
+                    <td>{{ tickets.ticketNo }}</td>
+                    <td>{{ tickets.ticketType }}</td>
+                    <td>{{ tickets.ticketStatus }}</td>
+                    <td>{{ tickets.ticketDueDate | date:'mediumDate' }}</td>
+                    <td>{{ tickets.ticketPriority }}</td>
+                    <td>{{ tickets.ticketCreatedOn | date:'mediumDate' }}</td>
+                    <td>{{ tickets.ticketUpdateAt | date:'mediumDate' }}</td>
+                    <td>
+                        <div *ngIf="tickets.outlet">
+                            <a [routerLink]="['/outlet', tickets.outlet?.id, 'view']" >{{ tickets.outlet?.id }}</a>
+                        </div>
+                    </td>
+                    <td>
+                        <div *ngIf="tickets.product">
+                            <a [routerLink]="['/product', tickets.product?.id, 'view']" >{{ tickets.product?.id }}</a>
+                        </div>
+                    </td>
+                    <td class="text-right">
+                        <div class="btn-group">
+                            <button type="submit"
+                                    [routerLink]="['/tickets', tickets.id, 'view']"
+                                    class="btn btn-info btn-sm">
+                                <fa-icon icon="eye"></fa-icon>
+                                <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+                            </button>
+
+                            <button type="submit"
+                                    [routerLink]="['/tickets', tickets.id, 'edit']"
+                                    class="btn btn-primary btn-sm">
+                                <fa-icon icon="pencil-alt"></fa-icon>
+                                <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+                            </button>
+
+                            <button type="submit" (click)="delete(tickets)"
+                                    class="btn btn-danger btn-sm">
+                                <fa-icon icon="times"></fa-icon>
+                                <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div *ngIf="tickets && tickets.length > 0">
+        <div class="row justify-content-center">
+            <jhi-item-count [page]="page" [total]="totalItems" [itemsPerPage]="itemsPerPage"></jhi-item-count>
+        </div>
+
+        <div class="row justify-content-center">
+            <ngb-pagination [collectionSize]="totalItems" [(page)]="ngbPaginationPage" [pageSize]="itemsPerPage" [maxSize]="5" [rotate]="true" [boundaryLinks]="true" (pageChange)="loadPage($event)"></ngb-pagination>
+        </div>
+    </div>
+</div>

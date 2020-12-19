@@ -103,9 +103,21 @@ public class OutletQueryService extends QueryService<Outlet> {
             if (criteria.getOutletLng() != null) {
                 specification = specification.and(buildRangeSpecification(criteria.getOutletLng(), Outlet_.outletLng));
             }
-            if (criteria.getInventoryId() != null) {
-                specification = specification.and(buildSpecification(criteria.getInventoryId(),
+            if (criteria.getInventoriesId() != null) {
+                specification = specification.and(buildSpecification(criteria.getInventoriesId(),
                     root -> root.join(Outlet_.inventories, JoinType.LEFT).get(Inventory_.id)));
+            }
+            if (criteria.getPurchaseOrdersId() != null) {
+                specification = specification.and(buildSpecification(criteria.getPurchaseOrdersId(),
+                    root -> root.join(Outlet_.purchaseOrders, JoinType.LEFT).get(PurchaseOrder_.id)));
+            }
+            if (criteria.getTicketsId() != null) {
+                specification = specification.and(buildSpecification(criteria.getTicketsId(),
+                    root -> root.join(Outlet_.tickets, JoinType.LEFT).get(Tickets_.id)));
+            }
+            if (criteria.getDeviceOverviewStatsId() != null) {
+                specification = specification.and(buildSpecification(criteria.getDeviceOverviewStatsId(),
+                    root -> root.join(Outlet_.deviceOverviewStats, JoinType.LEFT).get(DeviceOverviewStats_.id)));
             }
         }
         return specification;

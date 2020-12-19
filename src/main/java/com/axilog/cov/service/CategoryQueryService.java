@@ -88,11 +88,14 @@ public class CategoryQueryService extends QueryService<Category> {
             if (criteria.getCategoryId() != null) {
                 specification = specification.and(buildRangeSpecification(criteria.getCategoryId(), Category_.categoryId));
             }
-            if (criteria.getDescriptionCategory() != null) {
-                specification = specification.and(buildStringSpecification(criteria.getDescriptionCategory(), Category_.descriptionCategory));
+            if (criteria.getCategoryCode() != null) {
+                specification = specification.and(buildStringSpecification(criteria.getCategoryCode(), Category_.categoryCode));
             }
-            if (criteria.getProductId() != null) {
-                specification = specification.and(buildSpecification(criteria.getProductId(),
+            if (criteria.getCategoryDescription() != null) {
+                specification = specification.and(buildStringSpecification(criteria.getCategoryDescription(), Category_.categoryDescription));
+            }
+            if (criteria.getProductsId() != null) {
+                specification = specification.and(buildSpecification(criteria.getProductsId(),
                     root -> root.join(Category_.products, JoinType.LEFT).get(Product_.id)));
             }
         }

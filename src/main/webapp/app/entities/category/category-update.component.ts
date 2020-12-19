@@ -18,7 +18,8 @@ export class CategoryUpdateComponent implements OnInit {
   editForm = this.fb.group({
     id: [],
     categoryId: [],
-    descriptionCategory: [],
+    categoryCode: [],
+    categoryDescription: [],
   });
 
   constructor(protected categoryService: CategoryService, protected activatedRoute: ActivatedRoute, private fb: FormBuilder) {}
@@ -33,7 +34,8 @@ export class CategoryUpdateComponent implements OnInit {
     this.editForm.patchValue({
       id: category.id,
       categoryId: category.categoryId,
-      descriptionCategory: category.descriptionCategory,
+      categoryCode: category.categoryCode,
+      categoryDescription: category.categoryDescription,
     });
   }
 
@@ -56,7 +58,8 @@ export class CategoryUpdateComponent implements OnInit {
       ...new Category(),
       id: this.editForm.get(['id'])!.value,
       categoryId: this.editForm.get(['categoryId'])!.value,
-      descriptionCategory: this.editForm.get(['descriptionCategory'])!.value,
+      categoryCode: this.editForm.get(['categoryCode'])!.value,
+      categoryDescription: this.editForm.get(['categoryDescription'])!.value,
     };
   }
 
