@@ -21,7 +21,7 @@ public class SwaggerConfig {
       "Ericsson Developer", "http://www.ericsson.com", "contact_nims@ericsson.com");
   
   public static final ApiInfo DEFAULT_API_INFO = new ApiInfo(
-      "Awesome API Title", "Awesome VCT API Description", "1.0",
+      "Vax Control Tower API", "VCT API related to the Covid19 vaxination system", "1.0",
       "urn:tos", "www.axi-log.com", 
       "Apache 2.0", "http://www.apache.org/licenses/LICENSE-2.0");
 
