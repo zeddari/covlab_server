@@ -4,7 +4,7 @@ import { IOutlet } from 'app/shared/model/outlet.model';
 
 export interface IDeviceOverviewStats {
   id?: number;
-  deviceId?: number;
+  deviceId?: string;
   timestamp?: Moment;
   serialNumber?: string;
   humidity?: number;
@@ -19,7 +19,7 @@ export interface IDeviceOverviewStats {
 export class DeviceOverviewStats implements IDeviceOverviewStats {
   constructor(
     public id?: number,
-    public deviceId?: number,
+    public deviceId?: string,
     public timestamp?: Moment,
     public serialNumber?: string,
     public humidity?: number,

@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import com.axilog.cov.domain.Inventory;
+import com.axilog.cov.dto.command.InventoryCommand;
 import com.axilog.cov.dto.representation.InventoryDetail;
 import com.axilog.cov.dto.representation.InventoryRepresentation;
 
@@ -37,7 +38,7 @@ public class InventoryMapper {
 				.outletLat(inventory.getOutlet().getOutletLat())
 				.outletLng(inventory.getOutlet().getOutletLng())
 				.category(inventory.getProduct().getCategory().getCategoryCode())
-				.temperature(inventory.getProduct().getDeviceOverviewStats().getTemperature())
+				.temperature(inventory.getProduct().getDeviceOverviewStats() != null ? inventory.getProduct().getDeviceOverviewStats().getTemperature() : 0)
 				.build();
 	}
 	
@@ -54,5 +55,7 @@ public class InventoryMapper {
 		});
 		return inventoryRepresentation;
 	}
+	
+	
 	
 }

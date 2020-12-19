@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +24,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.axilog.cov.domain.Inventory;
+import com.axilog.cov.dto.command.InventoryCommand;
+import com.axilog.cov.dto.mapper.InventoryMapper;
+import com.axilog.cov.dto.representation.InventoryRepresentation;
 import com.axilog.cov.service.InventoryQueryService;
 import com.axilog.cov.service.InventoryService;
 import com.axilog.cov.service.dto.InventoryCriteria;
@@ -50,6 +54,10 @@ public class InventoryResource {
 
     private final InventoryQueryService inventoryQueryService;
 
+    @Autowired
+    private InventoryMapper inventoryMapper;
+    
+    
     public InventoryResource(InventoryService inventoryService, InventoryQueryService inventoryQueryService) {
         this.inventoryService = inventoryService;
         this.inventoryQueryService = inventoryQueryService;
@@ -95,6 +103,25 @@ public class InventoryResource {
             .body(result);
     }
 
+    @PutMapping("/inventory/update")
+    public ResponseEntity<Inventory> updateInventoryByCriteria(@RequestBody InventoryCommand inventoryCommand) throws URISyntaxException {
+        log.debug("REST request to update Inventory : {}", inventoryCommand);
+        if (inventoryCommand.getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        Optional<Inventory> inventoryOptional = inventoryService.findOne(inventoryCommand.getId());
+        if (!inventoryOptional.isPresent()) {
+        	throw new BadRequestAlertException("Id Does not Exist", ENTITY_NAME, "idnull");
+        }
+        Inventory result = inventoryOptional.get();
+        result.setQuantitiesInHand(inventoryCommand.getQuantitiesInHand());
+        result.setQuantitiesInTransit(inventoryCommand.getQuantitiesInTransit());
+        result = inventoryService.save(result);
+        return ResponseEntity.ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
+            .body(result);
+    }
+    
     /**
      * {@code GET  /inventories} : get all the inventories.
      *
@@ -110,6 +137,13 @@ public class InventoryResource {
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
+    @GetMapping("/inventory/list")
+    public ResponseEntity<InventoryRepresentation> getAllRepresentationInventories(InventoryCriteria criteria, Pageable pageable) {
+        log.debug("REST request to get Inventories by criteria: {}", criteria);
+        List<Inventory> inventories = inventoryQueryService.findByCriteria(criteria);
+        InventoryRepresentation inventoryRepresentation = inventoryMapper.toInventoryRepresentation(inventories);
+        return ResponseEntity.ok().body(inventoryRepresentation);
+    }
     /**
      * {@code GET  /inventories/count} : count all the inventories.
      *

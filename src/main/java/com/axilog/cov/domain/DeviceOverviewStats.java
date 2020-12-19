@@ -23,7 +23,7 @@ public class DeviceOverviewStats implements Serializable {
     private Long id;
 
     @Column(name = "device_id")
-    private Long deviceId;
+    private String deviceId;
 
     @Column(name = "timestamp")
     private LocalDate timestamp;
@@ -62,16 +62,16 @@ public class DeviceOverviewStats implements Serializable {
         this.id = id;
     }
 
-    public Long getDeviceId() {
+    public String getDeviceId() {
         return deviceId;
     }
 
-    public DeviceOverviewStats deviceId(Long deviceId) {
+    public DeviceOverviewStats deviceId(String deviceId) {
         this.deviceId = deviceId;
         return this;
     }
 
-    public void setDeviceId(Long deviceId) {
+    public void setDeviceId(String deviceId) {
         this.deviceId = deviceId;
     }
 
@@ -226,7 +226,7 @@ public class DeviceOverviewStats implements Serializable {
     public String toString() {
         return "DeviceOverviewStats{" +
             "id=" + getId() +
-            ", deviceId=" + getDeviceId() +
+            ", deviceId='" + getDeviceId() + "'" +
             ", timestamp='" + getTimestamp() + "'" +
             ", serialNumber='" + getSerialNumber() + "'" +
             ", humidity=" + getHumidity() +
