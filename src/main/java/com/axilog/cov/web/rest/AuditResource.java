@@ -3,6 +3,8 @@ package com.axilog.cov.web.rest;
 import com.axilog.cov.service.AuditEventService;
 import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
+import io.swagger.annotations.Api;
+
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -21,6 +23,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
  */
 @RestController
 @RequestMapping("/management/audits")
+@Api(tags = "Audit Management", value = "AuditManagement", description = "Controller for Audit Management")
+
 public class AuditResource {
     private final AuditEventService auditEventService;
 

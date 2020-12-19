@@ -4,6 +4,9 @@ import com.axilog.cov.security.jwt.JWTFilter;
 import com.axilog.cov.security.jwt.TokenProvider;
 import com.axilog.cov.web.rest.vm.LoginVM;
 import com.fasterxml.jackson.annotation.JsonProperty;
+
+import io.swagger.annotations.Api;
+
 import javax.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/api")
+@Api(tags = "Token Management", value = "TokenManagement", description = "Controller for Token Management")
 public class UserJWTController {
     private final TokenProvider tokenProvider;
 

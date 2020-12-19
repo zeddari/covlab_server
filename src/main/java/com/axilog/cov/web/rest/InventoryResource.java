@@ -2,6 +2,7 @@ package com.axilog.cov.web.rest;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,17 +31,21 @@ import com.axilog.cov.dto.representation.InventoryRepresentation;
 import com.axilog.cov.service.InventoryQueryService;
 import com.axilog.cov.service.InventoryService;
 import com.axilog.cov.service.dto.InventoryCriteria;
+import com.axilog.cov.util.DateUtil;
 import com.axilog.cov.web.rest.errors.BadRequestAlertException;
 
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
+import io.swagger.annotations.Api;
 
 /**
  * REST controller for managing {@link com.axilog.cov.domain.Inventory}.
  */
 @RestController
 @RequestMapping("/api")
+@Api(tags = "Inventory Management", value = "InventoryManagement", description = "Controller for Inventory Management")
+
 public class InventoryResource {
 
     private final Logger log = LoggerFactory.getLogger(InventoryResource.class);
@@ -116,6 +121,7 @@ public class InventoryResource {
         Inventory result = inventoryOptional.get();
         result.setQuantitiesInHand(inventoryCommand.getQuantitiesInHand());
         result.setQuantitiesInTransit(inventoryCommand.getQuantitiesInTransit());
+        result.setLastUpdatedAt(DateUtil.convertToLocalDateViaInstant(new Date()));
         result = inventoryService.save(result);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
