@@ -25,10 +25,10 @@
             <column name="product_code" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
-            <column name="temperature" type="varchar(255)">
+            <column name="category_id" type="bigint">
                 <constraints nullable="true" />
             </column>
-            <column name="category_id" type="bigint">
+            <column name="device_overview_stats_id" type="bigint">
                 <constraints nullable="true" />
             </column>
             <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
@@ -57,7 +57,6 @@
             <column name="product_id" type="numeric"/>
             <column name="description" type="string"/>
             <column name="product_code" type="string"/>
-            <column name="temperature" type="string"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
         </loadData>
     </changeSet>

@@ -47,6 +47,9 @@ public class Outlet implements Serializable {
     @OneToMany(mappedBy = "outlet")
     private Set<Tickets> tickets = new HashSet<>();
 
+    @OneToMany(mappedBy = "outlet")
+    private Set<DeviceOverviewStats> deviceOverviewStats = new HashSet<>();
+
     // jhipster-needle-entity-add-field - JHipster will add fields here
     public Long getId() {
         return id;
@@ -207,6 +210,31 @@ public class Outlet implements Serializable {
 
     public void setTickets(Set<Tickets> tickets) {
         this.tickets = tickets;
+    }
+
+    public Set<DeviceOverviewStats> getDeviceOverviewStats() {
+        return deviceOverviewStats;
+    }
+
+    public Outlet deviceOverviewStats(Set<DeviceOverviewStats> deviceOverviewStats) {
+        this.deviceOverviewStats = deviceOverviewStats;
+        return this;
+    }
+
+    public Outlet addDeviceOverviewStats(DeviceOverviewStats deviceOverviewStats) {
+        this.deviceOverviewStats.add(deviceOverviewStats);
+        deviceOverviewStats.setOutlet(this);
+        return this;
+    }
+
+    public Outlet removeDeviceOverviewStats(DeviceOverviewStats deviceOverviewStats) {
+        this.deviceOverviewStats.remove(deviceOverviewStats);
+        deviceOverviewStats.setOutlet(null);
+        return this;
+    }
+
+    public void setDeviceOverviewStats(Set<DeviceOverviewStats> deviceOverviewStats) {
+        this.deviceOverviewStats = deviceOverviewStats;
     }
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 

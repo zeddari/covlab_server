@@ -30,16 +30,18 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-control-label" jhiTranslate="covlabServerApp.product.temperature" for="field_temperature">Temperature</label>
-                    <input type="text" class="form-control" name="temperature" id="field_temperature"
-                           formControlName="temperature"/>
-                </div>
-
-                <div class="form-group">
                     <label class="form-control-label" jhiTranslate="covlabServerApp.product.category" for="field_category">Category</label>
                     <select class="form-control" id="field_category" name="category" formControlName="category">
                         <option [ngValue]="null"></option>
                         <option [ngValue]="categoryOption.id === editForm.get('category')!.value?.id ? editForm.get('category')!.value : categoryOption" *ngFor="let categoryOption of categories; trackBy: trackById">{{ categoryOption.id }}</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-control-label" jhiTranslate="covlabServerApp.product.deviceOverviewStats" for="field_deviceOverviewStats">Device Overview Stats</label>
+                    <select class="form-control" id="field_deviceOverviewStats" name="deviceOverviewStats" formControlName="deviceOverviewStats">
+                        <option [ngValue]="null"></option>
+                        <option [ngValue]="deviceOverviewStatsOption.id === editForm.get('deviceOverviewStats')!.value?.id ? editForm.get('deviceOverviewStats')!.value : deviceOverviewStatsOption" *ngFor="let deviceOverviewStatsOption of deviceoverviewstats; trackBy: trackById">{{ deviceOverviewStatsOption.id }}</option>
                     </select>
                 </div>
             </div>

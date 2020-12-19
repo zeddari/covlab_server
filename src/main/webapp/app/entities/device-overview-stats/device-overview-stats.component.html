@@ -1,0 +1,91 @@
+<div>
+    <h2 id="page-heading">
+        <span jhiTranslate="covlabServerApp.deviceOverviewStats.home.title">Device Overview Stats</span>
+
+        <button id="jh-create-entity" class="btn btn-primary float-right jh-create-entity create-device-overview-stats" [routerLink]="['/device-overview-stats/new']">
+            <fa-icon icon="plus"></fa-icon>
+            <span  jhiTranslate="covlabServerApp.deviceOverviewStats.home.createLabel">
+            Create a new Device Overview Stats
+            </span>
+        </button>
+    </h2>
+
+    <jhi-alert-error></jhi-alert-error>
+
+    <jhi-alert></jhi-alert>
+
+    <div class="alert alert-warning" id="no-result" *ngIf="deviceOverviewStats?.length === 0">
+        <span jhiTranslate="covlabServerApp.deviceOverviewStats.home.notFound">No deviceOverviewStats found</span>
+    </div>
+
+    <div class="table-responsive" id="entities" *ngIf="deviceOverviewStats && deviceOverviewStats.length > 0">
+        <table class="table table-striped" aria-describedby="page-heading">
+            <thead>
+                <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" [callback]="loadPage.bind(this)">
+                    <th scope="col"  jhiSortBy="id"><span jhiTranslate="global.field.id">ID</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="deviceId"><span jhiTranslate="covlabServerApp.deviceOverviewStats.deviceId">Device Id</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="timestamp"><span jhiTranslate="covlabServerApp.deviceOverviewStats.timestamp">Timestamp</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="serialNumber"><span jhiTranslate="covlabServerApp.deviceOverviewStats.serialNumber">Serial Number</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="humidity"><span jhiTranslate="covlabServerApp.deviceOverviewStats.humidity">Humidity</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="temperature"><span jhiTranslate="covlabServerApp.deviceOverviewStats.temperature">Temperature</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="co2"><span jhiTranslate="covlabServerApp.deviceOverviewStats.co2">Co 2</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="pressure"><span jhiTranslate="covlabServerApp.deviceOverviewStats.pressure">Pressure</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="differentialPressure"><span jhiTranslate="covlabServerApp.deviceOverviewStats.differentialPressure">Differential Pressure</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="outlet.id"><span jhiTranslate="covlabServerApp.deviceOverviewStats.outlet">Outlet</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let deviceOverviewStats of deviceOverviewStats ;trackBy: trackId">
+                    <td><a [routerLink]="['/device-overview-stats', deviceOverviewStats.id, 'view']">{{ deviceOverviewStats.id }}</a></td>
+                    <td>{{ deviceOverviewStats.deviceId }}</td>
+                    <td>{{ deviceOverviewStats.timestamp | date:'mediumDate' }}</td>
+                    <td>{{ deviceOverviewStats.serialNumber }}</td>
+                    <td>{{ deviceOverviewStats.humidity }}</td>
+                    <td>{{ deviceOverviewStats.temperature }}</td>
+                    <td>{{ deviceOverviewStats.co2 }}</td>
+                    <td>{{ deviceOverviewStats.pressure }}</td>
+                    <td>{{ deviceOverviewStats.differentialPressure }}</td>
+                    <td>
+                        <div *ngIf="deviceOverviewStats.outlet">
+                            <a [routerLink]="['/outlet', deviceOverviewStats.outlet?.id, 'view']" >{{ deviceOverviewStats.outlet?.id }}</a>
+                        </div>
+                    </td>
+                    <td class="text-right">
+                        <div class="btn-group">
+                            <button type="submit"
+                                    [routerLink]="['/device-overview-stats', deviceOverviewStats.id, 'view']"
+                                    class="btn btn-info btn-sm">
+                                <fa-icon icon="eye"></fa-icon>
+                                <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+                            </button>
+
+                            <button type="submit"
+                                    [routerLink]="['/device-overview-stats', deviceOverviewStats.id, 'edit']"
+                                    class="btn btn-primary btn-sm">
+                                <fa-icon icon="pencil-alt"></fa-icon>
+                                <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+                            </button>
+
+                            <button type="submit" (click)="delete(deviceOverviewStats)"
+                                    class="btn btn-danger btn-sm">
+                                <fa-icon icon="times"></fa-icon>
+                                <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div *ngIf="deviceOverviewStats && deviceOverviewStats.length > 0">
+        <div class="row justify-content-center">
+            <jhi-item-count [page]="page" [total]="totalItems" [itemsPerPage]="itemsPerPage"></jhi-item-count>
+        </div>
+
+        <div class="row justify-content-center">
+            <ngb-pagination [collectionSize]="totalItems" [(page)]="ngbPaginationPage" [pageSize]="itemsPerPage" [maxSize]="5" [rotate]="true" [boundaryLinks]="true" (pageChange)="loadPage($event)"></ngb-pagination>
+        </div>
+    </div>
+</div>

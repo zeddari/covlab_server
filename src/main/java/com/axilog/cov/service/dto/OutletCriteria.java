@@ -44,6 +44,8 @@ public class OutletCriteria implements Serializable, Criteria {
 
     private LongFilter ticketsId;
 
+    private LongFilter deviceOverviewStatsId;
+
     public OutletCriteria() {
     }
 
@@ -58,6 +60,7 @@ public class OutletCriteria implements Serializable, Criteria {
         this.inventoriesId = other.inventoriesId == null ? null : other.inventoriesId.copy();
         this.purchaseOrdersId = other.purchaseOrdersId == null ? null : other.purchaseOrdersId.copy();
         this.ticketsId = other.ticketsId == null ? null : other.ticketsId.copy();
+        this.deviceOverviewStatsId = other.deviceOverviewStatsId == null ? null : other.deviceOverviewStatsId.copy();
     }
 
     @Override
@@ -145,6 +148,14 @@ public class OutletCriteria implements Serializable, Criteria {
         this.ticketsId = ticketsId;
     }
 
+    public LongFilter getDeviceOverviewStatsId() {
+        return deviceOverviewStatsId;
+    }
+
+    public void setDeviceOverviewStatsId(LongFilter deviceOverviewStatsId) {
+        this.deviceOverviewStatsId = deviceOverviewStatsId;
+    }
+
 
     @Override
     public boolean equals(Object o) {
@@ -165,7 +176,8 @@ public class OutletCriteria implements Serializable, Criteria {
             Objects.equals(outletLng, that.outletLng) &&
             Objects.equals(inventoriesId, that.inventoriesId) &&
             Objects.equals(purchaseOrdersId, that.purchaseOrdersId) &&
-            Objects.equals(ticketsId, that.ticketsId);
+            Objects.equals(ticketsId, that.ticketsId) &&
+            Objects.equals(deviceOverviewStatsId, that.deviceOverviewStatsId);
     }
 
     @Override
@@ -180,7 +192,8 @@ public class OutletCriteria implements Serializable, Criteria {
         outletLng,
         inventoriesId,
         purchaseOrdersId,
-        ticketsId
+        ticketsId,
+        deviceOverviewStatsId
         );
     }
 
@@ -198,6 +211,7 @@ public class OutletCriteria implements Serializable, Criteria {
                 (inventoriesId != null ? "inventoriesId=" + inventoriesId + ", " : "") +
                 (purchaseOrdersId != null ? "purchaseOrdersId=" + purchaseOrdersId + ", " : "") +
                 (ticketsId != null ? "ticketsId=" + ticketsId + ", " : "") +
+                (deviceOverviewStatsId != null ? "deviceOverviewStatsId=" + deviceOverviewStatsId + ", " : "") +
             "}";
     }
 

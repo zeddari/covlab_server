@@ -26,8 +26,8 @@
                     <th scope="col"  jhiSortBy="productId"><span jhiTranslate="covlabServerApp.product.productId">Product Id</span> <fa-icon icon="sort"></fa-icon></th>
                     <th scope="col"  jhiSortBy="description"><span jhiTranslate="covlabServerApp.product.description">Description</span> <fa-icon icon="sort"></fa-icon></th>
                     <th scope="col"  jhiSortBy="productCode"><span jhiTranslate="covlabServerApp.product.productCode">Product Code</span> <fa-icon icon="sort"></fa-icon></th>
-                    <th scope="col"  jhiSortBy="temperature"><span jhiTranslate="covlabServerApp.product.temperature">Temperature</span> <fa-icon icon="sort"></fa-icon></th>
                     <th scope="col"  jhiSortBy="category.id"><span jhiTranslate="covlabServerApp.product.category">Category</span> <fa-icon icon="sort"></fa-icon></th>
+                    <th scope="col"  jhiSortBy="deviceOverviewStats.id"><span jhiTranslate="covlabServerApp.product.deviceOverviewStats">Device Overview Stats</span> <fa-icon icon="sort"></fa-icon></th>
                     <th scope="col"></th>
                 </tr>
             </thead>
@@ -37,10 +37,14 @@
                     <td>{{ product.productId }}</td>
                     <td>{{ product.description }}</td>
                     <td>{{ product.productCode }}</td>
-                    <td>{{ product.temperature }}</td>
                     <td>
                         <div *ngIf="product.category">
                             <a [routerLink]="['/category', product.category?.id, 'view']" >{{ product.category?.id }}</a>
+                        </div>
+                    </td>
+                    <td>
+                        <div *ngIf="product.deviceOverviewStats">
+                            <a [routerLink]="['/device-overview-stats', product.deviceOverviewStats?.id, 'view']" >{{ product.deviceOverviewStats?.id }}</a>
                         </div>
                     </td>
                     <td class="text-right">

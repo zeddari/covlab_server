@@ -94,9 +94,6 @@ public class ProductQueryService extends QueryService<Product> {
             if (criteria.getProductCode() != null) {
                 specification = specification.and(buildStringSpecification(criteria.getProductCode(), Product_.productCode));
             }
-            if (criteria.getTemperature() != null) {
-                specification = specification.and(buildStringSpecification(criteria.getTemperature(), Product_.temperature));
-            }
             if (criteria.getInventoriesId() != null) {
                 specification = specification.and(buildSpecification(criteria.getInventoriesId(),
                     root -> root.join(Product_.inventories, JoinType.LEFT).get(Inventory_.id)));
@@ -112,6 +109,10 @@ public class ProductQueryService extends QueryService<Product> {
             if (criteria.getCategoryId() != null) {
                 specification = specification.and(buildSpecification(criteria.getCategoryId(),
                     root -> root.join(Product_.category, JoinType.LEFT).get(Category_.id)));
+            }
+            if (criteria.getDeviceOverviewStatsId() != null) {
+                specification = specification.and(buildSpecification(criteria.getDeviceOverviewStatsId(),
+                    root -> root.join(Product_.deviceOverviewStats, JoinType.LEFT).get(DeviceOverviewStats_.id)));
             }
         }
         return specification;

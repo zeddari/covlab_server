@@ -44,6 +44,12 @@
       "otherEntityName": "tickets",
       "otherEntityRelationshipName": "outlet",
       "relationshipName": "tickets"
+    },
+    {
+      "relationshipType": "one-to-many",
+      "otherEntityName": "deviceOverviewStats",
+      "otherEntityRelationshipName": "outlet",
+      "relationshipName": "deviceOverviewStats"
     }
   ],
   "changelogDate": "20201215204807",

@@ -36,6 +36,11 @@ import { RouterModule } from '@angular/router';
         path: 'po-status',
         loadChildren: () => import('./po-status/po-status.module').then(m => m.CovlabServerPoStatusModule),
       },
+      {
+        path: 'device-overview-stats',
+        loadChildren: () =>
+          import('./device-overview-stats/device-overview-stats.module').then(m => m.CovlabServerDeviceOverviewStatsModule),
+      },
       /* jhipster-needle-add-entity-route - JHipster will add entity modules routes here */
     ]),
   ],

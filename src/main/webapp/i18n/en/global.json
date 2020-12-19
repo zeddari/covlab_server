@@ -15,6 +15,7 @@
         "statusPo": "Status PO",
         "tickets": "Tickets",
         "poStatus": "Po Status",
+        "deviceOverviewStats": "Device Overview Stats",
         "jhipster-needle-menu-add-entry": "JHipster will add additional entities here (do not translate!)"
       },
       "account": {

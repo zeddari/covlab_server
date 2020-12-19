@@ -12,10 +12,6 @@
     {
       "fieldName": "productCode",
       "fieldType": "String"
-    },
-    {
-      "fieldName": "temperature",
-      "fieldType": "String"
     }
   ],
   "relationships": [
@@ -42,6 +38,13 @@
       "otherEntityName": "category",
       "otherEntityRelationshipName": "products",
       "relationshipName": "category",
+      "otherEntityField": "id"
+    },
+    {
+      "relationshipType": "many-to-one",
+      "otherEntityName": "deviceOverviewStats",
+      "otherEntityRelationshipName": "product",
+      "relationshipName": "deviceOverviewStats",
       "otherEntityField": "id"
     }
   ],

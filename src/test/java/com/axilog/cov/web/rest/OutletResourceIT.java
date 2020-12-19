@@ -5,6 +5,7 @@ import com.axilog.cov.domain.Outlet;
 import com.axilog.cov.domain.Inventory;
 import com.axilog.cov.domain.PurchaseOrder;
 import com.axilog.cov.domain.Tickets;
+import com.axilog.cov.domain.DeviceOverviewStats;
 import com.axilog.cov.repository.OutletRepository;
 import com.axilog.cov.service.OutletService;
 import com.axilog.cov.service.dto.OutletCriteria;
@@ -817,6 +818,26 @@ public class OutletResourceIT {
 
         // Get all the outletList where tickets equals to ticketsId + 1
         defaultOutletShouldNotBeFound("ticketsId.equals=" + (ticketsId + 1));
+    }
+
+
+    @Test
+    @Transactional
+    public void getAllOutletsByDeviceOverviewStatsIsEqualToSomething() throws Exception {
+        // Initialize the database
+        outletRepository.saveAndFlush(outlet);
+        DeviceOverviewStats deviceOverviewStats = DeviceOverviewStatsResourceIT.createEntity(em);
+        em.persist(deviceOverviewStats);
+        em.flush();
+        outlet.addDeviceOverviewStats(deviceOverviewStats);
+        outletRepository.saveAndFlush(outlet);
+        Long deviceOverviewStatsId = deviceOverviewStats.getId();
+
+        // Get all the outletList where deviceOverviewStats equals to deviceOverviewStatsId
+        defaultOutletShouldBeFound("deviceOverviewStatsId.equals=" + deviceOverviewStatsId);
+
+        // Get all the outletList where deviceOverviewStats equals to deviceOverviewStatsId + 1
+        defaultOutletShouldNotBeFound("deviceOverviewStatsId.equals=" + (deviceOverviewStatsId + 1));
     }
 
     /**

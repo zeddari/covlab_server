@@ -32,8 +32,6 @@ public class ProductCriteria implements Serializable, Criteria {
 
     private StringFilter productCode;
 
-    private StringFilter temperature;
-
     private LongFilter inventoriesId;
 
     private LongFilter purchaseOrdersId;
@@ -41,6 +39,8 @@ public class ProductCriteria implements Serializable, Criteria {
     private LongFilter ticketsId;
 
     private LongFilter categoryId;
+
+    private LongFilter deviceOverviewStatsId;
 
     public ProductCriteria() {
     }
@@ -50,11 +50,11 @@ public class ProductCriteria implements Serializable, Criteria {
         this.productId = other.productId == null ? null : other.productId.copy();
         this.description = other.description == null ? null : other.description.copy();
         this.productCode = other.productCode == null ? null : other.productCode.copy();
-        this.temperature = other.temperature == null ? null : other.temperature.copy();
         this.inventoriesId = other.inventoriesId == null ? null : other.inventoriesId.copy();
         this.purchaseOrdersId = other.purchaseOrdersId == null ? null : other.purchaseOrdersId.copy();
         this.ticketsId = other.ticketsId == null ? null : other.ticketsId.copy();
         this.categoryId = other.categoryId == null ? null : other.categoryId.copy();
+        this.deviceOverviewStatsId = other.deviceOverviewStatsId == null ? null : other.deviceOverviewStatsId.copy();
     }
 
     @Override
@@ -94,14 +94,6 @@ public class ProductCriteria implements Serializable, Criteria {
         this.productCode = productCode;
     }
 
-    public StringFilter getTemperature() {
-        return temperature;
-    }
-
-    public void setTemperature(StringFilter temperature) {
-        this.temperature = temperature;
-    }
-
     public LongFilter getInventoriesId() {
         return inventoriesId;
     }
@@ -134,6 +126,14 @@ public class ProductCriteria implements Serializable, Criteria {
         this.categoryId = categoryId;
     }
 
+    public LongFilter getDeviceOverviewStatsId() {
+        return deviceOverviewStatsId;
+    }
+
+    public void setDeviceOverviewStatsId(LongFilter deviceOverviewStatsId) {
+        this.deviceOverviewStatsId = deviceOverviewStatsId;
+    }
+
 
     @Override
     public boolean equals(Object o) {
@@ -149,11 +149,11 @@ public class ProductCriteria implements Serializable, Criteria {
             Objects.equals(productId, that.productId) &&
             Objects.equals(description, that.description) &&
             Objects.equals(productCode, that.productCode) &&
-            Objects.equals(temperature, that.temperature) &&
             Objects.equals(inventoriesId, that.inventoriesId) &&
             Objects.equals(purchaseOrdersId, that.purchaseOrdersId) &&
             Objects.equals(ticketsId, that.ticketsId) &&
-            Objects.equals(categoryId, that.categoryId);
+            Objects.equals(categoryId, that.categoryId) &&
+            Objects.equals(deviceOverviewStatsId, that.deviceOverviewStatsId);
     }
 
     @Override
@@ -163,11 +163,11 @@ public class ProductCriteria implements Serializable, Criteria {
         productId,
         description,
         productCode,
-        temperature,
         inventoriesId,
         purchaseOrdersId,
         ticketsId,
-        categoryId
+        categoryId,
+        deviceOverviewStatsId
         );
     }
 
@@ -179,11 +179,11 @@ public class ProductCriteria implements Serializable, Criteria {
                 (productId != null ? "productId=" + productId + ", " : "") +
                 (description != null ? "description=" + description + ", " : "") +
                 (productCode != null ? "productCode=" + productCode + ", " : "") +
-                (temperature != null ? "temperature=" + temperature + ", " : "") +
                 (inventoriesId != null ? "inventoriesId=" + inventoriesId + ", " : "") +
                 (purchaseOrdersId != null ? "purchaseOrdersId=" + purchaseOrdersId + ", " : "") +
                 (ticketsId != null ? "ticketsId=" + ticketsId + ", " : "") +
                 (categoryId != null ? "categoryId=" + categoryId + ", " : "") +
+                (deviceOverviewStatsId != null ? "deviceOverviewStatsId=" + deviceOverviewStatsId + ", " : "") +
             "}";
     }
 

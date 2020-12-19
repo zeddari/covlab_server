@@ -24,7 +24,8 @@
       "outletLng": "Outlet Lng",
       "inventories": "Inventories",
       "purchaseOrders": "Purchase Orders",
-      "tickets": "Tickets"
+      "tickets": "Tickets",
+      "deviceOverviewStats": "Device Overview Stats"
     }
   }
 }

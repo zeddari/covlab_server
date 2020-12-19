@@ -20,14 +20,16 @@
                 <dd>
                     <span>{{ product.productCode }}</span>
                 </dd>
-                <dt><span jhiTranslate="covlabServerApp.product.temperature">Temperature</span></dt>
-                <dd>
-                    <span>{{ product.temperature }}</span>
-                </dd>
                 <dt><span jhiTranslate="covlabServerApp.product.category">Category</span></dt>
                 <dd>
                     <div *ngIf="product.category">
                         <a [routerLink]="['/category', product.category?.id, 'view']">{{ product.category?.id }}</a>
+                    </div>
+                </dd>
+                <dt><span jhiTranslate="covlabServerApp.product.deviceOverviewStats">Device Overview Stats</span></dt>
+                <dd>
+                    <div *ngIf="product.deviceOverviewStats">
+                        <a [routerLink]="['/device-overview-stats', product.deviceOverviewStats?.id, 'view']">{{ product.deviceOverviewStats?.id }}</a>
                     </div>
                 </dd>
             </dl>

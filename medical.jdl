@@ -11,7 +11,6 @@ entity Inventory {
     expectedCoveringDay     Double
     lastUpdatedAt			LocalDate
     status					String
-    
 }
 
 entity Outlet {
@@ -23,14 +22,14 @@ entity Outlet {
     outletLng 			Double
 }
 entity Product {
-      productId 			Long
+      productId 		Long
       description 		String
-      productCode	 		String
-      temperature             String
+      productCode	 	String
+      
 }
 entity Category {
     categoryId 			Long
-    categoryCode String
+    categoryCode 		String
     categoryDescription String
 }
 entity PurchaseOrder{
@@ -55,6 +54,16 @@ entity Tickets {
       ticketCreatedOn		LocalDate
       ticketUpdateAt		LocalDate
 }
+entity  DeviceOverviewStats {
+      deviceId 					Long
+      timestamp 				LocalDate
+      serialNumber 				String
+      humidity 					Double
+      temperature 				Double
+      co2 						Double
+      pressure 					Double
+      differentialPressure	 	Double
+}
    
 //relationship
 relationship OneToMany {
@@ -66,6 +75,8 @@ relationship OneToMany {
     Product{purchaseOrders} to PurchaseOrder{product}
     Outlet{tickets} to Tickets{outlet}
     Product{tickets} to Tickets{product}
+    Outlet{deviceOverviewStats} to DeviceOverviewStats{outlet}
+    DeviceOverviewStats{product} to Product{deviceOverviewStats}
 }
 
 

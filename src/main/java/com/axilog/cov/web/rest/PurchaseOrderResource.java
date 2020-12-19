@@ -28,6 +28,7 @@ import java.util.Optional;
 /**
  * REST controller for managing {@link com.axilog.cov.domain.PurchaseOrder}.
  */
+@SuppressWarnings("unused")
 @RestController
 @RequestMapping("/api")
 public class PurchaseOrderResource {

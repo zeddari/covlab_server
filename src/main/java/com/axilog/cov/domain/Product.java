@@ -30,9 +30,6 @@ public class Product implements Serializable {
     @Column(name = "product_code")
     private String productCode;
 
-    @Column(name = "temperature")
-    private String temperature;
-
     @OneToMany(mappedBy = "product")
     private Set<Inventory> inventories = new HashSet<>();
 
@@ -45,6 +42,10 @@ public class Product implements Serializable {
     @ManyToOne
     @JsonIgnoreProperties(value = "products", allowSetters = true)
     private Category category;
+
+    @ManyToOne
+    @JsonIgnoreProperties(value = "products", allowSetters = true)
+    private DeviceOverviewStats deviceOverviewStats;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
     public Long getId() {
@@ -92,19 +93,6 @@ public class Product implements Serializable {
 
     public void setProductCode(String productCode) {
         this.productCode = productCode;
-    }
-
-    public String getTemperature() {
-        return temperature;
-    }
-
-    public Product temperature(String temperature) {
-        this.temperature = temperature;
-        return this;
-    }
-
-    public void setTemperature(String temperature) {
-        this.temperature = temperature;
     }
 
     public Set<Inventory> getInventories() {
@@ -194,6 +182,19 @@ public class Product implements Serializable {
     public void setCategory(Category category) {
         this.category = category;
     }
+
+    public DeviceOverviewStats getDeviceOverviewStats() {
+        return deviceOverviewStats;
+    }
+
+    public Product deviceOverviewStats(DeviceOverviewStats deviceOverviewStats) {
+        this.deviceOverviewStats = deviceOverviewStats;
+        return this;
+    }
+
+    public void setDeviceOverviewStats(DeviceOverviewStats deviceOverviewStats) {
+        this.deviceOverviewStats = deviceOverviewStats;
+    }
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -220,7 +221,6 @@ public class Product implements Serializable {
             ", productId=" + getProductId() +
             ", description='" + getDescription() + "'" +
             ", productCode='" + getProductCode() + "'" +
-            ", temperature='" + getTemperature() + "'" +
             "}";
     }
 }
