@@ -29,7 +29,7 @@ public class InventoryMapper {
 				.reorderLevel(inventory.getReOrderLevel())
 				.suggestedQuantity(inventory.getSuggestedQuantity())
 				.expectedCoveringDay(inventory.getExpectedCoveringDay())
-				.lasterUpdated(inventory.getLastUpdatedAt())
+				.lastUpdatedAt(inventory.getLastUpdatedAt())
 				.status(inventory.getStatus())
 				.region(inventory.getOutlet().getOutletRegion())
 				.outletName(inventory.getOutlet().getOutletName())

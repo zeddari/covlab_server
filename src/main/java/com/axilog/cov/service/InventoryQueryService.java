@@ -112,9 +112,9 @@ public class InventoryQueryService extends QueryService<Inventory> {
             if (criteria.getExpectedCoveringDay() != null) {
                 specification = specification.and(buildRangeSpecification(criteria.getExpectedCoveringDay(), Inventory_.expectedCoveringDay));
             }
-            if (criteria.getLastUpdatedAt() != null) {
-                specification = specification.and(buildRangeSpecification(criteria.getLastUpdatedAt(), Inventory_.lastUpdatedAt));
-            }
+//            if (criteria.getLastUpdatedAt() != null) {
+//                specification = specification.and(buildRangeSpecification(criteria.getLastUpdatedAt(), Inventory_.lastUpdatedAt));
+//            }
             if (criteria.getStatus() != null) {
                 specification = specification.and(buildStringSpecification(criteria.getStatus(), Inventory_.status));
             }

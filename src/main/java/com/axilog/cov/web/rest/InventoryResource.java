@@ -121,7 +121,7 @@ public class InventoryResource {
         Inventory result = inventoryOptional.get();
         result.setQuantitiesInHand(inventoryCommand.getQuantitiesInHand());
         result.setQuantitiesInTransit(inventoryCommand.getQuantitiesInTransit());
-        result.setLastUpdatedAt(DateUtil.convertToLocalDateViaInstant(new Date()));
+        result.setLastUpdatedAt(DateUtil.now());
         result = inventoryService.save(result);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))

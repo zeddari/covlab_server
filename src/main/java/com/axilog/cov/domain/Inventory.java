@@ -1,11 +1,18 @@
 package com.axilog.cov.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-import javax.persistence.*;
-
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * A Inventory.
@@ -48,7 +55,7 @@ public class Inventory implements Serializable {
     private Double expectedCoveringDay;
 
     @Column(name = "last_updated_at")
-    private LocalDate lastUpdatedAt;
+    private Date lastUpdatedAt;
 
     @Column(name = "status")
     private String status;
@@ -187,16 +194,16 @@ public class Inventory implements Serializable {
         this.expectedCoveringDay = expectedCoveringDay;
     }
 
-    public LocalDate getLastUpdatedAt() {
+    public Date getLastUpdatedAt() {
         return lastUpdatedAt;
     }
 
-    public Inventory lastUpdatedAt(LocalDate lastUpdatedAt) {
+    public Inventory lastUpdatedAt(Date lastUpdatedAt) {
         this.lastUpdatedAt = lastUpdatedAt;
         return this;
     }
 
-    public void setLastUpdatedAt(LocalDate lastUpdatedAt) {
+    public void setLastUpdatedAt(Date lastUpdatedAt) {
         this.lastUpdatedAt = lastUpdatedAt;
     }
 
