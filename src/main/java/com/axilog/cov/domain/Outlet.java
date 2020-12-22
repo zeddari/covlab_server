@@ -3,6 +3,8 @@ package com.axilog.cov.domain;
 
 import javax.persistence.*;
 
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -12,6 +14,7 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "outlet")
+@Data
 public class Outlet implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -37,6 +40,9 @@ public class Outlet implements Serializable {
 
     @Column(name = "outlet_lng")
     private Double outletLng;
+    
+    @Column(name = "outlet_type")
+    private String outletType;
 
     @OneToMany(mappedBy = "outlet")
     private Set<Inventory> inventories = new HashSet<>();

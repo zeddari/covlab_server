@@ -2,9 +2,10 @@ package com.axilog.cov.web.rest;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Date;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -128,6 +129,32 @@ public class InventoryResource {
             .body(result);
     }
     
+    
+    @PutMapping("/inventory/update/new")
+    public ResponseEntity<Inventory> updateNewInventoryByCriteria(@RequestBody InventoryCommand inventoryCommand) throws URISyntaxException {
+        log.debug("REST request to update Inventory : {}", inventoryCommand);
+        if (inventoryCommand.getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        Optional<Inventory> inventoryOptional = inventoryService.findOne(inventoryCommand.getId());
+        if (!inventoryOptional.isPresent()) {
+        	throw new BadRequestAlertException("Id Does not Exist", ENTITY_NAME, "idnull");
+        }
+        Inventory result = inventoryOptional.get();
+        result.setIsLastInstance(Boolean.FALSE);
+        result = inventoryService.save(result);
+        
+        //create new entry with new date
+        result.setQuantitiesInHand(inventoryCommand.getQuantitiesInHand());
+        result.setActualDailyConsumption(inventoryCommand.getActualDailyConsumption());
+        result.setLastUpdatedAt(DateUtil.now());
+        result.setId(null);
+        result.setIsLastInstance(Boolean.TRUE);
+        result = inventoryService.save(result);
+        return ResponseEntity.ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
+            .body(result);
+    }
     /**
      * {@code GET  /inventories} : get all the inventories.
      *
@@ -147,6 +174,12 @@ public class InventoryResource {
     public ResponseEntity<InventoryRepresentation> getAllRepresentationInventories(InventoryCriteria criteria, Pageable pageable) {
         log.debug("REST request to get Inventories by criteria: {}", criteria);
         List<Inventory> inventories = inventoryQueryService.findByCriteria(criteria);
+        inventories = inventories.stream()
+                	.filter(inventory -> inventory.getIsLastInstance().equals(Boolean.TRUE)) // 
+                	.collect(Collectors.toList());
+        
+        //sort descending by lastUpdated
+        inventories = inventories.stream().sorted(Comparator.comparing(Inventory::getLastUpdatedAt, Comparator.nullsLast(Comparator.reverseOrder()))).collect(Collectors.toList());
         InventoryRepresentation inventoryRepresentation = inventoryMapper.toInventoryRepresentation(inventories);
         return ResponseEntity.ok().body(inventoryRepresentation);
     }

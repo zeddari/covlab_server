@@ -1,7 +1,6 @@
 package com.axilog.cov.domain;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -14,12 +13,15 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import lombok.Data;
+
 /**
  * A Inventory.
  */
 @Entity
 @Table(name = "inventory")
-public class Inventory implements Serializable {
+@Data
+public class Inventory implements Serializable, Cloneable {
 
     private static final long serialVersionUID = 1L;
 
@@ -60,6 +62,9 @@ public class Inventory implements Serializable {
     @Column(name = "status")
     private String status;
 
+    @Column(name = "is_last_instance")
+    private Boolean isLastInstance;
+    
     @ManyToOne
     @JsonIgnoreProperties(value = "inventories", allowSetters = true)
     private Outlet outlet;

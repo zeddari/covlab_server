@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -54,4 +55,9 @@ public class InventoryServiceImpl implements InventoryService {
         log.debug("Request to delete Inventory : {}", id);
         inventoryRepository.deleteById(id);
     }
+
+	@Override
+	public List<Inventory> findAll() {
+		return inventoryRepository.findAll();
+	}
 }

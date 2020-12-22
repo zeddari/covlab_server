@@ -11,4 +11,5 @@ public class InventoryCommand {
 	private Long id;
 	private Double quantitiesInHand;
 	private Double quantitiesInTransit;
+	private Double actualDailyConsumption;
 }

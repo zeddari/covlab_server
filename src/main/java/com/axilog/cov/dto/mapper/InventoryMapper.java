@@ -18,7 +18,7 @@ public class InventoryMapper {
 	 */
 	public InventoryDetail toInventoryDetail(Inventory inventory) {
 		return InventoryDetail.builder()
-				.inventoryId(inventory.getInventoryId())
+				.inventoryId(inventory.getId())
 				.itemCode(inventory.getProduct().getProductCode())
 				.description(inventory.getProduct().getDescription())
 				.quantitiesInHand(inventory.getQuantitiesInHand())
