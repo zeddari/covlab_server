@@ -45,5 +45,15 @@ public interface OutletService {
      */
     void delete(Long id);
     
+    /**
+     * @param outletRegion
+     * @return
+     */
     List<Outlet> findByOutletRegion(String outletRegion);
+    
+    /**
+     * @param outletRegion
+     * @return
+     */
+    List<Outlet> findAll();
 }

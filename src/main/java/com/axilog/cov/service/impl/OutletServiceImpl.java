@@ -60,4 +60,9 @@ public class OutletServiceImpl implements OutletService {
 	public List<Outlet> findByOutletRegion(String outletRegion) {
 		return outletRepository.findByOutletRegion(outletRegion);
 	}
+
+	@Override
+	public List<Outlet> findAll() {
+		return outletRepository.findAll();
+	}
 }

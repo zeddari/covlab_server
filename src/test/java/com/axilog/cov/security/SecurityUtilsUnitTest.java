@@ -2,10 +2,12 @@ package com.axilog.cov.security;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -17,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
  */
 public class SecurityUtilsUnitTest {
 
+	
     @Test
     public void testGetCurrentUserLogin() {
         SecurityContext securityContext = SecurityContextHolder.createEmptyContext();

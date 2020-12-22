@@ -1,7 +1,9 @@
 package com.axilog.cov.security;
 
+import java.security.Principal;
 import java.util.Optional;
 import java.util.stream.Stream;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
@@ -25,6 +27,17 @@ public final class SecurityUtils {
         return Optional.ofNullable(extractPrincipal(securityContext.getAuthentication()));
     }
 
+    public static Optional<String> getCurrentUserLoginFromAuth(Authentication authentication) {
+        return Optional.ofNullable(extractPrincipal(authentication));
+    }
+    private static String extractFromPrincipal(Principal principal) {
+       if (principal instanceof UserDetails) {
+            UserDetails springSecurityUser = (UserDetails) principal;
+            return springSecurityUser.getUsername();
+        }
+        return null;
+    }
+    
     private static String extractPrincipal(Authentication authentication) {
         if (authentication == null) {
             return null;

@@ -24,6 +24,7 @@ import org.springframework.util.StringUtils;
 
 import com.axilog.cov.domain.Outlet;
 import com.axilog.cov.service.OutletService;
+import com.axilog.cov.util.UserUtil;
 
 import io.github.jhipster.config.JHipsterProperties;
 import io.jsonwebtoken.Claims;
@@ -39,7 +40,7 @@ public class TokenProvider {
 
     private static final String AUTHORITIES_KEY = "auth";
     private static final String OUTLET_KEY = "outlet";
-    private static final String AUTHORITY_PREFIX = "ROLE_";
+    private static final String ADMIN = "ROLE_ADMIN";
 
     private Key key;
 
@@ -80,7 +81,13 @@ public class TokenProvider {
         String authorities = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(","));
         List<Outlet> outlets = new ArrayList<Outlet>();
         authentication.getAuthorities().forEach(auth -> {
-        	outlets.addAll(outletService.findByOutletRegion(auth.getAuthority().replace(AUTHORITY_PREFIX, "")));
+        	if (auth.getAuthority().equals(ADMIN)) {
+        		outlets.addAll(outletService.findAll());
+        	}
+        	else {
+        		outlets.addAll(outletService.findByOutletRegion(UserUtil.getRegionFromAuth(auth.getAuthority())));
+        	}
+        	
         });
         String allOutlet = outlets.stream().map(Outlet::getOutletName).collect(Collectors.joining(","));
         long now = (new Date()).getTime();

@@ -1,7 +1,11 @@
 package com.axilog.cov.security;
 
-import com.axilog.cov.config.Constants;
+import java.security.Principal;
 import java.util.Optional;
+
+import javax.servlet.http.HttpServletRequest;
+
+
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.stereotype.Component;
 
@@ -11,8 +15,20 @@ import org.springframework.stereotype.Component;
 @Component
 public class SpringSecurityAuditorAware implements AuditorAware<String> {
 
-    @Override
-    public Optional<String> getCurrentAuditor() {
-        return Optional.of(SecurityUtils.getCurrentUserLogin().orElse(Constants.SYSTEM_ACCOUNT));
-    }
+//    @Override
+//    public Optional<String> getCurrentAuditor() {
+//        return Optional.of(SecurityUtils.getCurrentUserLogin().orElse(Constants.SYSTEM_ACCOUNT));
+//    }
+	
+	private final HttpServletRequest httpServletRequest;
+
+	public SpringSecurityAuditorAware(HttpServletRequest httpServletRequest) {
+	    this.httpServletRequest = httpServletRequest;
+	}
+
+	@Override
+	public Optional<String> getCurrentAuditor() {
+	    return Optional.ofNullable(httpServletRequest.getUserPrincipal())
+	            .map(Principal::getName);
+	}
 }

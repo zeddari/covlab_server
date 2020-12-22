@@ -1,6 +1,10 @@
 package com.axilog.cov.web.rest;
 
+import java.security.Principal;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -8,7 +12,9 @@ import javax.validation.Valid;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,13 +23,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.axilog.cov.domain.Outlet;
 import com.axilog.cov.domain.User;
 import com.axilog.cov.repository.UserRepository;
 import com.axilog.cov.security.SecurityUtils;
 import com.axilog.cov.service.MailService;
+import com.axilog.cov.service.OutletService;
 import com.axilog.cov.service.UserService;
 import com.axilog.cov.service.dto.PasswordChangeDTO;
 import com.axilog.cov.service.dto.UserDTO;
+import com.axilog.cov.util.UserUtil;
 import com.axilog.cov.web.rest.errors.EmailAlreadyUsedException;
 import com.axilog.cov.web.rest.errors.InvalidPasswordException;
 import com.axilog.cov.web.rest.errors.LoginAlreadyUsedException;
@@ -55,6 +64,11 @@ public class AccountResource {
 
     private final MailService mailService;
 
+    @Autowired
+    private OutletService outletService; 
+    
+    private static final String ADMIN = "ROLE_ADMIN";
+    
     public AccountResource(UserRepository userRepository, UserService userService, MailService mailService) {
         this.userRepository = userRepository;
         this.userService = userService;
@@ -116,6 +130,7 @@ public class AccountResource {
         return userService
             .getUserWithAuthorities()
             .map(UserDTO::new)
+            .map(userDto -> addOutletToUser(getOutlets(userDto.getAuthorities()), userDto))
             .orElseThrow(() -> new AccountResourceException("User could not be found"));
     }
 
@@ -204,5 +219,23 @@ public class AccountResource {
             password.length() >= ManagedUserVM.PASSWORD_MIN_LENGTH &&
             password.length() <= ManagedUserVM.PASSWORD_MAX_LENGTH
         );
+    }
+    
+    private Set<String> getOutlets(Set<String> authorities) {
+    	Set<String> allOutlets = new HashSet<>();
+    	authorities.forEach(auth -> {
+    		if (auth.equals(ADMIN)) {
+    			allOutlets.addAll(outletService.findAll().stream().map(Outlet::getOutletName).collect(Collectors.toSet()));
+        	}
+        	else {
+        		allOutlets.addAll(outletService.findByOutletRegion(UserUtil.getRegionFromAuth(auth)).stream().map(Outlet::getOutletName).collect(Collectors.toSet()));
+        	}
+    	});
+    	return allOutlets;
+    }
+    
+    private UserDTO addOutletToUser(Set<String> outlets, UserDTO userDTO) {
+    	userDTO.setOutlets(outlets);
+    	return userDTO;
     }
 }
