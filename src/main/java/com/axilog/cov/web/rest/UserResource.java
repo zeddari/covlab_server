@@ -13,6 +13,8 @@ import com.axilog.cov.web.rest.errors.LoginAlreadyUsedException;
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
+import io.swagger.annotations.Api;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
@@ -57,6 +59,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
  */
 @RestController
 @RequestMapping("/api")
+@Api(tags = "Profile Management", value = "ProfileManagement", description = "Controller for Profile Management")
 public class UserResource {
     private static final List<String> ALLOWED_ORDERED_PROPERTIES = Collections.unmodifiableList(
         Arrays.asList("id", "login", "firstName", "lastName", "email", "activated", "langKey")

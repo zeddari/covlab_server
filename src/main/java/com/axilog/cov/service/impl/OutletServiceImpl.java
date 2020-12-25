@@ -1,17 +1,18 @@
 package com.axilog.cov.service.impl;
 
-import com.axilog.cov.service.OutletService;
-import com.axilog.cov.domain.Outlet;
-import com.axilog.cov.repository.OutletRepository;
+import java.util.List;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import com.axilog.cov.domain.Outlet;
+import com.axilog.cov.repository.OutletRepository;
+import com.axilog.cov.service.OutletService;
 
 /**
  * Service Implementation for managing {@link Outlet}.
@@ -54,4 +55,14 @@ public class OutletServiceImpl implements OutletService {
         log.debug("Request to delete Outlet : {}", id);
         outletRepository.deleteById(id);
     }
+
+	@Override
+	public List<Outlet> findByOutletRegion(String outletRegion) {
+		return outletRepository.findByOutletRegion(outletRegion);
+	}
+
+	@Override
+	public List<Outlet> findAll() {
+		return outletRepository.findAll();
+	}
 }

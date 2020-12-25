@@ -1,11 +1,12 @@
 package com.axilog.cov.service;
 
-import com.axilog.cov.domain.Inventory;
+import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.Optional;
+import com.axilog.cov.domain.Inventory;
 
 /**
  * Service Interface for managing {@link Inventory}.
@@ -28,6 +29,10 @@ public interface InventoryService {
      */
     Page<Inventory> findAll(Pageable pageable);
 
+    /**
+     * @return
+     */
+    List<Inventory> findAll();
 
     /**
      * Get the "id" inventory.

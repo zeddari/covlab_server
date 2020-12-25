@@ -36,9 +36,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WithMockUser
 public class DeviceOverviewStatsResourceIT {
 
-    private static final Long DEFAULT_DEVICE_ID = 1L;
-    private static final Long UPDATED_DEVICE_ID = 2L;
-    private static final Long SMALLER_DEVICE_ID = 1L - 1L;
+    private static final String DEFAULT_DEVICE_ID = "AAAAAAAAAA";
+    private static final String UPDATED_DEVICE_ID = "BBBBBBBBBB";
 
     private static final LocalDate DEFAULT_TIMESTAMP = LocalDate.ofEpochDay(0L);
     private static final LocalDate UPDATED_TIMESTAMP = LocalDate.now(ZoneId.systemDefault());
@@ -181,7 +180,7 @@ public class DeviceOverviewStatsResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(deviceOverviewStats.getId().intValue())))
-            .andExpect(jsonPath("$.[*].deviceId").value(hasItem(DEFAULT_DEVICE_ID.intValue())))
+            .andExpect(jsonPath("$.[*].deviceId").value(hasItem(DEFAULT_DEVICE_ID)))
             .andExpect(jsonPath("$.[*].timestamp").value(hasItem(DEFAULT_TIMESTAMP.toString())))
             .andExpect(jsonPath("$.[*].serialNumber").value(hasItem(DEFAULT_SERIAL_NUMBER)))
             .andExpect(jsonPath("$.[*].humidity").value(hasItem(DEFAULT_HUMIDITY.doubleValue())))
@@ -202,7 +201,7 @@ public class DeviceOverviewStatsResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(deviceOverviewStats.getId().intValue()))
-            .andExpect(jsonPath("$.deviceId").value(DEFAULT_DEVICE_ID.intValue()))
+            .andExpect(jsonPath("$.deviceId").value(DEFAULT_DEVICE_ID))
             .andExpect(jsonPath("$.timestamp").value(DEFAULT_TIMESTAMP.toString()))
             .andExpect(jsonPath("$.serialNumber").value(DEFAULT_SERIAL_NUMBER))
             .andExpect(jsonPath("$.humidity").value(DEFAULT_HUMIDITY.doubleValue()))
@@ -283,57 +282,30 @@ public class DeviceOverviewStatsResourceIT {
         // Get all the deviceOverviewStatsList where deviceId is null
         defaultDeviceOverviewStatsShouldNotBeFound("deviceId.specified=false");
     }
-
-    @Test
+                @Test
     @Transactional
-    public void getAllDeviceOverviewStatsByDeviceIdIsGreaterThanOrEqualToSomething() throws Exception {
+    public void getAllDeviceOverviewStatsByDeviceIdContainsSomething() throws Exception {
         // Initialize the database
         deviceOverviewStatsRepository.saveAndFlush(deviceOverviewStats);
 
-        // Get all the deviceOverviewStatsList where deviceId is greater than or equal to DEFAULT_DEVICE_ID
-        defaultDeviceOverviewStatsShouldBeFound("deviceId.greaterThanOrEqual=" + DEFAULT_DEVICE_ID);
+        // Get all the deviceOverviewStatsList where deviceId contains DEFAULT_DEVICE_ID
+        defaultDeviceOverviewStatsShouldBeFound("deviceId.contains=" + DEFAULT_DEVICE_ID);
 
-        // Get all the deviceOverviewStatsList where deviceId is greater than or equal to UPDATED_DEVICE_ID
-        defaultDeviceOverviewStatsShouldNotBeFound("deviceId.greaterThanOrEqual=" + UPDATED_DEVICE_ID);
+        // Get all the deviceOverviewStatsList where deviceId contains UPDATED_DEVICE_ID
+        defaultDeviceOverviewStatsShouldNotBeFound("deviceId.contains=" + UPDATED_DEVICE_ID);
     }
 
     @Test
     @Transactional
-    public void getAllDeviceOverviewStatsByDeviceIdIsLessThanOrEqualToSomething() throws Exception {
+    public void getAllDeviceOverviewStatsByDeviceIdNotContainsSomething() throws Exception {
         // Initialize the database
         deviceOverviewStatsRepository.saveAndFlush(deviceOverviewStats);
 
-        // Get all the deviceOverviewStatsList where deviceId is less than or equal to DEFAULT_DEVICE_ID
-        defaultDeviceOverviewStatsShouldBeFound("deviceId.lessThanOrEqual=" + DEFAULT_DEVICE_ID);
+        // Get all the deviceOverviewStatsList where deviceId does not contain DEFAULT_DEVICE_ID
+        defaultDeviceOverviewStatsShouldNotBeFound("deviceId.doesNotContain=" + DEFAULT_DEVICE_ID);
 
-        // Get all the deviceOverviewStatsList where deviceId is less than or equal to SMALLER_DEVICE_ID
-        defaultDeviceOverviewStatsShouldNotBeFound("deviceId.lessThanOrEqual=" + SMALLER_DEVICE_ID);
-    }
-
-    @Test
-    @Transactional
-    public void getAllDeviceOverviewStatsByDeviceIdIsLessThanSomething() throws Exception {
-        // Initialize the database
-        deviceOverviewStatsRepository.saveAndFlush(deviceOverviewStats);
-
-        // Get all the deviceOverviewStatsList where deviceId is less than DEFAULT_DEVICE_ID
-        defaultDeviceOverviewStatsShouldNotBeFound("deviceId.lessThan=" + DEFAULT_DEVICE_ID);
-
-        // Get all the deviceOverviewStatsList where deviceId is less than UPDATED_DEVICE_ID
-        defaultDeviceOverviewStatsShouldBeFound("deviceId.lessThan=" + UPDATED_DEVICE_ID);
-    }
-
-    @Test
-    @Transactional
-    public void getAllDeviceOverviewStatsByDeviceIdIsGreaterThanSomething() throws Exception {
-        // Initialize the database
-        deviceOverviewStatsRepository.saveAndFlush(deviceOverviewStats);
-
-        // Get all the deviceOverviewStatsList where deviceId is greater than DEFAULT_DEVICE_ID
-        defaultDeviceOverviewStatsShouldNotBeFound("deviceId.greaterThan=" + DEFAULT_DEVICE_ID);
-
-        // Get all the deviceOverviewStatsList where deviceId is greater than SMALLER_DEVICE_ID
-        defaultDeviceOverviewStatsShouldBeFound("deviceId.greaterThan=" + SMALLER_DEVICE_ID);
+        // Get all the deviceOverviewStatsList where deviceId does not contain UPDATED_DEVICE_ID
+        defaultDeviceOverviewStatsShouldBeFound("deviceId.doesNotContain=" + UPDATED_DEVICE_ID);
     }
 
 
@@ -1092,7 +1064,7 @@ public class DeviceOverviewStatsResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(deviceOverviewStats.getId().intValue())))
-            .andExpect(jsonPath("$.[*].deviceId").value(hasItem(DEFAULT_DEVICE_ID.intValue())))
+            .andExpect(jsonPath("$.[*].deviceId").value(hasItem(DEFAULT_DEVICE_ID)))
             .andExpect(jsonPath("$.[*].timestamp").value(hasItem(DEFAULT_TIMESTAMP.toString())))
             .andExpect(jsonPath("$.[*].serialNumber").value(hasItem(DEFAULT_SERIAL_NUMBER)))
             .andExpect(jsonPath("$.[*].humidity").value(hasItem(DEFAULT_HUMIDITY.doubleValue())))

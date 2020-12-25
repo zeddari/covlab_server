@@ -86,7 +86,7 @@ public class DeviceOverviewStatsQueryService extends QueryService<DeviceOverview
                 specification = specification.and(buildRangeSpecification(criteria.getId(), DeviceOverviewStats_.id));
             }
             if (criteria.getDeviceId() != null) {
-                specification = specification.and(buildRangeSpecification(criteria.getDeviceId(), DeviceOverviewStats_.deviceId));
+                specification = specification.and(buildStringSpecification(criteria.getDeviceId(), DeviceOverviewStats_.deviceId));
             }
             if (criteria.getTimestamp() != null) {
                 specification = specification.and(buildRangeSpecification(criteria.getTimestamp(), DeviceOverviewStats_.timestamp));

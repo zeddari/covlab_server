@@ -9,6 +9,8 @@ import com.axilog.cov.service.PurchaseOrderQueryService;
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
+import io.swagger.annotations.Api;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,6 +33,7 @@ import java.util.Optional;
 @SuppressWarnings("unused")
 @RestController
 @RequestMapping("/api")
+@Api(tags = "Purchase Management", value = "PurchaseManagement", description = "Controller for Purchase Management")
 public class PurchaseOrderResource {
 
     private final Logger log = LoggerFactory.getLogger(PurchaseOrderResource.class);

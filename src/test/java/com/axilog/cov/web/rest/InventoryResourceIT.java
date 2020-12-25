@@ -7,6 +7,7 @@ import com.axilog.cov.domain.Product;
 import com.axilog.cov.repository.InventoryRepository;
 import com.axilog.cov.service.InventoryService;
 import com.axilog.cov.service.dto.InventoryCriteria;
+import com.axilog.cov.util.DateUtil;
 import com.axilog.cov.service.InventoryQueryService;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -111,7 +112,7 @@ public class InventoryResourceIT {
             .reOrderLevel(DEFAULT_RE_ORDER_LEVEL)
             .suggestedQuantity(DEFAULT_SUGGESTED_QUANTITY)
             .expectedCoveringDay(DEFAULT_EXPECTED_COVERING_DAY)
-            .lastUpdatedAt(DEFAULT_LAST_UPDATED_AT)
+            .lastUpdatedAt(DateUtil.convertToDateViaInstant(DEFAULT_LAST_UPDATED_AT))
             .status(DEFAULT_STATUS);
         return inventory;
     }
@@ -132,7 +133,7 @@ public class InventoryResourceIT {
             .reOrderLevel(UPDATED_RE_ORDER_LEVEL)
             .suggestedQuantity(UPDATED_SUGGESTED_QUANTITY)
             .expectedCoveringDay(UPDATED_EXPECTED_COVERING_DAY)
-            .lastUpdatedAt(UPDATED_LAST_UPDATED_AT)
+            .lastUpdatedAt(DateUtil.convertToDateViaInstant(UPDATED_LAST_UPDATED_AT))
             .status(UPDATED_STATUS);
         return inventory;
     }
@@ -1444,7 +1445,7 @@ public class InventoryResourceIT {
             .reOrderLevel(UPDATED_RE_ORDER_LEVEL)
             .suggestedQuantity(UPDATED_SUGGESTED_QUANTITY)
             .expectedCoveringDay(UPDATED_EXPECTED_COVERING_DAY)
-            .lastUpdatedAt(UPDATED_LAST_UPDATED_AT)
+            .lastUpdatedAt(DateUtil.convertToDateViaInstant(UPDATED_LAST_UPDATED_AT))
             .status(UPDATED_STATUS);
 
         restInventoryMockMvc.perform(put("/api/inventories")

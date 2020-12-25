@@ -1,7 +1,8 @@
 package com.axilog.cov.dto.representation;
 
-import java.time.LocalDate;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.Builder;
 import lombok.Data;
@@ -20,7 +21,10 @@ public class InventoryDetail {
 	 private String reorderLevel;
 	 private Double suggestedQuantity;
 	 private Double expectedCoveringDay;
-	 private LocalDate lasterUpdated;
+	 
+	 @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+	 private Date lastUpdatedAt;
+	 
 	 private String status;
 	 private String region;
 	 private String outletName;

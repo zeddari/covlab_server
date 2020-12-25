@@ -9,6 +9,8 @@ import com.axilog.cov.service.TicketsQueryService;
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
+import io.swagger.annotations.Api;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,6 +32,7 @@ import java.util.Optional;
  */
 @RestController
 @RequestMapping("/api")
+@Api(tags = "Ticket Management", value = "TicketManagement", description = "Controller for Ticket Management")
 public class TicketsResource {
 
     private final Logger log = LoggerFactory.getLogger(TicketsResource.class);

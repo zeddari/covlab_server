@@ -3,6 +3,9 @@ package com.axilog.cov.service.dto;
 import com.axilog.cov.config.Constants;
 import com.axilog.cov.domain.Authority;
 import com.axilog.cov.domain.User;
+
+import lombok.Data;
+
 import java.time.Instant;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -11,6 +14,7 @@ import javax.validation.constraints.*;
 /**
  * A DTO representing a user, with his authorities.
  */
+@Data
 public class UserDTO {
     private Long id;
 
@@ -46,6 +50,8 @@ public class UserDTO {
     private Instant lastModifiedDate;
 
     private Set<String> authorities;
+    
+    private Set<String> outlets;
 
     public UserDTO() {
         // Empty constructor needed for Jackson.

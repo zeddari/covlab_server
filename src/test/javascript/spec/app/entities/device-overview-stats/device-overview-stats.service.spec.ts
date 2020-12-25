@@ -24,7 +24,7 @@ describe('Service Tests', () => {
       httpMock = injector.get(HttpTestingController);
       currentDate = moment();
 
-      elemDefault = new DeviceOverviewStats(0, 0, currentDate, 'AAAAAAA', 0, 0, 0, 0, 0);
+      elemDefault = new DeviceOverviewStats(0, 'AAAAAAA', currentDate, 'AAAAAAA', 0, 0, 0, 0, 0);
     });
 
     describe('Service methods', () => {
@@ -69,7 +69,7 @@ describe('Service Tests', () => {
       it('should update a DeviceOverviewStats', () => {
         const returnedFromService = Object.assign(
           {
-            deviceId: 1,
+            deviceId: 'BBBBBB',
             timestamp: currentDate.format(DATE_FORMAT),
             serialNumber: 'BBBBBB',
             humidity: 1,
@@ -98,7 +98,7 @@ describe('Service Tests', () => {
       it('should return a list of DeviceOverviewStats', () => {
         const returnedFromService = Object.assign(
           {
-            deviceId: 1,
+            deviceId: 'BBBBBB',
             timestamp: currentDate.format(DATE_FORMAT),
             serialNumber: 'BBBBBB',
             humidity: 1,

@@ -55,7 +55,7 @@ entity Tickets {
       ticketUpdateAt		LocalDate
 }
 entity  DeviceOverviewStats {
-      deviceId 					Long
+      deviceId 					String
       timestamp 				LocalDate
       serialNumber 				String
       humidity 					Double

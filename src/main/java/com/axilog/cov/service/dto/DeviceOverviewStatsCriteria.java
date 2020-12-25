@@ -27,7 +27,7 @@ public class DeviceOverviewStatsCriteria implements Serializable, Criteria {
 
     private LongFilter id;
 
-    private LongFilter deviceId;
+    private StringFilter deviceId;
 
     private LocalDateFilter timestamp;
 
@@ -77,11 +77,11 @@ public class DeviceOverviewStatsCriteria implements Serializable, Criteria {
         this.id = id;
     }
 
-    public LongFilter getDeviceId() {
+    public StringFilter getDeviceId() {
         return deviceId;
     }
 
-    public void setDeviceId(LongFilter deviceId) {
+    public void setDeviceId(StringFilter deviceId) {
         this.deviceId = deviceId;
     }
 

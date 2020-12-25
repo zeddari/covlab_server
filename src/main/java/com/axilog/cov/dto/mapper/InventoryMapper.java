@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import com.axilog.cov.domain.Inventory;
+import com.axilog.cov.dto.command.InventoryCommand;
 import com.axilog.cov.dto.representation.InventoryDetail;
 import com.axilog.cov.dto.representation.InventoryRepresentation;
 
@@ -17,7 +18,7 @@ public class InventoryMapper {
 	 */
 	public InventoryDetail toInventoryDetail(Inventory inventory) {
 		return InventoryDetail.builder()
-				.inventoryId(inventory.getInventoryId())
+				.inventoryId(inventory.getId())
 				.itemCode(inventory.getProduct().getProductCode())
 				.description(inventory.getProduct().getDescription())
 				.quantitiesInHand(inventory.getQuantitiesInHand())
@@ -28,7 +29,7 @@ public class InventoryMapper {
 				.reorderLevel(inventory.getReOrderLevel())
 				.suggestedQuantity(inventory.getSuggestedQuantity())
 				.expectedCoveringDay(inventory.getExpectedCoveringDay())
-				.lasterUpdated(inventory.getLastUpdatedAt())
+				.lastUpdatedAt(inventory.getLastUpdatedAt())
 				.status(inventory.getStatus())
 				.region(inventory.getOutlet().getOutletRegion())
 				.outletName(inventory.getOutlet().getOutletName())
@@ -37,7 +38,7 @@ public class InventoryMapper {
 				.outletLat(inventory.getOutlet().getOutletLat())
 				.outletLng(inventory.getOutlet().getOutletLng())
 				.category(inventory.getProduct().getCategory().getCategoryCode())
-				.temperature(inventory.getProduct().getDeviceOverviewStats().getTemperature())
+				.temperature(inventory.getProduct().getDeviceOverviewStats() != null ? inventory.getProduct().getDeviceOverviewStats().getTemperature() : 0)
 				.build();
 	}
 	
@@ -54,5 +55,7 @@ public class InventoryMapper {
 		});
 		return inventoryRepresentation;
 	}
+	
+	
 	
 }
