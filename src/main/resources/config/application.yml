@@ -163,3 +163,13 @@ jhipster:
 # ===================================================================
 
 # application:
+outlet:
+  kpi:
+    temperatureMin: -1000
+    temperatureMax: 1000
+    humidityMin: 1000
+    humidityMax: 1000
+    pressureMin: 1000
+    pressureMax: 1000
+      
+      

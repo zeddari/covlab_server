@@ -48,4 +48,9 @@ public interface InventoryService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+    
+    /**
+     * @return
+     */
+    public List<String> getOutletWithTemperatureIssue();
 }

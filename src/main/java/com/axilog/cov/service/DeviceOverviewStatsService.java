@@ -1,11 +1,12 @@
 package com.axilog.cov.service;
 
-import com.axilog.cov.domain.DeviceOverviewStats;
+import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.Optional;
+import com.axilog.cov.domain.DeviceOverviewStats;
 
 /**
  * Service Interface for managing {@link DeviceOverviewStats}.
@@ -28,6 +29,10 @@ public interface DeviceOverviewStatsService {
      */
     Page<DeviceOverviewStats> findAll(Pageable pageable);
 
+    /**
+     * @return
+     */
+    List<DeviceOverviewStats> findAll();
 
     /**
      * Get the "id" deviceOverviewStats.

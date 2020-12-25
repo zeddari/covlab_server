@@ -76,9 +76,6 @@ public class GMapMapper {
 				.iconWidth(40)
 				.color(markerColor(node.getImage())).animation(markerAnimation(node.getImage()))
 				.polylines(null)
-				.htmlModal(node.getTextModal())
-				.info1(node.getInfo1()).info21(node.getInfo21()).info22(node.getInfo22()).info3(node.getInfo3()).info4(node.getInfo4())
-				.info5(node.getInfo5()).info6(node.getInfo6()).info7(node.getInfo7()).info8(node.getInfo8())
 				.visible(false)
 				.build();
 	}

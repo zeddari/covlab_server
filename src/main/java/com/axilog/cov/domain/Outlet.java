@@ -1,13 +1,22 @@
 package com.axilog.cov.domain;
 
 
-import javax.persistence.*;
-
-import lombok.Data;
-
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * A Outlet.
@@ -15,6 +24,9 @@ import java.util.Set;
 @Entity
 @Table(name = "outlet")
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Outlet implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -44,6 +56,9 @@ public class Outlet implements Serializable {
     @Column(name = "outlet_type")
     private String outletType;
 
+    @Column(name = "outlet_parent_region")
+    private String outletParentRegion;
+    
     @OneToMany(mappedBy = "outlet")
     private Set<Inventory> inventories = new HashSet<>();
 

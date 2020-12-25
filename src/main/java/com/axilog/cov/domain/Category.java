@@ -3,6 +3,11 @@ package com.axilog.cov.domain;
 
 import javax.persistence.*;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -12,6 +17,10 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "category")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Category implements Serializable {
 
     private static final long serialVersionUID = 1L;

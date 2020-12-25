@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -54,4 +55,9 @@ public class DeviceOverviewStatsServiceImpl implements DeviceOverviewStatsServic
         log.debug("Request to delete DeviceOverviewStats : {}", id);
         deviceOverviewStatsRepository.deleteById(id);
     }
+
+	@Override
+	public List<DeviceOverviewStats> findAll() {
+		return deviceOverviewStatsRepository.findAll();
+	}
 }
