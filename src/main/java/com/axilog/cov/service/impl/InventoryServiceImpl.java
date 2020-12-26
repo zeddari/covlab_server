@@ -65,37 +65,5 @@ public class InventoryServiceImpl implements InventoryService {
 		return inventoryRepository.findAll();
 	}
 
-	@Override
-	public List<ServiceDashRep> getQuantitiesHandByCategory() {
 	
-		List<ServiceDashProjection> list = inventoryRepository.findHandByCategorys();
-		List<ServiceDashRep> data = new ArrayList();
-		if(list!=null && !list.isEmpty()) {
-			for(ServiceDashProjection el : list) {
-				ServiceDashRep a =	ServiceDashRep.builder().code_categorie(el.getCategory()).total_quantities_inHand(el.getQuantitiesCategory()).build();
-				data.add(a);
-				log.info(data + "");
-			}
-			return data;
-		}
-		
-		data.add(ServiceDashRep.builder().build());
-		return data;
-	}
-	public List<ServiceDashRep> getQuantitiesHandByLocation() {
-		
-		List<ServiceDashProjection> list = inventoryRepository.findHandByLocation();
-		List<ServiceDashRep> data = new ArrayList();
-		if(list!=null && !list.isEmpty()) {
-			for(ServiceDashProjection el : list) {
-				ServiceDashRep a =	ServiceDashRep.builder().outlet_name(el.getLocation()).total_quantities_inHand(el.getQuantitiesLocation()).build();
-				data.add(a);
-				log.info(data + "");
-			}
-			return data;
-		}
-		
-		data.add(ServiceDashRep.builder().build());
-		return data;
-	}
 }

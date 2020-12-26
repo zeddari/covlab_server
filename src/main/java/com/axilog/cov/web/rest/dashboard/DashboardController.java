@@ -1,5 +1,7 @@
 package com.axilog.cov.web.rest.dashboard;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -7,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.axilog.cov.dto.representation.OverallStatsRepresentation;
+import com.axilog.cov.dto.representation.ServiceDashRep;
 import com.axilog.cov.exception.TopologyDataNotFoundException;
 import com.axilog.cov.service.OverallStatsService;
 
@@ -22,6 +25,7 @@ public class DashboardController {
 
 	@Autowired
 	private OverallStatsService overallStatsService;
+	 
 
 	/**
 	 * @return
@@ -35,6 +39,29 @@ public class DashboardController {
 			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found")})
 	public OverallStatsRepresentation getTopologyData() throws TopologyDataNotFoundException {
 		return overallStatsService.findKpiByLastUpdated();
+	}
+	
+	/**
+	 * @return
+	 * @throws TopologyDataNotFoundException 
+	 */
+	@GetMapping(value = "/totalLocation", produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiOperation(value = "Qunatities in hand Per Category", notes = "returns a a list of mw links")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved list"),
+			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found")})
+	public List<ServiceDashRep> getQuantitiesLocation() throws TopologyDataNotFoundException {
+		return overallStatsService.getQuantitiesHandByLocation();
+	}
+	@GetMapping(value = "/totalCatogory", produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiOperation(value = "Qunatities in hand Per Category", notes = "returns a a list of mw links")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved list"),
+			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found")})
+	public List<ServiceDashRep> getQuanititesCategory() throws TopologyDataNotFoundException {
+		return overallStatsService.getQuantitiesHandByCategory();
 	}
 	
 }
