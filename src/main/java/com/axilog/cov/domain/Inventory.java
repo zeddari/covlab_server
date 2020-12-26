@@ -2,6 +2,7 @@ package com.axilog.cov.domain;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,7 +14,10 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * A Inventory.
@@ -21,6 +25,9 @@ import lombok.Data;
 @Entity
 @Table(name = "inventory")
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Inventory implements Serializable, Cloneable {
 
     private static final long serialVersionUID = 1L;

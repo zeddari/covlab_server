@@ -1,14 +1,18 @@
 package com.axilog.cov.dto.mapper;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.stereotype.Component;
 
 import com.axilog.cov.domain.Inventory;
-import com.axilog.cov.dto.command.InventoryCommand;
+import com.axilog.cov.domain.OverallStats;
 import com.axilog.cov.dto.representation.InventoryDetail;
 import com.axilog.cov.dto.representation.InventoryRepresentation;
+import com.axilog.cov.dto.representation.OverallStatsRepresentation;
 
 @Component
 public class InventoryMapper {
@@ -17,6 +21,8 @@ public class InventoryMapper {
 	 * @return
 	 */
 	public InventoryDetail toInventoryDetail(Inventory inventory) {
+		DecimalFormat formatter = (DecimalFormat)NumberFormat.getNumberInstance(Locale.US);
+		formatter.applyPattern("##.#");
 		return InventoryDetail.builder()
 				.inventoryId(inventory.getId())
 				.itemCode(inventory.getProduct().getProductCode())
@@ -38,7 +44,7 @@ public class InventoryMapper {
 				.outletLat(inventory.getOutlet().getOutletLat())
 				.outletLng(inventory.getOutlet().getOutletLng())
 				.category(inventory.getProduct().getCategory().getCategoryCode())
-				.temperature(inventory.getProduct().getDeviceOverviewStats() != null ? inventory.getProduct().getDeviceOverviewStats().getTemperature() : 0)
+				.temperature(formatter.format(inventory.getProduct().getDeviceOverviewStats() != null ? inventory.getProduct().getDeviceOverviewStats().getTemperature() : 0))
 				.build();
 	}
 	
@@ -56,6 +62,22 @@ public class InventoryMapper {
 		return inventoryRepresentation;
 	}
 	
-	
+	/**
+	 * @param overallStats
+	 * @return
+	 */
+	public OverallStatsRepresentation toOverallStatsRepres(OverallStats overallStats) {
+		return OverallStatsRepresentation.builder()
+				.deliveryOnTimeInFull(overallStats.getDeliveryOnTimeInFull())
+				.lastUpdatedAt(overallStats.getLastUpdatedAt())
+				.overallOutletPerformanceScore(overallStats.getOverallOutletPerformanceScore())
+				.stockoutRatio(overallStats.getStockoutRatio())
+				.totalVaccinesConsumed(overallStats.getTotalVaccinesConsumed())
+				.totalVaccinesReceivedAtNupco(overallStats.getTotalVaccinesReceivedAtNupco())
+				.totalVaccinesReceivedAtOutlets(overallStats.getTotalVaccinesReceivedAtOutlets())
+				.warehouseFillingRate(overallStats.getWarehouseFillingRate())
+				.wastageVaccines(overallStats.getWastageVaccines())
+				.build();
+	}
 	
 }

@@ -33,5 +33,5 @@ public class InventoryDetail {
 	 private Double outletLat;
 	 private Double outletLng;
 	 private String category;
-	 private Double temperature;
+	 private String temperature;
 }
