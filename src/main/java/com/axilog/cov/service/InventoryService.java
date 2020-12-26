@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.axilog.cov.domain.Inventory;
+import com.axilog.cov.dto.representation.ServiceDashRep;
 
 /**
  * Service Interface for managing {@link Inventory}.
@@ -48,4 +49,6 @@ public interface InventoryService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+    public List<ServiceDashRep> getQuantitiesHandByCategory();
+    public List<ServiceDashRep> getQuantitiesHandByLocation();
 }
