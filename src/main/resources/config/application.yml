@@ -171,5 +171,6 @@ outlet:
     humidityMax: 1000
     pressureMin: 1000
     pressureMax: 1000
+autoReplenishCron: '*/10 * * * * *'
       
       

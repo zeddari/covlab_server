@@ -2,6 +2,11 @@ package com.axilog.cov.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 
 import java.io.Serializable;
@@ -14,6 +19,10 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "purchase_order")
+@Builder
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class PurchaseOrder implements Serializable {
 
     private static final long serialVersionUID = 1L;

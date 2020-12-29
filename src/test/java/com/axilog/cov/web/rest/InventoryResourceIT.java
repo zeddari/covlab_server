@@ -102,18 +102,18 @@ public class InventoryResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Inventory createEntity(EntityManager em) {
-        Inventory inventory = new Inventory()
+        Inventory inventory = Inventory.builder()
             .inventoryId(DEFAULT_INVENTORY_ID)
-            .quantitiesInHand(DEFAULT_QUANTITIES_IN_HAND)
+            .receivedQty(DEFAULT_QUANTITIES_IN_HAND)
             .quantitiesInTransit(DEFAULT_QUANTITIES_IN_TRANSIT)
             .uom(DEFAULT_UOM)
-            .actualDailyConsumption(DEFAULT_ACTUAL_DAILY_CONSUMPTION)
+            .consumedQty(DEFAULT_ACTUAL_DAILY_CONSUMPTION)
             .actualAvgConsumption(DEFAULT_ACTUAL_AVG_CONSUMPTION)
             .reOrderLevel(DEFAULT_RE_ORDER_LEVEL)
             .suggestedQuantity(DEFAULT_SUGGESTED_QUANTITY)
-            .expectedCoveringDay(DEFAULT_EXPECTED_COVERING_DAY)
+            .capacity(DEFAULT_EXPECTED_COVERING_DAY)
             .lastUpdatedAt(DateUtil.convertToDateViaInstant(DEFAULT_LAST_UPDATED_AT))
-            .status(DEFAULT_STATUS);
+            .status(DEFAULT_STATUS).build();
         return inventory;
     }
     /**
@@ -123,18 +123,18 @@ public class InventoryResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Inventory createUpdatedEntity(EntityManager em) {
-        Inventory inventory = new Inventory()
+        Inventory inventory = Inventory.builder()
             .inventoryId(UPDATED_INVENTORY_ID)
-            .quantitiesInHand(UPDATED_QUANTITIES_IN_HAND)
+            .receivedQty(UPDATED_QUANTITIES_IN_HAND)
             .quantitiesInTransit(UPDATED_QUANTITIES_IN_TRANSIT)
             .uom(UPDATED_UOM)
-            .actualDailyConsumption(UPDATED_ACTUAL_DAILY_CONSUMPTION)
+            .consumedQty(UPDATED_ACTUAL_DAILY_CONSUMPTION)
             .actualAvgConsumption(UPDATED_ACTUAL_AVG_CONSUMPTION)
             .reOrderLevel(UPDATED_RE_ORDER_LEVEL)
             .suggestedQuantity(UPDATED_SUGGESTED_QUANTITY)
-            .expectedCoveringDay(UPDATED_EXPECTED_COVERING_DAY)
+            .capacity(UPDATED_EXPECTED_COVERING_DAY)
             .lastUpdatedAt(DateUtil.convertToDateViaInstant(UPDATED_LAST_UPDATED_AT))
-            .status(UPDATED_STATUS);
+            .status(UPDATED_STATUS).build();
         return inventory;
     }
 
@@ -158,14 +158,14 @@ public class InventoryResourceIT {
         assertThat(inventoryList).hasSize(databaseSizeBeforeCreate + 1);
         Inventory testInventory = inventoryList.get(inventoryList.size() - 1);
         assertThat(testInventory.getInventoryId()).isEqualTo(DEFAULT_INVENTORY_ID);
-        assertThat(testInventory.getQuantitiesInHand()).isEqualTo(DEFAULT_QUANTITIES_IN_HAND);
+        assertThat(testInventory.getReceivedQty()).isEqualTo(DEFAULT_QUANTITIES_IN_HAND);
         assertThat(testInventory.getQuantitiesInTransit()).isEqualTo(DEFAULT_QUANTITIES_IN_TRANSIT);
         assertThat(testInventory.getUom()).isEqualTo(DEFAULT_UOM);
-        assertThat(testInventory.getActualDailyConsumption()).isEqualTo(DEFAULT_ACTUAL_DAILY_CONSUMPTION);
+        assertThat(testInventory.getConsumedQty()).isEqualTo(DEFAULT_ACTUAL_DAILY_CONSUMPTION);
         assertThat(testInventory.getActualAvgConsumption()).isEqualTo(DEFAULT_ACTUAL_AVG_CONSUMPTION);
         assertThat(testInventory.getReOrderLevel()).isEqualTo(DEFAULT_RE_ORDER_LEVEL);
         assertThat(testInventory.getSuggestedQuantity()).isEqualTo(DEFAULT_SUGGESTED_QUANTITY);
-        assertThat(testInventory.getExpectedCoveringDay()).isEqualTo(DEFAULT_EXPECTED_COVERING_DAY);
+        assertThat(testInventory.getCapacity()).isEqualTo(DEFAULT_EXPECTED_COVERING_DAY);
         assertThat(testInventory.getLastUpdatedAt()).isEqualTo(DEFAULT_LAST_UPDATED_AT);
         assertThat(testInventory.getStatus()).isEqualTo(DEFAULT_STATUS);
     }
@@ -1437,14 +1437,11 @@ public class InventoryResourceIT {
         em.detach(updatedInventory);
         updatedInventory
             .inventoryId(UPDATED_INVENTORY_ID)
-            .quantitiesInHand(UPDATED_QUANTITIES_IN_HAND)
             .quantitiesInTransit(UPDATED_QUANTITIES_IN_TRANSIT)
             .uom(UPDATED_UOM)
-            .actualDailyConsumption(UPDATED_ACTUAL_DAILY_CONSUMPTION)
             .actualAvgConsumption(UPDATED_ACTUAL_AVG_CONSUMPTION)
             .reOrderLevel(UPDATED_RE_ORDER_LEVEL)
             .suggestedQuantity(UPDATED_SUGGESTED_QUANTITY)
-            .expectedCoveringDay(UPDATED_EXPECTED_COVERING_DAY)
             .lastUpdatedAt(DateUtil.convertToDateViaInstant(UPDATED_LAST_UPDATED_AT))
             .status(UPDATED_STATUS);
 
@@ -1458,14 +1455,14 @@ public class InventoryResourceIT {
         assertThat(inventoryList).hasSize(databaseSizeBeforeUpdate);
         Inventory testInventory = inventoryList.get(inventoryList.size() - 1);
         assertThat(testInventory.getInventoryId()).isEqualTo(UPDATED_INVENTORY_ID);
-        assertThat(testInventory.getQuantitiesInHand()).isEqualTo(UPDATED_QUANTITIES_IN_HAND);
+        assertThat(testInventory.getReceivedQty()).isEqualTo(UPDATED_QUANTITIES_IN_HAND);
         assertThat(testInventory.getQuantitiesInTransit()).isEqualTo(UPDATED_QUANTITIES_IN_TRANSIT);
         assertThat(testInventory.getUom()).isEqualTo(UPDATED_UOM);
-        assertThat(testInventory.getActualDailyConsumption()).isEqualTo(UPDATED_ACTUAL_DAILY_CONSUMPTION);
+        assertThat(testInventory.getConsumedQty()).isEqualTo(UPDATED_ACTUAL_DAILY_CONSUMPTION);
         assertThat(testInventory.getActualAvgConsumption()).isEqualTo(UPDATED_ACTUAL_AVG_CONSUMPTION);
         assertThat(testInventory.getReOrderLevel()).isEqualTo(UPDATED_RE_ORDER_LEVEL);
         assertThat(testInventory.getSuggestedQuantity()).isEqualTo(UPDATED_SUGGESTED_QUANTITY);
-        assertThat(testInventory.getExpectedCoveringDay()).isEqualTo(UPDATED_EXPECTED_COVERING_DAY);
+        assertThat(testInventory.getCapacity()).isEqualTo(UPDATED_EXPECTED_COVERING_DAY);
         assertThat(testInventory.getLastUpdatedAt()).isEqualTo(UPDATED_LAST_UPDATED_AT);
         assertThat(testInventory.getStatus()).isEqualTo(UPDATED_STATUS);
     }

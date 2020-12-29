@@ -12,11 +12,13 @@ import lombok.Data;
 public class InventoryDetail {
 	 private float inventoryId;
 	 private String itemCode;
+	 private String nupcoCode;
 	 private String description;
-	 private Double quantitiesInHand;
+	 private Double currentBalance;
+	 private Double receivedQuantity;
 	 private Double quantitiesInTransit;
 	 private String uom;
-	 private Double actualDailyConsumption;
+	 private Double consumedQty;
 	 private Double actualAvgConsumption;
 	 private String reorderLevel;
 	 private Double suggestedQuantity;

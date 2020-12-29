@@ -80,8 +80,7 @@ public class TopologyServiceImpl implements TopologyService {
 			/** calculate the health */
 			String outletHealth = getOutletHealth(deviceOverviewStatsFiltered);
 			NodeRepresentation node = TopologyMapper.toNodeRepresentation(outlet, outletHealth);
-			geoData += MapDataBuilder.nodeData(node.getFont().getColor(), node.getLabel(), node.getLabel(), buildMapIconByNodeType(node.getNodeType()), "image", "", "", node.getLat(), node.getLng(), node.getNodeType(), node.getGroup(), false);
-
+			
 			/** get details of outlet inventory */
 			Inventory inventory = Inventory.builder().isLastInstance(true).outlet(outlet).product(Product.builder().category(Category.builder().id(9L).build()).build()).build();
 			Example<Inventory> exampleInventory= Example.of(inventory);
@@ -91,6 +90,14 @@ public class TopologyServiceImpl implements TopologyService {
 			}
 			nodes.add(node);
 			edges.add(TopologyMapper.toEdgeRepresentation(outlet, 70006));
+			double balance = 0;
+			double consumedQty = 0;
+			if (node.getInventoryDetail() != null) {
+				balance = node.getInventoryDetail().getCurrentBalance();
+				consumedQty = node.getInventoryDetail().getConsumedQty();
+			}
+			geoData += MapDataBuilder.nodeData(node.getFont().getColor(), node.getLabel(), node.getLabel(), buildMapIconByNodeType(node.getNodeType()), "image", balance, consumedQty, "", node.getLat(), node.getLng(), node.getNodeType(), node.getGroup(), false);
+
 		});
 		nodes.add(buildMinisteryode());
 		String geo = geoData.substring(0, geoData.length() -1);

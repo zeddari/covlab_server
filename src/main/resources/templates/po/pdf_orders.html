@@ -1,0 +1,40 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Products</title>
+<bookmarks> <bookmark name="Products" href="#inventories"></bookmark>
+</bookmarks>
+<link rel="stylesheet" type="text/css" href="css/style.css" />
+</head>
+
+<body>
+	<img class="logo" src="images/logo.png" />
+	<span class="titles-style"
+		th:text="|Products / Count: ${#lists.size(inventories)}|"></span>
+
+	<!-- Students Table -->
+	<div id="students">
+		<div th:if="${not #lists.isEmpty(inventories)}">
+			<table class="students_table paginate-table">
+				<thead>
+					<tr>
+						<th>Code</th>
+						<th>Product Name</th>
+						<th>Quantity</th>
+						<th>UO</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="inventory : ${inventories}">
+						<td th:text="${inventory.code}"></td>
+						<td th:text="${inventory.description}"></td>
+						<td th:text="${inventory.quantity}"></td>
+						<td th:text="${inventory.uom}"></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+</body>
+</html>

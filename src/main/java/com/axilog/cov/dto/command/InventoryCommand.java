@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class InventoryCommand {
 	private Long id;
-	private Double quantitiesInHand;
+	private Double currentBalance;
 	private Double quantitiesInTransit;
-	private Double actualDailyConsumption;
+	private Double consumeQty;
 }

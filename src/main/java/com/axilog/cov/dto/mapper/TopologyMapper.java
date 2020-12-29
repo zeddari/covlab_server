@@ -36,7 +36,7 @@ public class TopologyMapper {
 		.id(outlet.getId().intValue())
 		.font(Font.builder().align("bottom").color(color).size(TopologyConstant.NODE_TITLE_SIZE).build())
 		.image(chooseIconMedByType(outlet.getOutletType(), color))
-		.label(outlet.getOutletName())
+		.label(outlet.getOutletAdress())
 		.nodeType(outlet.getOutletType())
 		.group(outlet.getOutletType())
 		.region(outlet.getOutletRegion())
@@ -56,6 +56,7 @@ public class TopologyMapper {
 	public static EdgeRepresentation toEdgeRepresentation(Outlet outlet, Integer ministeryId) {
 		return EdgeRepresentation.builder()
 				.id(ministeryId + "-" + outlet.getId())
+				.type("Min-Outlet")
 				.to(outlet.getId().intValue())
 				.from(ministeryId)
 				.build();

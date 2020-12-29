@@ -88,18 +88,18 @@ public class InventoryQueryService extends QueryService<Inventory> {
             if (criteria.getInventoryId() != null) {
                 specification = specification.and(buildRangeSpecification(criteria.getInventoryId(), Inventory_.inventoryId));
             }
-            if (criteria.getQuantitiesInHand() != null) {
-                specification = specification.and(buildRangeSpecification(criteria.getQuantitiesInHand(), Inventory_.quantitiesInHand));
-            }
+//            if (criteria.getQuantitiesInHand() != null) {
+//                specification = specification.and(buildRangeSpecification(criteria.getQuantitiesInHand(), Inventory_.quantitiesInHand));
+//            }
             if (criteria.getQuantitiesInTransit() != null) {
                 specification = specification.and(buildRangeSpecification(criteria.getQuantitiesInTransit(), Inventory_.quantitiesInTransit));
             }
             if (criteria.getUom() != null) {
                 specification = specification.and(buildStringSpecification(criteria.getUom(), Inventory_.uom));
             }
-            if (criteria.getActualDailyConsumption() != null) {
-                specification = specification.and(buildRangeSpecification(criteria.getActualDailyConsumption(), Inventory_.actualDailyConsumption));
-            }
+//            if (criteria.getActualDailyConsumption() != null) {
+//                specification = specification.and(buildRangeSpecification(criteria.getActualDailyConsumption(), Inventory_.actualDailyConsumption));
+//            }
             if (criteria.getActualAvgConsumption() != null) {
                 specification = specification.and(buildRangeSpecification(criteria.getActualAvgConsumption(), Inventory_.actualAvgConsumption));
             }
@@ -109,9 +109,9 @@ public class InventoryQueryService extends QueryService<Inventory> {
             if (criteria.getSuggestedQuantity() != null) {
                 specification = specification.and(buildRangeSpecification(criteria.getSuggestedQuantity(), Inventory_.suggestedQuantity));
             }
-            if (criteria.getExpectedCoveringDay() != null) {
-                specification = specification.and(buildRangeSpecification(criteria.getExpectedCoveringDay(), Inventory_.expectedCoveringDay));
-            }
+//            if (criteria.getExpectedCoveringDay() != null) {
+//                specification = specification.and(buildRangeSpecification(criteria.getExpectedCoveringDay(), Inventory_.expectedCoveringDay));
+//            }
 //            if (criteria.getLastUpdatedAt() != null) {
 //                specification = specification.and(buildRangeSpecification(criteria.getLastUpdatedAt(), Inventory_.lastUpdatedAt));
 //            }

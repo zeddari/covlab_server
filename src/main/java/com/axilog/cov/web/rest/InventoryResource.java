@@ -120,7 +120,7 @@ public class InventoryResource {
         	throw new BadRequestAlertException("Id Does not Exist", ENTITY_NAME, "idnull");
         }
         Inventory result = inventoryOptional.get();
-        result.setQuantitiesInHand(inventoryCommand.getQuantitiesInHand());
+        result.setReceivedQty(inventoryCommand.getCurrentBalance());
         result.setQuantitiesInTransit(inventoryCommand.getQuantitiesInTransit());
         result.setLastUpdatedAt(DateUtil.now());
         result = inventoryService.save(result);
@@ -145,8 +145,12 @@ public class InventoryResource {
         result = inventoryService.save(result);
         
         //create new entry with new date
-        result.setQuantitiesInHand(inventoryCommand.getQuantitiesInHand());
-        result.setActualDailyConsumption(inventoryCommand.getActualDailyConsumption());
+        result.setReceivedQty(inventoryCommand.getCurrentBalance());
+        result.setCurrent_balance(result.getCurrent_balance() + inventoryCommand.getCurrentBalance());
+        
+        result.setCurrent_balance(result.getCurrent_balance() - inventoryCommand.getConsumeQty());
+        result.setConsumedQty(result.getConsumedQty() + inventoryCommand.getConsumeQty());
+        
         result.setLastUpdatedAt(DateUtil.now());
         result.setId(null);
         result.setIsLastInstance(Boolean.TRUE);

@@ -47,6 +47,7 @@ public class GMapMapper {
 		return MapRepresentation.builder().markers(markers).polylines(polylines)
 				.geoData(geoData).geoDataService(geoDataS).geoDataOther(geoDataO)
 				.executiveTable(topologyRepresentation.getExecutiveTable())
+				.kpiTable(topologyRepresentation.getKpiTable())
 			.sumRepForCircle(SummaryRepresentationForCircle.builder().nodeNumber(markers.size()).color(sumCircleColor=nodeColorForSummaryCircle(markers)).build())
 			.build();
 	}

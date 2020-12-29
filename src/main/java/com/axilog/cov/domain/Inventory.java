@@ -2,7 +2,6 @@ package com.axilog.cov.domain;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -39,8 +38,11 @@ public class Inventory implements Serializable, Cloneable {
     @Column(name = "inventory_id")
     private Long inventoryId;
 
-    @Column(name = "quantities_in_hand")
-    private Double quantitiesInHand;
+    @Column(name = "received_qty")
+    private Double receivedQty;
+
+    @Column(name = "current_balance")
+    private Double current_balance;
 
     @Column(name = "quantities_in_transit")
     private Double quantitiesInTransit;
@@ -48,8 +50,8 @@ public class Inventory implements Serializable, Cloneable {
     @Column(name = "uom")
     private String uom;
 
-    @Column(name = "actual_daily_consumption")
-    private Double actualDailyConsumption;
+    @Column(name = "consumed_qty")
+    private Double consumedQty;
 
     @Column(name = "actual_avg_consumption")
     private Double actualAvgConsumption;
@@ -60,13 +62,13 @@ public class Inventory implements Serializable, Cloneable {
     @Column(name = "suggested_quantity")
     private Double suggestedQuantity;
 
-    @Column(name = "expected_covering_day")
-    private Double expectedCoveringDay;
+    @Column(name = "capacity", nullable = true, insertable = false, updatable = false)
+    private Double capacity;
 
     @Column(name = "last_updated_at")
     private Date lastUpdatedAt;
 
-    @Column(name = "status")
+    @Column(name = "status", nullable = true, insertable = false, updatable = false)
     private String status;
 
     @Column(name = "is_last_instance")
@@ -102,19 +104,6 @@ public class Inventory implements Serializable, Cloneable {
         this.inventoryId = inventoryId;
     }
 
-    public Double getQuantitiesInHand() {
-        return quantitiesInHand;
-    }
-
-    public Inventory quantitiesInHand(Double quantitiesInHand) {
-        this.quantitiesInHand = quantitiesInHand;
-        return this;
-    }
-
-    public void setQuantitiesInHand(Double quantitiesInHand) {
-        this.quantitiesInHand = quantitiesInHand;
-    }
-
     public Double getQuantitiesInTransit() {
         return quantitiesInTransit;
     }
@@ -141,18 +130,7 @@ public class Inventory implements Serializable, Cloneable {
         this.uom = uom;
     }
 
-    public Double getActualDailyConsumption() {
-        return actualDailyConsumption;
-    }
-
-    public Inventory actualDailyConsumption(Double actualDailyConsumption) {
-        this.actualDailyConsumption = actualDailyConsumption;
-        return this;
-    }
-
-    public void setActualDailyConsumption(Double actualDailyConsumption) {
-        this.actualDailyConsumption = actualDailyConsumption;
-    }
+    
 
     public Double getActualAvgConsumption() {
         return actualAvgConsumption;
@@ -191,19 +169,6 @@ public class Inventory implements Serializable, Cloneable {
 
     public void setSuggestedQuantity(Double suggestedQuantity) {
         this.suggestedQuantity = suggestedQuantity;
-    }
-
-    public Double getExpectedCoveringDay() {
-        return expectedCoveringDay;
-    }
-
-    public Inventory expectedCoveringDay(Double expectedCoveringDay) {
-        this.expectedCoveringDay = expectedCoveringDay;
-        return this;
-    }
-
-    public void setExpectedCoveringDay(Double expectedCoveringDay) {
-        this.expectedCoveringDay = expectedCoveringDay;
     }
 
     public Date getLastUpdatedAt() {
@@ -273,24 +238,5 @@ public class Inventory implements Serializable, Cloneable {
     @Override
     public int hashCode() {
         return 31;
-    }
-
-    // prettier-ignore
-    @Override
-    public String toString() {
-        return "Inventory{" +
-            "id=" + getId() +
-            ", inventoryId=" + getInventoryId() +
-            ", quantitiesInHand=" + getQuantitiesInHand() +
-            ", quantitiesInTransit=" + getQuantitiesInTransit() +
-            ", uom='" + getUom() + "'" +
-            ", actualDailyConsumption=" + getActualDailyConsumption() +
-            ", actualAvgConsumption=" + getActualAvgConsumption() +
-            ", reOrderLevel='" + getReOrderLevel() + "'" +
-            ", suggestedQuantity=" + getSuggestedQuantity() +
-            ", expectedCoveringDay=" + getExpectedCoveringDay() +
-            ", lastUpdatedAt='" + getLastUpdatedAt() + "'" +
-            ", status='" + getStatus() + "'" +
-            "}";
     }
 }

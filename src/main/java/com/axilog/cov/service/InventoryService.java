@@ -33,6 +33,13 @@ public interface InventoryService {
      * @return
      */
     List<Inventory> findAll();
+    
+    /**
+     * find by a list of status
+     * @param status
+     * @return
+     */
+    List<Inventory> findByStatusIn(List<String> status);
 
     /**
      * Get the "id" inventory.

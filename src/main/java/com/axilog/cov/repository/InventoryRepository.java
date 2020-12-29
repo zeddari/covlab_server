@@ -2,6 +2,8 @@ package com.axilog.cov.repository;
 
 import com.axilog.cov.domain.Inventory;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 
@@ -11,5 +13,7 @@ import org.springframework.stereotype.Repository;
 @SuppressWarnings("unused")
 @Repository
 public interface InventoryRepository extends JpaRepository<Inventory, Long>, JpaSpecificationExecutor<Inventory> {
+
+	List<Inventory> findByStatusIn(List<String> status);
 	
 }
