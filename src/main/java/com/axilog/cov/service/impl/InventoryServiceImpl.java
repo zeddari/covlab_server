@@ -61,7 +61,7 @@ public class InventoryServiceImpl implements InventoryService {
 		return inventoryRepository.findAll();
 	}
 
-	@Override
+	
 	public List<String> getOutletWithTemperatureIssue() {
 		return null;
 	}
