@@ -49,7 +49,7 @@ public class Product implements Serializable {
     @OneToMany(mappedBy = "product")
     private Set<Inventory> inventories = new HashSet<>();
 
-    @OneToMany(mappedBy = "product")
+    @OneToMany
     private Set<PurchaseOrder> purchaseOrders = new HashSet<>();
 
     @OneToMany(mappedBy = "product")
@@ -136,30 +136,6 @@ public class Product implements Serializable {
         this.inventories = inventories;
     }
 
-    public Set<PurchaseOrder> getPurchaseOrders() {
-        return purchaseOrders;
-    }
-
-    public Product purchaseOrders(Set<PurchaseOrder> purchaseOrders) {
-        this.purchaseOrders = purchaseOrders;
-        return this;
-    }
-
-    public Product addPurchaseOrders(PurchaseOrder purchaseOrder) {
-        this.purchaseOrders.add(purchaseOrder);
-        purchaseOrder.setProduct(this);
-        return this;
-    }
-
-    public Product removePurchaseOrders(PurchaseOrder purchaseOrder) {
-        this.purchaseOrders.remove(purchaseOrder);
-        purchaseOrder.setProduct(null);
-        return this;
-    }
-
-    public void setPurchaseOrders(Set<PurchaseOrder> purchaseOrders) {
-        this.purchaseOrders = purchaseOrders;
-    }
 
     public Set<Tickets> getTickets() {
         return tickets;

@@ -1,17 +1,29 @@
 package com.axilog.cov.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
-import javax.persistence.*;
-
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Date;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import lombok.Builder;
+import lombok.Data;
 
 /**
  * A PoStatus.
  */
 @Entity
 @Table(name = "po_status")
+@Builder
+@Data
 public class PoStatus implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -24,7 +36,7 @@ public class PoStatus implements Serializable {
     private String status;
 
     @Column(name = "updated_at")
-    private LocalDate updatedAt;
+    private Date updatedAt;
 
     @ManyToOne
     @JsonIgnoreProperties(value = "poStatuses", allowSetters = true)
@@ -52,18 +64,7 @@ public class PoStatus implements Serializable {
         this.status = status;
     }
 
-    public LocalDate getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public PoStatus updatedAt(LocalDate updatedAt) {
-        this.updatedAt = updatedAt;
-        return this;
-    }
-
-    public void setUpdatedAt(LocalDate updatedAt) {
-        this.updatedAt = updatedAt;
-    }
+    
 
     public PurchaseOrder getPurchaseOrder() {
         return purchaseOrder;

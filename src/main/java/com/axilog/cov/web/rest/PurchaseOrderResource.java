@@ -7,9 +7,14 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -34,16 +39,20 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.axilog.cov.domain.Inventory;
+import com.axilog.cov.domain.PoStatus;
+import com.axilog.cov.domain.Product;
 import com.axilog.cov.domain.PurchaseOrder;
 import com.axilog.cov.dto.mapper.InventoryMapper;
 import com.axilog.cov.dto.representation.InventoryDetail;
 import com.axilog.cov.dto.representation.InventoryPdfDetail;
+import com.axilog.cov.security.SecurityUtils;
 import com.axilog.cov.service.InventoryService;
 import com.axilog.cov.service.MailService;
 import com.axilog.cov.service.PurchaseOrderQueryService;
 import com.axilog.cov.service.PurchaseOrderService;
 import com.axilog.cov.service.dto.PurchaseOrderCriteria;
 import com.axilog.cov.service.pdf.PdfService;
+import com.axilog.cov.util.DateUtil;
 import com.axilog.cov.web.rest.errors.BadRequestAlertException;
 import com.lowagie.text.DocumentException;
 
@@ -186,22 +195,28 @@ public class PurchaseOrderResource {
     public void scheduleTaskForAutoReplunish() throws IOException, DocumentException {
         long now = System.currentTimeMillis() / 1000;
         log.info("schedule tasks For Auto Replunish using cron jobs - " + now);
-        List<InventoryPdfDetail> details = getProductToBeOrdered();
+        List<Inventory> inventories = getProductToBeOrdered();
+        List<InventoryPdfDetail> details = inventoryMapper.toPdfListDetail(inventories);
         File poPdf = pdfService.generatePdf(details);
-        
-        List<String> status = new ArrayList<String>();
-        status.add("oos");
-        status.add("noos");
-        List<Inventory> inventories = inventoryService.findByStatusIn(status);
-        
+        List<Product> products = new ArrayList<>();
         if (inventories != null) {
-        	inventories.forEach(inventory -> {
-        		PurchaseOrder po = PurchaseOrder.builder()
-        				.product(inventory.getProduct())
-        				.build();
-        		PurchaseOrder result = purchaseOrderService.save(po);
-        	});
+        	products = inventories.stream().map(Inventory:: getProduct).collect(Collectors.toList());
         }
+        String login = "NA";
+        if (SecurityUtils.getCurrentUserLogin().isPresent()) {
+        	login = SecurityUtils.getCurrentUserLogin().get();
+        }
+        Set<PoStatus> poStatus = new HashSet<>();
+        poStatus.add(PoStatus.builder().status("CREATED").updatedAt(DateUtil.now()).build());
+        PurchaseOrder po = PurchaseOrder.builder()
+				.products(products)
+				.createdAt(DateUtil.now())
+				.createdBy(login)
+				.quantity(1000.345)
+				.poStatuses(poStatus)
+				.build();
+		PurchaseOrder result = purchaseOrderService.save(po);
+		//mailService.sendEmail(to, subject, content, isMultipart, isHtml);
         
     }
     
@@ -218,7 +233,7 @@ public class PurchaseOrderResource {
     @GetMapping("/downloadPo")
     public void downloadPDFResource(HttpServletResponse response) {
         try {
-            Path file = Paths.get(pdfService.generatePdf(getProductToBeOrdered()).getAbsolutePath());
+            Path file = Paths.get(pdfService.generatePdf(inventoryMapper.toPdfListDetail(getProductToBeOrdered())).getAbsolutePath());
             if (Files.exists(file)) {
                 response.setContentType("application/pdf");
                 response.addHeader("Content-Disposition",
@@ -231,12 +246,10 @@ public class PurchaseOrderResource {
         }
     }
     
-    private List<InventoryPdfDetail> getProductToBeOrdered() {
+    private List<Inventory> getProductToBeOrdered() {
     	 List<String> status = new ArrayList<String>();
          status.add("oos");
          status.add("noos");
-         List<Inventory> inventories = inventoryService.findByStatusIn(status);
-         List<InventoryPdfDetail> details = inventoryMapper.toPdfListDetail(inventories);
-         return details;
+         return inventoryService.findByStatusIn(status);
     }
 }

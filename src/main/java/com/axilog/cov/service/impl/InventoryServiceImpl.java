@@ -68,16 +68,7 @@ public class InventoryServiceImpl implements InventoryService {
 
 	@Override
 	public List<Inventory> findByStatusIn(List<String> status) {
-		List<Inventory>  inventoriesToBeAutoReplenished = inventoryRepository.findByStatusIn(status);
-		if (inventoriesToBeAutoReplenished.isEmpty()) {
-			log.info("No Inventory to be replenished");
-			return null;
-		}
-		else {
-			inventoriesToBeAutoReplenished.forEach(inv -> {
-				
-			});
-		}
-		return null;
+		return inventoryRepository.findByStatusIn(status);
+		
 	}
 }

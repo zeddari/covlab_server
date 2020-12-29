@@ -1,6 +1,7 @@
 package com.axilog.cov.repository;
 
 import com.axilog.cov.domain.Inventory;
+import com.axilog.cov.dto.projection.ServiceDashProjection;
 
 import java.util.List;
 

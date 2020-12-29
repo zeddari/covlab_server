@@ -94,18 +94,18 @@ public class PurchaseOrderQueryService extends QueryService<PurchaseOrder> {
             if (criteria.getCreatedBy() != null) {
                 specification = specification.and(buildStringSpecification(criteria.getCreatedBy(), PurchaseOrder_.createdBy));
             }
-            if (criteria.getCreatedOn() != null) {
-                specification = specification.and(buildRangeSpecification(criteria.getCreatedOn(), PurchaseOrder_.createdOn));
-            }
-            if (criteria.getDeliveredDate() != null) {
-                specification = specification.and(buildRangeSpecification(criteria.getDeliveredDate(), PurchaseOrder_.deliveredDate));
-            }
-            if (criteria.getUpdatedAt() != null) {
-                specification = specification.and(buildRangeSpecification(criteria.getUpdatedAt(), PurchaseOrder_.updatedAt));
-            }
-            if (criteria.getCreatedAt() != null) {
-                specification = specification.and(buildRangeSpecification(criteria.getCreatedAt(), PurchaseOrder_.createdAt));
-            }
+//            if (criteria.getCreatedOn() != null) {
+//                specification = specification.and(buildRangeSpecification(criteria.getCreatedOn(), PurchaseOrder_.createdOn));
+//            }
+//            if (criteria.getDeliveredDate() != null) {
+//                specification = specification.and(buildRangeSpecification(criteria.getDeliveredDate(), PurchaseOrder_.deliveredDate));
+//            }
+//            if (criteria.getUpdatedAt() != null) {
+//                specification = specification.and(buildRangeSpecification(criteria.getUpdatedAt(), PurchaseOrder_.updatedAt));
+//            }
+//            if (criteria.getCreatedAt() != null) {
+//                specification = specification.and(buildRangeSpecification(criteria.getCreatedAt(), PurchaseOrder_.createdAt));
+//            }
             if (criteria.getPoStatusId() != null) {
                 specification = specification.and(buildSpecification(criteria.getPoStatusId(),
                     root -> root.join(PurchaseOrder_.poStatuses, JoinType.LEFT).get(PoStatus_.id)));
@@ -114,10 +114,10 @@ public class PurchaseOrderQueryService extends QueryService<PurchaseOrder> {
                 specification = specification.and(buildSpecification(criteria.getOutletId(),
                     root -> root.join(PurchaseOrder_.outlet, JoinType.LEFT).get(Outlet_.id)));
             }
-            if (criteria.getProductId() != null) {
-                specification = specification.and(buildSpecification(criteria.getProductId(),
-                    root -> root.join(PurchaseOrder_.product, JoinType.LEFT).get(Product_.id)));
-            }
+//            if (criteria.getProductId() != null) {
+//                specification = specification.and(buildSpecification(criteria.getProductId(),
+//                    root -> root.join(PurchaseOrder_.product, JoinType.LEFT).get(Product_.id)));
+//            }
         }
         return specification;
     }
