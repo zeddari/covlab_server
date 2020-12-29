@@ -98,10 +98,10 @@ public class ProductQueryService extends QueryService<Product> {
                 specification = specification.and(buildSpecification(criteria.getInventoriesId(),
                     root -> root.join(Product_.inventories, JoinType.LEFT).get(Inventory_.id)));
             }
-            if (criteria.getPurchaseOrdersId() != null) {
-                specification = specification.and(buildSpecification(criteria.getPurchaseOrdersId(),
-                    root -> root.join(Product_.purchaseOrders, JoinType.LEFT).get(PurchaseOrder_.id)));
-            }
+//            if (criteria.getPurchaseOrdersId() != null) {
+//                specification = specification.and(buildSpecification(criteria.getPurchaseOrdersId(),
+//                    root -> root.join(Product_.purchaseOrders, JoinType.LEFT).get(PurchaseOrder_.id)));
+//            }
             if (criteria.getTicketsId() != null) {
                 specification = specification.and(buildSpecification(criteria.getTicketsId(),
                     root -> root.join(Product_.tickets, JoinType.LEFT).get(Tickets_.id)));

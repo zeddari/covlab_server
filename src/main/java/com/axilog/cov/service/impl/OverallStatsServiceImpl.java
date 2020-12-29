@@ -39,7 +39,7 @@ public class OverallStatsServiceImpl implements OverallStatsService {
 	@Override
 	public List<ServiceDashRep> getQuantitiesHandByCategory() {
 	
-		List<ServiceDashProjection> list = inventoryRepository.findHandByCategorys();
+		List<ServiceDashProjection> list = null;//inventoryRepository.findHandByCategorys();
 		List<ServiceDashRep> data = new ArrayList();
 		if(list!=null && !list.isEmpty()) {
 			for(ServiceDashProjection el : list) {
@@ -56,7 +56,7 @@ public class OverallStatsServiceImpl implements OverallStatsService {
 	@Override
 	public List<ServiceDashRep> getQuantitiesHandByLocation() {
 		
-		List<ServiceDashProjection> list = inventoryRepository.findHandByLocation();
+		List<ServiceDashProjection> list = null; //inventoryRepository.findHandByLocation();
 		List<ServiceDashRep> data = new ArrayList();
 		if(list!=null && !list.isEmpty()) {
 			for(ServiceDashProjection el : list) {

@@ -1,18 +1,27 @@
 package com.axilog.cov.domain;
 
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
-
-import java.io.Serializable;
-import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * A PurchaseOrder.
@@ -41,16 +50,16 @@ public class PurchaseOrder implements Serializable {
     private String createdBy;
 
     @Column(name = "created_on")
-    private LocalDate createdOn;
+    private Date createdOn;
 
     @Column(name = "delivered_date")
-    private LocalDate deliveredDate;
+    private Date deliveredDate;
 
     @Column(name = "updated_at")
-    private LocalDate updatedAt;
+    private Date updatedAt;
 
     @Column(name = "created_at")
-    private LocalDate createdAt;
+    private Date createdAt;
 
     @OneToMany(mappedBy = "purchaseOrder")
     private Set<PoStatus> poStatuses = new HashSet<>();
@@ -59,9 +68,8 @@ public class PurchaseOrder implements Serializable {
     @JsonIgnoreProperties(value = "purchaseOrders", allowSetters = true)
     private Outlet outlet;
 
-    @ManyToOne
-    @JsonIgnoreProperties(value = "purchaseOrders", allowSetters = true)
-    private Product product;
+    @OneToMany
+    private List<Product> products;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
     public Long getId() {
@@ -111,57 +119,6 @@ public class PurchaseOrder implements Serializable {
         this.createdBy = createdBy;
     }
 
-    public LocalDate getCreatedOn() {
-        return createdOn;
-    }
-
-    public PurchaseOrder createdOn(LocalDate createdOn) {
-        this.createdOn = createdOn;
-        return this;
-    }
-
-    public void setCreatedOn(LocalDate createdOn) {
-        this.createdOn = createdOn;
-    }
-
-    public LocalDate getDeliveredDate() {
-        return deliveredDate;
-    }
-
-    public PurchaseOrder deliveredDate(LocalDate deliveredDate) {
-        this.deliveredDate = deliveredDate;
-        return this;
-    }
-
-    public void setDeliveredDate(LocalDate deliveredDate) {
-        this.deliveredDate = deliveredDate;
-    }
-
-    public LocalDate getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public PurchaseOrder updatedAt(LocalDate updatedAt) {
-        this.updatedAt = updatedAt;
-        return this;
-    }
-
-    public void setUpdatedAt(LocalDate updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public LocalDate getCreatedAt() {
-        return createdAt;
-    }
-
-    public PurchaseOrder createdAt(LocalDate createdAt) {
-        this.createdAt = createdAt;
-        return this;
-    }
-
-    public void setCreatedAt(LocalDate createdAt) {
-        this.createdAt = createdAt;
-    }
 
     public Set<PoStatus> getPoStatuses() {
         return poStatuses;
@@ -201,18 +158,7 @@ public class PurchaseOrder implements Serializable {
         this.outlet = outlet;
     }
 
-    public Product getProduct() {
-        return product;
-    }
-
-    public PurchaseOrder product(Product product) {
-        this.product = product;
-        return this;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
-    }
+    
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override

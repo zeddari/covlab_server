@@ -8,12 +8,13 @@
 </head>
 
 <body>
-	<img class="logo" src="images/logo.png" />
+	<img th:src="@{content/images/pdf_logo.jpg}" />
+
 	<span class="titles-style"
 		th:text="|Products / Count: ${#lists.size(inventories)}|"></span>
 
 	<!-- Students Table -->
-	<div id="students">
+	<div id="inventories">
 		<div th:if="${not #lists.isEmpty(inventories)}">
 			<table class="students_table paginate-table">
 				<thead>
@@ -35,6 +36,6 @@
 			</table>
 		</div>
 	</div>
-
+<img th:src="@{content/images/pdf_footer.jpg}" />
 </body>
 </html>

@@ -92,10 +92,11 @@ public class PurchaseOrderResourceIT {
             .orderNo(DEFAULT_ORDER_NO)
             .quantity(DEFAULT_QUANTITY)
             .createdBy(DEFAULT_CREATED_BY)
-            .createdOn(DEFAULT_CREATED_ON)
-            .deliveredDate(DEFAULT_DELIVERED_DATE)
-            .updatedAt(DEFAULT_UPDATED_AT)
-            .createdAt(DEFAULT_CREATED_AT);
+//            .createdOn(DEFAULT_CREATED_ON)
+//            .deliveredDate(DEFAULT_DELIVERED_DATE)
+//            .updatedAt(DEFAULT_UPDATED_AT)
+//            .createdAt(DEFAULT_CREATED_AT)
+            ;
         return purchaseOrder;
     }
     /**
@@ -109,10 +110,11 @@ public class PurchaseOrderResourceIT {
             .orderNo(UPDATED_ORDER_NO)
             .quantity(UPDATED_QUANTITY)
             .createdBy(UPDATED_CREATED_BY)
-            .createdOn(UPDATED_CREATED_ON)
-            .deliveredDate(UPDATED_DELIVERED_DATE)
-            .updatedAt(UPDATED_UPDATED_AT)
-            .createdAt(UPDATED_CREATED_AT);
+//            .createdOn(UPDATED_CREATED_ON)
+//            .deliveredDate(UPDATED_DELIVERED_DATE)
+//            .updatedAt(UPDATED_UPDATED_AT)
+//            .createdAt(UPDATED_CREATED_AT)
+            ;
         return purchaseOrder;
     }
 
@@ -980,7 +982,7 @@ public class PurchaseOrderResourceIT {
         Product product = ProductResourceIT.createEntity(em);
         em.persist(product);
         em.flush();
-        purchaseOrder.setProduct(product);
+//        purchaseOrder.setProduct(product);
         purchaseOrderRepository.saveAndFlush(purchaseOrder);
         Long productId = product.getId();
 
@@ -1055,10 +1057,11 @@ public class PurchaseOrderResourceIT {
             .orderNo(UPDATED_ORDER_NO)
             .quantity(UPDATED_QUANTITY)
             .createdBy(UPDATED_CREATED_BY)
-            .createdOn(UPDATED_CREATED_ON)
-            .deliveredDate(UPDATED_DELIVERED_DATE)
-            .updatedAt(UPDATED_UPDATED_AT)
-            .createdAt(UPDATED_CREATED_AT);
+//            .createdOn(UPDATED_CREATED_ON)
+//            .deliveredDate(UPDATED_DELIVERED_DATE)
+//            .updatedAt(UPDATED_UPDATED_AT)
+//            .createdAt(UPDATED_CREATED_AT)
+            ;
 
         restPurchaseOrderMockMvc.perform(put("/api/purchase-orders")
             .contentType(MediaType.APPLICATION_JSON)

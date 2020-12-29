@@ -27,8 +27,6 @@ public class PurchaseOrderMapper {
 				.createdAtPo(purchaseOrder.getCreatedAt())
 				.region(purchaseOrder.getOutlet().getOutletRegion())
 				.statusPo(purchaseOrder.getPoStatuses().stream().max(Comparator.comparing(PoStatus::getUpdatedAt)).get().getStatus())
-				.codeProductPo(purchaseOrder.getProduct().getProductCode())
-				.descProPo(purchaseOrder.getProduct().getDescription())
 				.build();
 	}
 	

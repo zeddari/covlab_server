@@ -1,6 +1,7 @@
 package com.axilog.cov.dto.representation;
 
-import java.time.LocalDate;
+import java.util.Date;
+
 import lombok.Builder;
 import lombok.Data;
 
@@ -11,10 +12,10 @@ public class PurchaseOrderDetail {
 	private float PoNo;
 	 private Double quantityPo;
 	 private String createdByPo;
-	 private LocalDate createdOnPO;	
-	 private LocalDate deliveredDatePo;
-	 private LocalDate updatedAtPo;
-	 private LocalDate createdAtPo;
+	 private Date createdOnPO;	
+	 private Date deliveredDatePo;
+	 private Date updatedAtPo;
+	 private Date createdAtPo;
 	 private String region;
 	 private String statusPo;
 	 private String codeProductPo;

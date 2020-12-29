@@ -476,7 +476,7 @@ public class ProductResourceIT {
         PurchaseOrder purchaseOrders = PurchaseOrderResourceIT.createEntity(em);
         em.persist(purchaseOrders);
         em.flush();
-        product.addPurchaseOrders(purchaseOrders);
+//        product.addPurchaseOrders(purchaseOrders);
         productRepository.saveAndFlush(product);
         Long purchaseOrdersId = purchaseOrders.getId();
 
