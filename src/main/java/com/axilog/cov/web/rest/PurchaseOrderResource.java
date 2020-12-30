@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,19 +41,24 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.thymeleaf.context.Context;
 
 import com.axilog.cov.domain.Inventory;
+import com.axilog.cov.domain.Outlet;
 import com.axilog.cov.domain.PoStatus;
 import com.axilog.cov.domain.Product;
 import com.axilog.cov.domain.PurchaseOrder;
 import com.axilog.cov.domain.Sequence;
 import com.axilog.cov.dto.mapper.InventoryMapper;
+import com.axilog.cov.dto.mapper.PurchaseOrderMapper;
 import com.axilog.cov.dto.representation.InventoryDetail;
 import com.axilog.cov.dto.representation.InventoryPdfDetail;
 import com.axilog.cov.dto.representation.PoPdfDetail;
+import com.axilog.cov.dto.representation.PurchaseOrderDetail;
+import com.axilog.cov.dto.representation.PurchaseOrderRepresentation;
 import com.axilog.cov.repository.PoStatusRepository;
 import com.axilog.cov.repository.SequenceRepository;
 import com.axilog.cov.security.SecurityUtils;
 import com.axilog.cov.service.InventoryService;
 import com.axilog.cov.service.MailService;
+import com.axilog.cov.service.OutletService;
 import com.axilog.cov.service.PurchaseOrderQueryService;
 import com.axilog.cov.service.PurchaseOrderService;
 import com.axilog.cov.service.dto.PurchaseOrderCriteria;
@@ -100,10 +106,16 @@ public class PurchaseOrderResource {
     private InventoryMapper inventoryMapper;
     
     @Autowired
+    private PurchaseOrderMapper purchaseOrderMapper;
+    
+    @Autowired
     private PoStatusRepository poStatusRepository;
     
     @Autowired
     private SequenceRepository sequenceRepository;
+    
+    @Autowired
+    private OutletService outletService;
     
     @Value("${poReceiverEmail}")
     private String poReceiverEmail;
@@ -172,6 +184,18 @@ public class PurchaseOrderResource {
     }
 
     /**
+     * @param criteria
+     * @param pageable
+     * @return
+     */
+    @GetMapping("/purchaseOrders/list")
+    public ResponseEntity<PurchaseOrderRepresentation> getPurchaseOrders(PurchaseOrderCriteria criteria, Pageable pageable) {
+        log.debug("REST request to get PurchaseOrders by criteria: {}", criteria);
+        List<PurchaseOrder> poList = purchaseOrderService.findAll();
+        PurchaseOrderRepresentation purchaseOrderRepresentation = purchaseOrderMapper.toPurchaseRepresentation(poList);
+        return ResponseEntity.ok().body(purchaseOrderRepresentation);
+    }
+    /**
      * {@code GET  /purchase-orders/count} : count all the purchaseOrders.
      *
      * @param criteria the criteria which the requested entities should match.
@@ -215,8 +239,9 @@ public class PurchaseOrderResource {
         log.info("schedule tasks For Auto Replunish using cron jobs - " + now);
         List<Inventory> inventories = getProductToBeOrdered();
         List<PurchaseOrder> orders = purchaseOrderService.findAll();
+        List<Outlet> outlets = outletService.findAll();
+        
         List<Product> productsHavePo = new ArrayList<>();
-        List<Product> productsToBeInPo = new ArrayList<>();
         if (orders != null) {
         	orders.forEach(order -> {
         		if (!order.getPoStatuses().contains(PoStatus.builder().status("CLOSED").build())) {
@@ -225,47 +250,63 @@ public class PurchaseOrderResource {
         		
         	});
         }
-        if (inventories != null) {
-        	productsToBeInPo = inventories.stream().map(Inventory ::  getProduct).filter(product -> !productsHavePo.contains(product)).collect(Collectors.toList());
-        }
-        PoPdfDetail details = inventoryMapper.toPdfListDetail(inventories, productsToBeInPo);
-        if (details == null || details.getListDetails() == null || details.getListDetails().isEmpty()) {
-        	log.info("No Po to be ordered");
-        }
-        else {
-        	 File poPdf = pdfService.generatePdf(details);
-             List<Product> products = new ArrayList<>();
-             if (inventories != null) {
-             	products = inventories.stream().map(Inventory:: getProduct).collect(Collectors.toList());
-             }
-             String login = "NA";
-             if (SecurityUtils.getCurrentUserLogin().isPresent()) {
-             	login = SecurityUtils.getCurrentUserLogin().get();
-             }
-             PoStatus poStatus = PoStatus.builder().status("CREATED").updatedAt(DateUtil.now()).build();
-             poStatus = poStatusRepository.save(poStatus);
-             
-             Set<PoStatus> poStatusList = new HashSet<>();
-             poStatusList.add(poStatus);
-             Sequence currSeq = sequenceRepository.curVal();
-             Long currVal = currSeq.getCurrentNumber();
-             currVal = currVal + 1;
-             currSeq.setCurrentNumber(currVal);
-             sequenceRepository.save(currSeq);
-             
-             PurchaseOrder po = PurchaseOrder.builder()
-     				.products(products)
-     				.createdAt(DateUtil.now())
-     				.createdBy(login)
-     				.poStatuses(poStatusList)
-     				.orderNo(currVal)
-     				.build();
-     		PurchaseOrder result = purchaseOrderService.save(po);
-     		Context context = pdfService.getContext(null, "mailDetail");
-     		String html = pdfService.loadAndFillTemplate(context, "mail/poEmail");
-     		mailService.sendEmail(poReceiverEmail, poSubjectEmail, html, true, true);
-        }
-       
+        
+        
+        outlets.forEach(outlet -> {
+		try {
+			List<Product> productsToBeInPo = new ArrayList<>();
+			if (inventories != null) {
+	        	productsToBeInPo = inventories.stream().map(Inventory ::  getProduct).filter(product -> !productsHavePo.contains(product)).collect(Collectors.toList());
+	        }
+			List<Inventory> inventoriesPerOutlet = inventories.stream().filter(inventory -> inventory.getOutlet().equals(outlet)).collect(Collectors.toList());
+    		PoPdfDetail detail = inventoryMapper.toPdfListDetail(inventoriesPerOutlet, productsToBeInPo, outlet);
+            if (detail == null || detail.getListDetails() == null || detail.getListDetails().isEmpty()) {
+            	log.info("No Po to be ordered");
+            }
+            else {
+            	File poPdf = pdfService.generatePdf(detail);
+        		byte[] fileContent = FileUtils.readFileToByteArray(poPdf);
+                List<Product> products = new ArrayList<>();
+                if (inventories != null) {
+                	products = inventories.stream().map(Inventory:: getProduct).collect(Collectors.toList());
+                }
+                String login = "NA";
+                if (SecurityUtils.getCurrentUserLogin().isPresent()) {
+                	login = SecurityUtils.getCurrentUserLogin().get();
+                }
+                PoStatus poStatus = PoStatus.builder().status("CREATED").updatedAt(DateUtil.now()).build();
+                poStatus = poStatusRepository.save(poStatus);
+                
+                Set<PoStatus> poStatusList = new HashSet<>();
+                poStatusList.add(poStatus);
+                Sequence currSeq = sequenceRepository.curVal();
+                Long currVal = currSeq.getCurrentNumber();
+                currVal = currVal + 1;
+                currSeq.setCurrentNumber(currVal);
+                sequenceRepository.save(currSeq);
+                
+                PurchaseOrder po = PurchaseOrder.builder()
+        				.products(products)
+        				.createdAt(DateUtil.now())
+        				.createdBy(login)
+        				.poStatuses(poStatusList)
+        				.orderNo(currVal)
+        				.data(fileContent)
+        				.outlet(outlet)
+        				.build();
+        		PurchaseOrder result = purchaseOrderService.save(po);
+        		Context context = pdfService.getContext(null, "mailDetail");
+        		String html = pdfService.loadAndFillTemplate(context, "mail/poEmail");
+        		mailService.sendEmailWithAttachment(poReceiverEmail, poSubjectEmail, html, true, true, "orders.pdf");
+            }
+			
+		}
+		catch(Exception e) {
+			log.error("Exception when looping over inventory to create their Po", e);
+		}
+		
+	});
+        	 
         
     }
     

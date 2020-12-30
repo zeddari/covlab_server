@@ -50,6 +50,9 @@ public class OverallStats implements Serializable {
     @Column(name = "overall_outlet_performance_score")
     private Double overallOutletPerformanceScore;
     
+    @Column(name = "current_balance")
+    private Double currentBalance;
+    
     @Column(name = "last_updated_at")
     @Id
     private Date lastUpdatedAt;

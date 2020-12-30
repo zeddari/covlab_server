@@ -141,7 +141,7 @@ jhipster:
   #     allow-credentials: true
   #     max-age: 1800
   mail:
-    from: covlabServer@localhost
+    from: BGI-orders@nupco.com
   swagger:
     default-include-pattern: /api/.*
     title: covlabServer API
@@ -172,7 +172,7 @@ outlet:
     pressureMin: 1000
     pressureMax: 1000
 autoReplenishCron: '*/10 * * * * *'
-poReceiverEmail: regragui.99@gmail.com
+poReceiverEmail: azeddari@gmail.com
 poSubjectEmail: 'New Po for you'
 vendor: 'Nupco'
 contactPersonName: 'Mohammed Alqahtani'

@@ -15,4 +15,5 @@ public class PoPdfDetail {
 
 	private List<InventoryPdfDetail> listDetails;
 	private HeaderPdfDetail headerPdfDetail;
+	private String outlet;
 }

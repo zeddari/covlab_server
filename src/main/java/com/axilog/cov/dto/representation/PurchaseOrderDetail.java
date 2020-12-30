@@ -10,15 +10,16 @@ import lombok.Data;
 public class PurchaseOrderDetail {
 
 	private float PoNo;
-	 private Double quantityPo;
-	 private String createdByPo;
-	 private Date createdOnPO;	
-	 private Date deliveredDatePo;
-	 private Date updatedAtPo;
-	 private Date createdAtPo;
-	 private String region;
-	 private String statusPo;
-	 private String codeProductPo;
-	 private String descProPo;
+	 private Double quantity;
+	 private String createdBy;
+	 private Date createdOn;	
+	 private Date deliveredDate;
+	 private Date updatedAt;
+	 private Date createdAt;
+	 private String outlet;
+	 private String status;
+	 private String codeProduct;
+	 private String descPro;
+	 private byte[] data;
 	
 }

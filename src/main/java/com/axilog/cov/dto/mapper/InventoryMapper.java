@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.axilog.cov.domain.Inventory;
+import com.axilog.cov.domain.Outlet;
 import com.axilog.cov.domain.OverallStats;
 import com.axilog.cov.domain.Product;
 import com.axilog.cov.dto.representation.HeaderPdfDetail;
@@ -103,6 +104,7 @@ public class InventoryMapper {
 				.totalVaccinesReceivedAtOutlets(overallStats.getTotalVaccinesReceivedAtOutlets())
 				.warehouseFillingRate(overallStats.getWarehouseFillingRate())
 				.wastageVaccines(overallStats.getWastageVaccines())
+				.currentBalance(overallStats.getCurrentBalance())
 				.build();
 	}
 	
@@ -125,7 +127,7 @@ public class InventoryMapper {
 	 * @param inventories
 	 * @return
 	 */
-	public PoPdfDetail toPdfListDetail(List<Inventory> inventories, List<Product> productsToBeInPo) {
+	public PoPdfDetail toPdfListDetail(List<Inventory> inventories, List<Product> productsToBeInPo, Outlet outlet) {
 		List<InventoryPdfDetail> inventoryPdfDetails = new ArrayList<>();
 		if (inventories == null) return PoPdfDetail.builder().build();
 		inventories.forEach(inv -> {
@@ -148,6 +150,6 @@ public class InventoryMapper {
 				.contactPersonMobile(contactPersonPhone)
 				.contactPersonName(contactPersonName)
 				.build();
-		return PoPdfDetail.builder().listDetails(inventoryPdfDetails).headerPdfDetail(headerPdfDetail).build();
+		return PoPdfDetail.builder().listDetails(inventoryPdfDetails).headerPdfDetail(headerPdfDetail).outlet(outlet.getOutletName()).build();
 	}
 }

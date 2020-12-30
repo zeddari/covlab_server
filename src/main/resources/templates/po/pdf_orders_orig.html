@@ -1,0 +1,61 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Products</title>
+<bookmarks> <bookmark name="Products" href="#poPdfDetail.listDetails"></bookmark>
+</bookmarks>
+<link rel="stylesheet" type="text/css" href="css/style.css" />
+</head>
+
+<body>
+	<img th:src="@{content/images/pdf_logo.jpg}" />
+
+
+<div>
+
+<div style="position:absolute;left:43.00px;top:162.00px" class="cls_002"><span class="cls_002">Purchase Order #: </span><span th:text="${poPdfDetail.headerPdfDetail.orderNumber}"></span></div>
+<div style="position:absolute;left:701.00px;top:162.00px" class="cls_002"><span class="cls_002">Vendor: Nupco</span></div>
+<div style="position:absolute;left:43.00px;top:186.00px" class="cls_002"><span class="cls_002">Created: 2020-12-24</span></div>
+<div style="position:absolute;left:552.00px;top:186.00px" class="cls_002"><span class="cls_002">Contact Person: Mohammed Alqahtani</span></div>
+<div style="position:absolute;left:43.00px;top:210.00px" class="cls_002"><span class="cls_002">Due Date: 2021-01-03</span></div>
+<div style="position:absolute;left:631.00px;top:210.00px" class="cls_002"><span class="cls_002">Mobile: +966 55 086 0179</span></div>
+<div style="position:absolute;left:43.00px;top:234.00px" class="cls_002"><span class="cls_002">Destination: NHL</span></div>
+<div style="position:absolute;left:521.00px;top:234.00px" class="cls_002"><span class="cls_002">Email: m.hmoud.alqahtani@ascend.com.sa</span></div>
+<div style="position:absolute;left:36.00px;top:308.00px" class="cls_003"><span class="cls_003">Code</span></div>
+<div style="position:absolute;left:530.00px;top:308.00px" class="cls_003"><span class="cls_003">Product Name Quantity  UO</span></div>
+<div style="position:absolute;left:36.00px;top:345.00px" class="cls_002"><span class="cls_002">HW4412</span></div>
+<div style="position:absolute;left:419.00px;top:345.00px" class="cls_002"><span class="cls_002">BGI 2019-NCOV RT-PCR KIT, 50 TESTS</span></div>
+
+</div>
+
+	
+
+	<span class="titles-style"
+		th:text="|Products / Count: ${#lists.size(poPdfDetail.listDetails)}|"></span>
+
+	<!-- Students Table -->
+	<div id="poPdfDetail.listDetails">
+		<div th:if="${not #lists.isEmpty(poPdfDetail.listDetails)}">
+			<table class="students_table paginate-table">
+				<thead>
+					<tr>
+						<th>Code</th>
+						<th>Product Name</th>
+						<th>Quantity</th>
+						<th>UO</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="inventory : ${poPdfDetail.listDetails}">
+						<td th:text="${inventory.code}"></td>
+						<td th:text="${inventory.description}"></td>
+						<td th:text="${inventory.quantity}"></td>
+						<td th:text="${inventory.uom}"></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+<img th:src="@{content/images/pdf_footer.jpg}" />
+</body>
+</html>

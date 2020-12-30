@@ -30,6 +30,7 @@ public class OverallStatsRepresentation implements Serializable {
     private Double stockoutRatio;
     private Double warehouseFillingRate;
     private Double overallOutletPerformanceScore;
+    private Double currentBalance;
     
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date lastUpdatedAt;

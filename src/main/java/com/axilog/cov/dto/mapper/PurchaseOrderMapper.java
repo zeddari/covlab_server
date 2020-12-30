@@ -19,14 +19,15 @@ public class PurchaseOrderMapper {
 	public PurchaseOrderDetail toPurchaseOrderDetail(PurchaseOrder purchaseOrder) {
 		return PurchaseOrderDetail.builder()
 				.PoNo(purchaseOrder.getOrderNo())
-				.quantityPo(purchaseOrder.getQuantity())
-				.createdByPo(purchaseOrder.getCreatedBy())
-				.createdOnPO(purchaseOrder.getCreatedOn())
-				.deliveredDatePo(purchaseOrder.getDeliveredDate())
-				.updatedAtPo(purchaseOrder.getUpdatedAt())
-				.createdAtPo(purchaseOrder.getCreatedAt())
-				.region(purchaseOrder.getOutlet().getOutletRegion())
-				.statusPo(purchaseOrder.getPoStatuses().stream().max(Comparator.comparing(PoStatus::getUpdatedAt)).get().getStatus())
+				.quantity(purchaseOrder.getQuantity())
+				.createdBy(purchaseOrder.getCreatedBy())
+				.createdOn(purchaseOrder.getCreatedOn())
+				.deliveredDate(purchaseOrder.getDeliveredDate())
+				.updatedAt(purchaseOrder.getUpdatedAt())
+				.createdAt(purchaseOrder.getCreatedAt())
+				.outlet(purchaseOrder.getOutlet() != null ? purchaseOrder.getOutlet().getOutletName() : null)
+				.status(purchaseOrder.getPoStatuses().stream().max(Comparator.comparing(PoStatus::getUpdatedAt)).get().getStatus())
+				.data(purchaseOrder.getData())
 				.build();
 	}
 	

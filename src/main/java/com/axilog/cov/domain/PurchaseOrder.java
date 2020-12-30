@@ -61,6 +61,9 @@ public class PurchaseOrder implements Serializable {
 
     @Column(name = "created_at")
     private Date createdAt;
+    
+    @Column(name = "data")
+    private byte[] data;
 
     @OneToMany(fetch = FetchType.EAGER)
     private Set<PoStatus> poStatuses = new HashSet<>();
