@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +13,9 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
-import com.axilog.cov.domain.Inventory;
 import com.axilog.cov.dto.mapper.InventoryMapper;
 import com.axilog.cov.dto.representation.InventoryPdfDetail;
+import com.axilog.cov.dto.representation.PoPdfDetail;
 import com.axilog.cov.service.InventoryService;
 import com.lowagie.text.DocumentException;
 
@@ -36,9 +35,9 @@ public class PdfService {
         this.templateEngine = templateEngine;
     }
 
-    public File generatePdf(List<InventoryPdfDetail> details ) throws IOException, DocumentException {
-        Context context = getContext(details);
-        String html = loadAndFillTemplate(context);
+    public File generatePdf(PoPdfDetail details ) throws IOException, DocumentException {
+        Context context = getContext(details, "poPdfDetail");
+        String html = loadAndFillTemplate(context, "po/pdf_orders");
         return renderPdf(html);
     }
 
@@ -55,15 +54,14 @@ public class PdfService {
         return file;
     }
 
-    private Context getContext(List<InventoryPdfDetail> details) {
+    public Context getContext(PoPdfDetail details, String variableName) {
         Context context = new Context();
-        
-        context.setVariable("inventories", details);
+        context.setVariable(variableName, details);
         return context;
     }
 
-    private String loadAndFillTemplate(Context context) {
-        return templateEngine.process("po/pdf_orders", context);
+    public String loadAndFillTemplate(Context context, String templateName) {
+        return templateEngine.process(templateName, context);
     }
 
 

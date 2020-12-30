@@ -1,11 +1,12 @@
 package com.axilog.cov.service;
 
-import com.axilog.cov.domain.PurchaseOrder;
+import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.Optional;
+import com.axilog.cov.domain.PurchaseOrder;
 
 /**
  * Service Interface for managing {@link PurchaseOrder}.
@@ -28,6 +29,10 @@ public interface PurchaseOrderService {
      */
     Page<PurchaseOrder> findAll(Pageable pageable);
 
+    /**
+     * @return
+     */
+    List<PurchaseOrder> findAll();
 
     /**
      * Get the "id" purchaseOrder.

@@ -2,21 +2,44 @@ package com.axilog.cov.dto.mapper;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.axilog.cov.domain.Inventory;
 import com.axilog.cov.domain.OverallStats;
+import com.axilog.cov.domain.Product;
+import com.axilog.cov.dto.representation.HeaderPdfDetail;
 import com.axilog.cov.dto.representation.InventoryDetail;
 import com.axilog.cov.dto.representation.InventoryPdfDetail;
 import com.axilog.cov.dto.representation.InventoryRepresentation;
 import com.axilog.cov.dto.representation.OverallStatsRepresentation;
+import com.axilog.cov.dto.representation.PoPdfDetail;
+import com.axilog.cov.util.DateUtil;
 
 @Component
 public class InventoryMapper {
+	
+	@Value("${vendor}")
+	private String vendor;
+	
+	@Value("${contactPersonName}")
+	private String contactPersonName;
+	
+	@Value("${contactPersonPhone}")
+	private String contactPersonPhone;
+	
+	@Value("${contactPersonEmail}")
+	private String contactPersonEmail;
+	
+	@Value("${destination}")
+	private String destination;
 	/**
 	 * @param inventory
 	 * @return
@@ -88,10 +111,13 @@ public class InventoryMapper {
 	 * @return
 	 */
 	public InventoryPdfDetail toPdfDetail(Inventory inventory) {
+		Double nextCapacity = 20  - inventory.getCapacity();
+		Double desiredQty = nextCapacity * inventory.getActualAvgConsumption();
 		return InventoryPdfDetail.builder()
 				.code(inventory.getProduct().getProductCode())
 				.description(inventory.getProduct().getDescription())
 				.uom(inventory.getUom())
+				.quantity(desiredQty)
 				.build();
 	}
 	
@@ -99,12 +125,29 @@ public class InventoryMapper {
 	 * @param inventories
 	 * @return
 	 */
-	public List<InventoryPdfDetail> toPdfListDetail(List<Inventory> inventories) {
+	public PoPdfDetail toPdfListDetail(List<Inventory> inventories, List<Product> productsToBeInPo) {
 		List<InventoryPdfDetail> inventoryPdfDetails = new ArrayList<>();
-		if (inventories == null) return inventoryPdfDetails;
+		if (inventories == null) return PoPdfDetail.builder().build();
 		inventories.forEach(inv -> {
-			inventoryPdfDetails.add(toPdfDetail(inv));
+			if (productsToBeInPo.contains(inv.getProduct())) {
+				inventoryPdfDetails.add(toPdfDetail(inv));
+			}
+			
 		});
-		return inventoryPdfDetails;
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd HH:MM:SS");
+		String creationDate =  sdf.format(DateUtil.now()); 
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DAY_OF_MONTH, 10);
+		Date dateTenDays = cal.getTime();
+		String dueDate = sdf.format(dateTenDays); 
+		HeaderPdfDetail headerPdfDetail = HeaderPdfDetail.builder().destination(destination)
+				.creationDate(creationDate)
+				.DueDate(dueDate)
+				.vendor(vendor)
+				.contactPersonEmail(contactPersonEmail)
+				.contactPersonMobile(contactPersonPhone)
+				.contactPersonName(contactPersonName)
+				.build();
+		return PoPdfDetail.builder().listDetails(inventoryPdfDetails).headerPdfDetail(headerPdfDetail).build();
 	}
 }

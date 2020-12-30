@@ -150,3 +150,10 @@
   -webkit-animation-delay: 0s;
   animation-delay: 0s;
 }
+.main {  width:100%;;}
+.left { vertical-align: top;
+       float: left; 
+       width: 50%;}
+.right { vertical-align: top;
+       float: right;
+       width: 50%;}

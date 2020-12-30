@@ -37,14 +37,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.thymeleaf.context.Context;
 
 import com.axilog.cov.domain.Inventory;
 import com.axilog.cov.domain.PoStatus;
 import com.axilog.cov.domain.Product;
 import com.axilog.cov.domain.PurchaseOrder;
+import com.axilog.cov.domain.Sequence;
 import com.axilog.cov.dto.mapper.InventoryMapper;
 import com.axilog.cov.dto.representation.InventoryDetail;
 import com.axilog.cov.dto.representation.InventoryPdfDetail;
+import com.axilog.cov.dto.representation.PoPdfDetail;
+import com.axilog.cov.repository.PoStatusRepository;
+import com.axilog.cov.repository.SequenceRepository;
 import com.axilog.cov.security.SecurityUtils;
 import com.axilog.cov.service.InventoryService;
 import com.axilog.cov.service.MailService;
@@ -60,6 +65,7 @@ import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
 import io.swagger.annotations.Api;
+import liquibase.pro.packaged.de;
 
 /**
  * REST controller for managing {@link com.axilog.cov.domain.PurchaseOrder}.
@@ -92,6 +98,18 @@ public class PurchaseOrderResource {
     
     @Autowired
     private InventoryMapper inventoryMapper;
+    
+    @Autowired
+    private PoStatusRepository poStatusRepository;
+    
+    @Autowired
+    private SequenceRepository sequenceRepository;
+    
+    @Value("${poReceiverEmail}")
+    private String poReceiverEmail;
+    
+    @Value("${poSubjectEmail}")
+    private String poSubjectEmail;
     
     public PurchaseOrderResource(PurchaseOrderService purchaseOrderService, PurchaseOrderQueryService purchaseOrderQueryService) {
         this.purchaseOrderService = purchaseOrderService;
@@ -196,27 +214,58 @@ public class PurchaseOrderResource {
         long now = System.currentTimeMillis() / 1000;
         log.info("schedule tasks For Auto Replunish using cron jobs - " + now);
         List<Inventory> inventories = getProductToBeOrdered();
-        List<InventoryPdfDetail> details = inventoryMapper.toPdfListDetail(inventories);
-        File poPdf = pdfService.generatePdf(details);
-        List<Product> products = new ArrayList<>();
+        List<PurchaseOrder> orders = purchaseOrderService.findAll();
+        List<Product> productsHavePo = new ArrayList<>();
+        List<Product> productsToBeInPo = new ArrayList<>();
+        if (orders != null) {
+        	orders.forEach(order -> {
+        		if (!order.getPoStatuses().contains(PoStatus.builder().status("CLOSED").build())) {
+        			productsHavePo.addAll(order.getProducts());
+        		}
+        		
+        	});
+        }
         if (inventories != null) {
-        	products = inventories.stream().map(Inventory:: getProduct).collect(Collectors.toList());
+        	productsToBeInPo = inventories.stream().map(Inventory ::  getProduct).filter(product -> !productsHavePo.contains(product)).collect(Collectors.toList());
         }
-        String login = "NA";
-        if (SecurityUtils.getCurrentUserLogin().isPresent()) {
-        	login = SecurityUtils.getCurrentUserLogin().get();
+        PoPdfDetail details = inventoryMapper.toPdfListDetail(inventories, productsToBeInPo);
+        if (details == null || details.getListDetails() == null || details.getListDetails().isEmpty()) {
+        	log.info("No Po to be ordered");
         }
-        Set<PoStatus> poStatus = new HashSet<>();
-        poStatus.add(PoStatus.builder().status("CREATED").updatedAt(DateUtil.now()).build());
-        PurchaseOrder po = PurchaseOrder.builder()
-				.products(products)
-				.createdAt(DateUtil.now())
-				.createdBy(login)
-				.quantity(1000.345)
-				.poStatuses(poStatus)
-				.build();
-		PurchaseOrder result = purchaseOrderService.save(po);
-		//mailService.sendEmail(to, subject, content, isMultipart, isHtml);
+        else {
+        	 File poPdf = pdfService.generatePdf(details);
+             List<Product> products = new ArrayList<>();
+             if (inventories != null) {
+             	products = inventories.stream().map(Inventory:: getProduct).collect(Collectors.toList());
+             }
+             String login = "NA";
+             if (SecurityUtils.getCurrentUserLogin().isPresent()) {
+             	login = SecurityUtils.getCurrentUserLogin().get();
+             }
+             PoStatus poStatus = PoStatus.builder().status("CREATED").updatedAt(DateUtil.now()).build();
+             poStatus = poStatusRepository.save(poStatus);
+             
+             Set<PoStatus> poStatusList = new HashSet<>();
+             poStatusList.add(poStatus);
+             Sequence currSeq = sequenceRepository.curVal();
+             Long currVal = currSeq.getCurrentNumber();
+             currVal = currVal + 1;
+             currSeq.setCurrentNumber(currVal);
+             sequenceRepository.save(currSeq);
+             
+             PurchaseOrder po = PurchaseOrder.builder()
+     				.products(products)
+     				.createdAt(DateUtil.now())
+     				.createdBy(login)
+     				.poStatuses(poStatusList)
+     				.orderNo(currVal)
+     				.build();
+     		PurchaseOrder result = purchaseOrderService.save(po);
+     		Context context = pdfService.getContext(null, "mailDetail");
+     		String html = pdfService.loadAndFillTemplate(context, "mail/poEmail");
+     		mailService.sendEmail(poReceiverEmail, poSubjectEmail, html, true, true);
+        }
+       
         
     }
     
@@ -233,7 +282,7 @@ public class PurchaseOrderResource {
     @GetMapping("/downloadPo")
     public void downloadPDFResource(HttpServletResponse response) {
         try {
-            Path file = Paths.get(pdfService.generatePdf(inventoryMapper.toPdfListDetail(getProductToBeOrdered())).getAbsolutePath());
+            Path file = null;//Paths.get(pdfService.generatePdf(inventoryMapper.toPdfListDetail(getProductToBeOrdered())).getAbsolutePath());
             if (Files.exists(file)) {
                 response.setContentType("application/pdf");
                 response.addHeader("Content-Disposition",
@@ -241,7 +290,7 @@ public class PurchaseOrderResource {
                 Files.copy(file, response.getOutputStream());
                 response.getOutputStream().flush();
             }
-        } catch (DocumentException | IOException ex) {
+        } catch (IOException ex) {
             ex.printStackTrace();
         }
     }

@@ -172,5 +172,11 @@ outlet:
     pressureMin: 1000
     pressureMax: 1000
 autoReplenishCron: '*/10 * * * * *'
-      
+poReceiverEmail: regragui.99@gmail.com
+poSubjectEmail: 'New Po for you'
+vendor: 'Nupco'
+contactPersonName: 'Mohammed Alqahtani'
+contactPersonEmail: 'm.hmoud.alqahtani@ascend.com.sa'
+contactPersonPhone: '+966 55 086 0179'
+destination: 'NHL'
       

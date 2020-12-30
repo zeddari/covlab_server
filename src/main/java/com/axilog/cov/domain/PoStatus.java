@@ -1,7 +1,6 @@
 package com.axilog.cov.domain;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -14,8 +13,10 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * A PoStatus.
@@ -24,6 +25,8 @@ import lombok.Data;
 @Table(name = "po_status")
 @Builder
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class PoStatus implements Serializable {
 
     private static final long serialVersionUID = 1L;
