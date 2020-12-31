@@ -1,6 +1,5 @@
 package com.axilog.cov.web.rest;
 
-import java.security.Principal;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -14,8 +13,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,6 +49,7 @@ import io.swagger.annotations.Api;
 @Api(tags = "Profile Management", value = "ProfileManagement", description = "Controller for Profile Management")
 public class AccountResource {
 
+	static String  codeVerirification = "";
     private static class AccountResourceException extends RuntimeException {
 
         private AccountResourceException(String message) {
@@ -213,6 +214,28 @@ public class AccountResource {
         }
     }
 
+    @GetMapping("/sendcodeverif")
+    public void sendVerificationCode() {
+        String username = SecurityUtils.getCurrentUserLogin()
+            .orElseThrow(() -> new AccountResourceException("Username not found"));
+
+        Optional<User> user = userRepository.findOneByLogin(username);
+        if (!user.isPresent()) {
+            throw new AccountResourceException("User could not be found");
+        }
+        String mail = user.get().getEmail();
+        codeVerirification= CodeVerification.randomVerificationCode();
+        String content = "Your verification code is: " + codeVerirification;
+        mailService.sendEmail(mail, "Verification Code", content, true, true);
+    }
+   
+	@GetMapping("/checkcodeverif/{code}")
+	public ResponseEntity<String> sendVerificationCode(@PathVariable(name = "code", required = true) String code) {
+		if (codeVerirification.equals(code))
+			return ResponseEntity.ok("{\"result\": \"success\"}");
+		return ResponseEntity.ok("{\"result\": \"failure\"}");
+	}
+    
     private static boolean checkPasswordLength(String password) {
         return (
             !StringUtils.isEmpty(password) &&

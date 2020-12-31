@@ -2,6 +2,8 @@ package com.axilog.cov.repository;
 
 import com.axilog.cov.domain.PurchaseOrder;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.*;
 import org.springframework.stereotype.Repository;
 
@@ -11,4 +13,6 @@ import org.springframework.stereotype.Repository;
 @SuppressWarnings("unused")
 @Repository
 public interface PurchaseOrderRepository extends JpaRepository<PurchaseOrder, Long>, JpaSpecificationExecutor<PurchaseOrder> {
+
+	List<PurchaseOrder> findByOrderNo(Long orderNo);
 }

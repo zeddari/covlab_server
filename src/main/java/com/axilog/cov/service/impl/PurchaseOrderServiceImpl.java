@@ -60,4 +60,13 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 	public List<PurchaseOrder> findAll() {
 		return purchaseOrderRepository.findAll();
 	}
+
+	@Override
+	public PurchaseOrder findByOrderNo(String orderNo) {
+		List<PurchaseOrder> purchaseOrders = purchaseOrderRepository.findByOrderNo(new Long(orderNo));
+		if (Optional.ofNullable(purchaseOrders).isPresent() && purchaseOrders.size() > 0) {
+			return purchaseOrders.get(0);
+		}
+		return null;
+	}
 }

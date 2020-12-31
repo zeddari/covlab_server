@@ -68,8 +68,7 @@ public class PurchaseOrder implements Serializable {
     @OneToMany(fetch = FetchType.EAGER)
     private Set<PoStatus> poStatuses = new HashSet<>();
 
-    @ManyToOne
-    @JsonIgnoreProperties(value = "purchaseOrders", allowSetters = true)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Outlet outlet;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -125,6 +124,7 @@ public class PurchaseOrder implements Serializable {
 
 
     public Set<PoStatus> getPoStatuses() {
+    	if (poStatuses == null) poStatuses = new HashSet<>();
         return poStatuses;
     }
 

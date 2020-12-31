@@ -42,7 +42,6 @@ public class PoStatus implements Serializable {
     private Date updatedAt;
 
     @ManyToOne
-    @JsonIgnoreProperties(value = "poStatuses", allowSetters = true)
     private PurchaseOrder purchaseOrder;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here

@@ -7,6 +7,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
@@ -46,6 +47,7 @@ import com.axilog.cov.domain.PoStatus;
 import com.axilog.cov.domain.Product;
 import com.axilog.cov.domain.PurchaseOrder;
 import com.axilog.cov.domain.Sequence;
+import com.axilog.cov.dto.command.PurchaseOrderCommand;
 import com.axilog.cov.dto.mapper.InventoryMapper;
 import com.axilog.cov.dto.mapper.PurchaseOrderMapper;
 import com.axilog.cov.dto.representation.InventoryDetail;
@@ -118,7 +120,7 @@ public class PurchaseOrderResource {
     private OutletService outletService;
     
     @Value("${poReceiverEmail}")
-    private String poReceiverEmail;
+    private String[] poReceiverEmail;
     
     @Value("${poSubjectEmail}")
     private String poSubjectEmail;
@@ -147,6 +149,26 @@ public class PurchaseOrderResource {
             .body(result);
     }
 
+    @PostMapping("/purchaseOrders/update")
+    public void updateStatusPurchaseOrder(@RequestBody PurchaseOrderCommand purchaseOrderCommand) throws URISyntaxException {
+        log.debug("REST request to save PurchaseOrder : {}", purchaseOrderCommand);
+        if (purchaseOrderCommand == null) {
+            throw new BadRequestAlertException("null body", ENTITY_NAME, "idexists");
+        }
+        PurchaseOrder result = purchaseOrderService.findByOrderNo(purchaseOrderCommand.getOrderNo());
+        if (result == null) {
+        	throw new BadRequestAlertException("Purchase Order does not exist with Order NO", ENTITY_NAME, "OrderNo does not exist");
+        }
+        List<PoStatus> poStatusExisting = result.getPoStatuses().stream().filter(poSt -> poSt.getStatus().equals(purchaseOrderCommand.getStatus())).collect(Collectors.toList());
+        if (poStatusExisting == null || poStatusExisting.isEmpty()) {
+            PoStatus poStatus = PoStatus.builder().status(purchaseOrderCommand.getStatus()).updatedAt(DateUtil.now()).build();
+            poStatus = poStatusRepository.save(poStatus);
+            result.getPoStatuses().add(poStatus);
+            result.setUpdatedAt(DateUtil.now());
+            result = purchaseOrderService.save(result);
+        }
+
+    }
     /**
      * {@code PUT  /purchase-orders} : Updates an existing purchaseOrder.
      *
@@ -254,12 +276,18 @@ public class PurchaseOrderResource {
         
         outlets.forEach(outlet -> {
 		try {
+			 Sequence currSeq = sequenceRepository.curVal();
+             Long currVal = currSeq.getCurrentNumber();
+             currVal = currVal + 1;
+             currSeq.setCurrentNumber(currVal);
+             sequenceRepository.save(currSeq);
+             
 			List<Product> productsToBeInPo = new ArrayList<>();
 			if (inventories != null) {
 	        	productsToBeInPo = inventories.stream().map(Inventory ::  getProduct).filter(product -> !productsHavePo.contains(product)).collect(Collectors.toList());
 	        }
 			List<Inventory> inventoriesPerOutlet = inventories.stream().filter(inventory -> inventory.getOutlet().equals(outlet)).collect(Collectors.toList());
-    		PoPdfDetail detail = inventoryMapper.toPdfListDetail(inventoriesPerOutlet, productsToBeInPo, outlet);
+    		PoPdfDetail detail = inventoryMapper.toPdfListDetail(inventoriesPerOutlet, productsToBeInPo, outlet, currVal);
             if (detail == null || detail.getListDetails() == null || detail.getListDetails().isEmpty()) {
             	log.info("No Po to be ordered");
             }
@@ -279,16 +307,13 @@ public class PurchaseOrderResource {
                 
                 Set<PoStatus> poStatusList = new HashSet<>();
                 poStatusList.add(poStatus);
-                Sequence currSeq = sequenceRepository.curVal();
-                Long currVal = currSeq.getCurrentNumber();
-                currVal = currVal + 1;
-                currSeq.setCurrentNumber(currVal);
-                sequenceRepository.save(currSeq);
-                
+               
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd HH:MM:SS");
                 PurchaseOrder po = PurchaseOrder.builder()
         				.products(products)
         				.createdAt(DateUtil.now())
         				.createdBy(login)
+        				.deliveredDate(sdf.parse(detail.getHeaderPdfDetail().getDueDate()))
         				.poStatuses(poStatusList)
         				.orderNo(currVal)
         				.data(fileContent)
@@ -297,7 +322,7 @@ public class PurchaseOrderResource {
         		PurchaseOrder result = purchaseOrderService.save(po);
         		Context context = pdfService.getContext(null, "mailDetail");
         		String html = pdfService.loadAndFillTemplate(context, "mail/poEmail");
-        		mailService.sendEmailWithAttachment(poReceiverEmail, poSubjectEmail, html, true, true, "orders.pdf");
+        		mailService.sendEmailWithAttachmentAndMultiple(poReceiverEmail, poSubjectEmail, html, true, true, "orders.pdf");
             }
 			
 		}

@@ -127,7 +127,7 @@ public class InventoryMapper {
 	 * @param inventories
 	 * @return
 	 */
-	public PoPdfDetail toPdfListDetail(List<Inventory> inventories, List<Product> productsToBeInPo, Outlet outlet) {
+	public PoPdfDetail toPdfListDetail(List<Inventory> inventories, List<Product> productsToBeInPo, Outlet outlet, Long poNumber) {
 		List<InventoryPdfDetail> inventoryPdfDetails = new ArrayList<>();
 		if (inventories == null) return PoPdfDetail.builder().build();
 		inventories.forEach(inv -> {
@@ -149,6 +149,7 @@ public class InventoryMapper {
 				.contactPersonEmail(contactPersonEmail)
 				.contactPersonMobile(contactPersonPhone)
 				.contactPersonName(contactPersonName)
+				.orderNumber(Long.toString(poNumber))
 				.build();
 		return PoPdfDetail.builder().listDetails(inventoryPdfDetails).headerPdfDetail(headerPdfDetail).outlet(outlet.getOutletName()).build();
 	}

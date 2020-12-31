@@ -172,7 +172,7 @@ outlet:
     pressureMin: 1000
     pressureMax: 1000
 autoReplenishCron: '*/10 * * * * *'
-poReceiverEmail: azeddari@gmail.com
+poReceiverEmail: azeddari@gmail.com,azeddari@axi-log.com
 poSubjectEmail: 'New Po for you'
 vendor: 'Nupco'
 contactPersonName: 'Mohammed Alqahtani'
