@@ -1,16 +1,14 @@
 package com.axilog.cov.web.rest;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -47,14 +45,13 @@ import com.axilog.cov.domain.PoStatus;
 import com.axilog.cov.domain.Product;
 import com.axilog.cov.domain.PurchaseOrder;
 import com.axilog.cov.domain.Sequence;
+import com.axilog.cov.dto.command.POMailDetail;
 import com.axilog.cov.dto.command.PurchaseOrderCommand;
 import com.axilog.cov.dto.mapper.InventoryMapper;
 import com.axilog.cov.dto.mapper.PurchaseOrderMapper;
-import com.axilog.cov.dto.representation.InventoryDetail;
-import com.axilog.cov.dto.representation.InventoryPdfDetail;
 import com.axilog.cov.dto.representation.PoPdfDetail;
-import com.axilog.cov.dto.representation.PurchaseOrderDetail;
 import com.axilog.cov.dto.representation.PurchaseOrderRepresentation;
+import com.axilog.cov.enums.PurchaseStatusEnum;
 import com.axilog.cov.repository.PoStatusRepository;
 import com.axilog.cov.repository.SequenceRepository;
 import com.axilog.cov.security.SecurityUtils;
@@ -73,7 +70,6 @@ import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
 import io.swagger.annotations.Api;
-import liquibase.pro.packaged.de;
 
 /**
  * REST controller for managing {@link com.axilog.cov.domain.PurchaseOrder}.
@@ -119,11 +115,17 @@ public class PurchaseOrderResource {
     @Autowired
     private OutletService outletService;
     
-    @Value("${poReceiverEmail}")
-    private String[] poReceiverEmail;
+    @Value("${poEmailReceiver}")
+    private String[] poEmailReceiver;
     
     @Value("${poSubjectEmail}")
     private String poSubjectEmail;
+    
+    @Value("${poEmailApprovalLevel1}")
+    private String[] poEmailApprovalLevel1;
+    
+    @Value("${poEmailApprovalLevel2}")
+    private String[] poEmailApprovalLevel2;
     
     public PurchaseOrderResource(PurchaseOrderService purchaseOrderService, PurchaseOrderQueryService purchaseOrderQueryService) {
         this.purchaseOrderService = purchaseOrderService;
@@ -263,19 +265,20 @@ public class PurchaseOrderResource {
         List<PurchaseOrder> orders = purchaseOrderService.findAll();
         List<Outlet> outlets = outletService.findAll();
         
-        List<Product> productsHavePo = new ArrayList<>();
-        if (orders != null) {
-        	orders.forEach(order -> {
-        		if (!order.getPoStatuses().contains(PoStatus.builder().status("CLOSED").build())) {
-        			productsHavePo.addAll(order.getProducts());
-        		}
-        		
-        	});
-        }
+        
         
         
         outlets.forEach(outlet -> {
 		try {
+			List<Product> productsHavePo = new ArrayList<>();
+	        if (orders != null) {
+	        	orders.forEach(order -> {
+	        		if (!order.getPoStatuses().contains(PoStatus.builder().status("CLOSED").build()) && order.getOutlet().equals(outlet)) {
+	        			productsHavePo.addAll(order.getProducts());
+	        		}
+	        		
+	        	});
+	        }
 			 Sequence currSeq = sequenceRepository.curVal();
              Long currVal = currSeq.getCurrentNumber();
              currVal = currVal + 1;
@@ -302,11 +305,15 @@ public class PurchaseOrderResource {
                 if (SecurityUtils.getCurrentUserLogin().isPresent()) {
                 	login = SecurityUtils.getCurrentUserLogin().get();
                 }
-                PoStatus poStatus = PoStatus.builder().status("CREATED").updatedAt(DateUtil.now()).build();
-                poStatus = poStatusRepository.save(poStatus);
-                
                 Set<PoStatus> poStatusList = new HashSet<>();
-                poStatusList.add(poStatus);
+                
+                PoStatus poCreatedStatus = PoStatus.builder().status(PurchaseStatusEnum.CREATED.getLabel()).updatedAt(DateUtil.now()).build();
+                poCreatedStatus = poStatusRepository.save(poCreatedStatus);
+                poStatusList.add(poCreatedStatus);
+                
+                PoStatus poPending1Status = PoStatus.builder().status(PurchaseStatusEnum.PENDING_AP1.getLabel()).updatedAt(DateUtil.now()).build();
+                poPending1Status = poStatusRepository.save(poPending1Status);
+                poStatusList.add(poPending1Status);
                
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd HH:MM:SS");
                 PurchaseOrder po = PurchaseOrder.builder()
@@ -320,9 +327,15 @@ public class PurchaseOrderResource {
         				.outlet(outlet)
         				.build();
         		PurchaseOrder result = purchaseOrderService.save(po);
-        		Context context = pdfService.getContext(null, "mailDetail");
-        		String html = pdfService.loadAndFillTemplate(context, "mail/poEmail");
-        		mailService.sendEmailWithAttachmentAndMultiple(poReceiverEmail, poSubjectEmail, html, true, true, "orders.pdf");
+        		POMailDetail poMailDetail = POMailDetail.builder()
+        				.poNumber(currVal)
+        				.status(PurchaseStatusEnum.PENDING_AP2.getLabel())
+        				.approvalLevel(1)
+        				.emailToBeSent(true)
+        				.build();
+        		Context context = pdfService.getContext(poMailDetail, "mailDetail");
+        		String html = pdfService.loadAndFillTemplate(context, "mail/poApprovalEmail");
+        		mailService.sendEmailWithAttachmentAndMultiple(poEmailApprovalLevel1, poSubjectEmail, html, true, true, poPdf);
             }
 			
 		}
@@ -333,6 +346,66 @@ public class PurchaseOrderResource {
 	});
         	 
         
+    }
+    
+    
+    @PostMapping("/purchaseOrders/approval")
+    public void approvePurchaseOrder(@RequestBody PurchaseOrderCommand purchaseOrderCommand) throws URISyntaxException, IOException {
+        log.debug("REST request to save PurchaseOrder : {}", purchaseOrderCommand);
+        if (purchaseOrderCommand == null) {
+            throw new BadRequestAlertException("null body", ENTITY_NAME, "idexists");
+        }
+        PurchaseOrder result = purchaseOrderService.findByOrderNo(purchaseOrderCommand.getOrderNo());
+        if (result == null) {
+        	throw new BadRequestAlertException("Purchase Order does not exist with Order NO", ENTITY_NAME, "OrderNo does not exist");
+        }
+        List<PoStatus> poStatusExisting = result.getPoStatuses().stream().filter(poSt -> poSt.getStatus().equals(purchaseOrderCommand.getStatus())).collect(Collectors.toList());
+        if (poStatusExisting == null || poStatusExisting.isEmpty()) {
+            PoStatus poStatus = PoStatus.builder().status(purchaseOrderCommand.getStatus()).updatedAt(DateUtil.now()).build();
+            poStatus = poStatusRepository.save(poStatus);
+            result.getPoStatuses().add(poStatus);
+            result.setUpdatedAt(DateUtil.now());
+            result = purchaseOrderService.save(result);
+            
+            //
+            if (purchaseOrderCommand.isEmailToBeSent()) {
+            	
+        		if (purchaseOrderCommand.getApprovalLevel() == 1) {
+        			POMailDetail poMailDetail = POMailDetail.builder()
+            				.poNumber(result.getOrderNo())
+            				.status(PurchaseStatusEnum.PENDING_AP2.getLabel())
+            				.approvalLevel(2)
+            				.emailToBeSent(true)
+            				.build();
+        			Context context = pdfService.getContext(null, "mailDetail");
+            		String html = pdfService.loadAndFillTemplate(context, "mail/poApprovalEmail");
+            		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:MM:SS");
+            		File tempFile = File.createTempFile("order", sdf.format(DateUtil.now()), null);
+            		FileOutputStream fos = new FileOutputStream(tempFile);
+            		fos.write(result.getData());
+            		fos.close();
+        			mailService.sendEmailWithAttachmentAndMultiple(poEmailApprovalLevel2, poSubjectEmail, html, true, true, tempFile);	
+        		}
+        		else if (purchaseOrderCommand.getApprovalLevel() == 2) {
+        			POMailDetail poMailDetail = POMailDetail.builder()
+            				.poNumber(result.getOrderNo())
+            				.status(PurchaseStatusEnum.SENT_TO_NUPCO.getLabel())
+            				.approvalLevel(3)
+            				.emailToBeSent(true)
+            				.build();
+        			Context context = pdfService.getContext(null, "mailDetail");
+            		String html = pdfService.loadAndFillTemplate(context, "mail/poApprovalEmail");
+            		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:MM:SS");
+            		File tempFile = File.createTempFile("order", sdf.format(DateUtil.now()), null);
+            		FileOutputStream fos = new FileOutputStream(tempFile);
+            		fos.write(result.getData());
+            		fos.close();
+        			mailService.sendEmailWithAttachmentAndMultiple(poEmailReceiver, poSubjectEmail, html, true, true, tempFile);	
+        		}
+        		
+            }
+        }
+
     }
     
     @GetMapping("/poInventory")

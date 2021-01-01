@@ -141,7 +141,7 @@ jhipster:
   #     allow-credentials: true
   #     max-age: 1800
   mail:
-    from: BGI-orders@nupco.com
+    from: dev@salehiya.com
   swagger:
     default-include-pattern: /api/.*
     title: covlabServer API
@@ -171,12 +171,18 @@ outlet:
     humidityMax: 1000
     pressureMin: 1000
     pressureMax: 1000
+# Auoreplenishment Cron
 autoReplenishCron: '*/10 * * * * *'
-poReceiverEmail: azeddari@gmail.com,azeddari@axi-log.com
+
+## Purchase Order template details
+poEmailReceiver: azeddari@gmail.com,azeddari@axi-log.com
 poSubjectEmail: 'New Po for you'
 vendor: 'Nupco'
 contactPersonName: 'Mohammed Alqahtani'
 contactPersonEmail: 'm.hmoud.alqahtani@ascend.com.sa'
 contactPersonPhone: '+966 55 086 0179'
-destination: 'NHL'
+
+## po approval level1 details
+poEmailApprovalLevel1: 'azeddari@gmail.com'
+poEmailApprovalLevel2: 'azeddari@gmail.com'
       

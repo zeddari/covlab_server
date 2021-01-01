@@ -129,7 +129,6 @@
                    Created: <b><span th:text="${poPdfDetail.headerPdfDetail.creationDate}"></span></b><br/>
                    Due Date: <b><span th:text="${poPdfDetail.headerPdfDetail.DueDate}"></span></b><br/>
                    Destination: <b><span th:text="${poPdfDetail.headerPdfDetail.destination}"></span></b><br/>
-                   Outlet: <span th:text="${poPdfDetail.outlet}"></span>
                             </td>
                             <td width="30px"></td>
                             <td>
@@ -149,6 +148,7 @@
             <tr class="heading" th:if="${not #lists.isEmpty(poPdfDetail.listDetails)}">
                			<td>Code</td>
 						<td>Product Name</td>
+						<td>Category</td>
 						<td>Quantity</td>
 						<td>UOM</td>
             </tr>
@@ -158,6 +158,7 @@
             <tr class="item" th:each="inventory : ${poPdfDetail.listDetails}">
                			<td th:text="${inventory.code}"></td>
 						<td th:text="${inventory.description}"></td>
+						<td th:text="${inventory.category}"></td>
 						<td th:text="${inventory.quantity}"></td>
 						<td th:text="${inventory.uom}"></td>
             </tr>

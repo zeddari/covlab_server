@@ -58,8 +58,8 @@ spring:
   mail:
     host: outlook.office365.com
     port: 587
-    username: BGI-orders@nupco.com
-    password: Nup%w230D
+    username: dev@salehiya.com
+    password: Sa*20200150
     properties:
       mail:
         smtp:

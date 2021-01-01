@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
@@ -14,7 +13,6 @@ import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import com.axilog.cov.dto.mapper.InventoryMapper;
-import com.axilog.cov.dto.representation.InventoryPdfDetail;
 import com.axilog.cov.dto.representation.PoPdfDetail;
 import com.axilog.cov.service.InventoryService;
 import com.lowagie.text.DocumentException;
@@ -54,9 +52,25 @@ public class PdfService {
         return file;
     }
 
+    /**
+     * @param details
+     * @param variableName
+     * @return
+     */
     public Context getContext(PoPdfDetail details, String variableName) {
         Context context = new Context();
         context.setVariable(variableName, details);
+        return context;
+    }
+    
+    /**
+     * @param objectValue
+     * @param objectName
+     * @return
+     */
+    public Context getContext(Object objectValue, String objectName) {
+        Context context = new Context();
+        context.setVariable(objectName, objectValue);
         return context;
     }
 

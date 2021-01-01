@@ -82,7 +82,7 @@ public class MailService {
     }
     
     @Async
-    public void sendEmailWithAttachmentAndMultiple(String[] to, String subject, String content, boolean isMultipart, boolean isHtml, String fileToAttach) {
+    public void sendEmailWithAttachmentAndMultiple(String[] to, String subject, String content, boolean isMultipart, boolean isHtml, File fileToAttach) {
         log.debug(
             "Send email[multipart '{}' and html '{}'] to '{}' with subject '{}' and content={}",
             isMultipart,
@@ -94,7 +94,7 @@ public class MailService {
 
         // Prepare message using a Spring helper
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-        FileSystemResource file = new FileSystemResource(new File(fileToAttach));
+        FileSystemResource file = new FileSystemResource(fileToAttach);
         try {
             MimeMessageHelper message = new MimeMessageHelper(mimeMessage, isMultipart, StandardCharsets.UTF_8.name());
             message.setTo(to);

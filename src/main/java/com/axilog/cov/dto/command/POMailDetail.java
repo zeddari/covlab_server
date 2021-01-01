@@ -1,15 +1,17 @@
 package com.axilog.cov.dto.command;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class PurchaseOrderCommand {
-	private String orderNo;
+@Builder
+public class POMailDetail {
+	private Long poNumber;
 	private String status;
-	private boolean emailToBeSent;
-	private int approvalLevel;
+	private Boolean emailToBeSent;
+	private Integer approvalLevel;
 }

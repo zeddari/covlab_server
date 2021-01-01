@@ -39,8 +39,6 @@ public class InventoryMapper {
 	@Value("${contactPersonEmail}")
 	private String contactPersonEmail;
 	
-	@Value("${destination}")
-	private String destination;
 	/**
 	 * @param inventory
 	 * @return
@@ -118,6 +116,7 @@ public class InventoryMapper {
 		return InventoryPdfDetail.builder()
 				.code(inventory.getProduct().getProductCode())
 				.description(inventory.getProduct().getDescription())
+				.category(inventory.getProduct().getCategory() != null ? inventory.getProduct().getCategory().getCategoryDescription() : "")
 				.uom(inventory.getUom())
 				.quantity(desiredQty)
 				.build();
@@ -142,7 +141,7 @@ public class InventoryMapper {
 		cal.add(Calendar.DAY_OF_MONTH, 10);
 		Date dateTenDays = cal.getTime();
 		String dueDate = sdf.format(dateTenDays); 
-		HeaderPdfDetail headerPdfDetail = HeaderPdfDetail.builder().destination(destination)
+		HeaderPdfDetail headerPdfDetail = HeaderPdfDetail.builder().destination(outlet.getOutletName())
 				.creationDate(creationDate)
 				.DueDate(dueDate)
 				.vendor(vendor)
