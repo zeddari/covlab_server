@@ -2,7 +2,7 @@ package com.axilog.cov.dto.representation;
 
 import java.util.Date;
 
-import org.springframework.cloud.cloudfoundry.com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.Builder;
 import lombok.Data;

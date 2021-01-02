@@ -260,6 +260,29 @@ public class DateUtil {
 		return calendar.getTime();
 
 	}
+	
+	/**
+	 * @param date
+	 * @param day
+	 * @return
+	 */
+
+	public static Date addMinutes(Date date, int minute) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		calendar.add(Calendar.MINUTE, minute);
+		return calendar.getTime();
+
+	}
+	
+	
+	public static Date addSeconds(Date date, int minute) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		calendar.add(Calendar.SECOND, minute);
+		return calendar.getTime();
+
+	}
 
 	/**
 	 * jira IBSTHP-9291 Start

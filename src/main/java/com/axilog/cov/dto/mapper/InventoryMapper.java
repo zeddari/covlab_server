@@ -113,6 +113,7 @@ public class InventoryMapper {
 	public InventoryPdfDetail toPdfDetail(Inventory inventory) {
 		Double nextCapacity = 20  - inventory.getCapacity();
 		Double desiredQty = nextCapacity * inventory.getActualAvgConsumption();
+		inventory.setQuantitiesInTransit(desiredQty);
 		return InventoryPdfDetail.builder()
 				.code(inventory.getProduct().getProductCode())
 				.description(inventory.getProduct().getDescription())
