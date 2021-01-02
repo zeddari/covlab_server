@@ -1,6 +1,8 @@
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>New Purchase Order</title>
+    <bookmarks> <bookmark name="Products" href="#poPdfDetail.listDetails"></bookmark>
+</bookmarks>
     
     <style>
     .invoice-box {
@@ -98,21 +100,17 @@
 </head>
 
 <body>
-    <div class="invoice-box">
+
+    <div class="invoice-box" id="poPdfDetail.listDetails">
         <table cellpadding="0" cellspacing="0">
             <tr class="top">
                 <td colspan="2">
                     <table>
                         <tr>
                             <td class="title">
-                                <img src="https://www.sparksuite.com/images/logo.png" style="width:100%; max-width:300px;"></img>
+                                <img th:src="@{content/images/pdf_logo.jpg}"></img>
                             </td>
-                            
-                            <td>
-                                Invoice #: 123<br/>
-                                Created: January 1, 2015<br/>
-                                Due: February 1, 2015
-                            </td>
+                                                      
                         </tr>
                     </table>
                 </td>
@@ -123,88 +121,43 @@
                     <table>
                         <tr>
                             <td>
-                                Sparksuite, Inc.<br/>
-                                12345 Sunny Road<br/>
-                                Sunnyville, CA 12345
+                   Purchase Order #: <span th:text="${poPdfDetail.headerPdfDetail.orderNumber}"></span><br/>
+                   Created: <span th:text="${poPdfDetail.headerPdfDetail.creationDate}"></span><br/>
+                   Due Date: <span th:text="${poPdfDetail.headerPdfDetail.DueDate}"></span><br/>
+                   Destination: <span th:text="${poPdfDetail.headerPdfDetail.destination}"></span><br/>
+                   Outlet: <span th:text="${poPdfDetail.outlet}"></span>
                             </td>
                             
                             <td>
-                                Acme Corp.<br/>
-                                John Doe<br/>
-                                john@example.com
+                                Vendor: <span th:text="${poPdfDetail.headerPdfDetail.vendor}"></span><br/>
+								Contact Person: <span th:text="${poPdfDetail.headerPdfDetail.contactPersonName}"></span><br/>
+								Mobile: <span th:text="${poPdfDetail.headerPdfDetail.contactPersonMobile}"></span><br/>
+								Email: <span th:text="${poPdfDetail.headerPdfDetail.contactPersonEmail}"></span><br/>
                             </td>
                         </tr>
                     </table>
                 </td>
             </tr>
             
-            <tr class="heading">
-                <td>
-                    Payment Method
-                </td>
-                
-                <td>
-                    Check #
-                </td>
+ 		<span class="titles-style" th:text="|Products / Count: ${#lists.size(poPdfDetail.listDetails)}|"></span>
+            
+            <tr class="heading" th:if="${not #lists.isEmpty(poPdfDetail.listDetails)}">
+               			<td>Code</td>
+						<td>Product Name</td>
+						<td>Quantity</td>
+						<td>UO</td>
             </tr>
             
-            <tr class="details">
-                <td>
-                    Check
-                </td>
-                
-                <td>
-                    1000
-                </td>
+
+            
+            <tr class="item" th:each="inventory : ${poPdfDetail.listDetails}">
+               			<td th:text="${inventory.code}"></td>
+						<td th:text="${inventory.description}"></td>
+						<td th:text="${inventory.quantity}"></td>
+						<td th:text="${inventory.uom}"></td>
             </tr>
             
-            <tr class="heading">
-                <td>
-                    Item
-                </td>
-                
-                <td>
-                    Price
-                </td>
-            </tr>
             
-            <tr class="item">
-                <td>
-                    Website design
-                </td>
-                
-                <td>
-                    $300.00
-                </td>
-            </tr>
-            
-            <tr class="item">
-                <td>
-                    Hosting (3 months)
-                </td>
-                
-                <td>
-                    $75.00
-                </td>
-            </tr>
-            
-            <tr class="item last">
-                <td>
-                    Domain name (1 year)
-                </td>
-                
-                <td>
-                    $10.00
-                </td>
-            </tr>
-            
-            <tr class="total">
-                <td></td>
-                
-                <td>
-                   Total: $385.00
-                </td>
-            </tr>
         </table>
     </div>
 </body>

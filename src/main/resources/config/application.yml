@@ -87,7 +87,7 @@ spring:
       hibernate.query.fail_on_pagination_over_collection_fetch: true
       hibernate.query.in_clause_parameter_padding: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
       naming:
         physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
         implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
@@ -172,7 +172,7 @@ outlet:
     pressureMin: 1000
     pressureMax: 1000
 autoReplenishCron: '*/10 * * * * *'
-poReceiverEmail: azeddari@gmail.com
+poReceiverEmail: regragui.99@gmail.com
 poSubjectEmail: 'New Po for you'
 vendor: 'Nupco'
 contactPersonName: 'Mohammed Alqahtani'

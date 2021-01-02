@@ -143,6 +143,7 @@ public class InventoryMapper {
 		Date dateTenDays = cal.getTime();
 		String dueDate = sdf.format(dateTenDays); 
 		HeaderPdfDetail headerPdfDetail = HeaderPdfDetail.builder().destination(destination)
+				.orderNumber(orderNumber)
 				.creationDate(creationDate)
 				.DueDate(dueDate)
 				.vendor(vendor)
