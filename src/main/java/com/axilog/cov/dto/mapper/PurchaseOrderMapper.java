@@ -18,7 +18,7 @@ public class PurchaseOrderMapper {
 	 */
 	public PurchaseOrderDetail toPurchaseOrderDetail(PurchaseOrder purchaseOrder) {
 		return PurchaseOrderDetail.builder()
-				.PoNo(purchaseOrder.getOrderNo())
+				.poNo(purchaseOrder.getOrderNo())
 				.quantity(purchaseOrder.getQuantity())
 				.createdBy(purchaseOrder.getCreatedBy())
 				.createdOn(purchaseOrder.getCreatedOn())

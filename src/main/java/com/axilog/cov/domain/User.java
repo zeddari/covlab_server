@@ -2,6 +2,12 @@ package com.axilog.cov.domain;
 
 import com.axilog.cov.config.Constants;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.HashSet;
@@ -20,6 +26,10 @@ import org.hibernate.annotations.BatchSize;
  */
 @Entity
 @Table(name = "jhi_user")
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class User extends AbstractAuditingEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -77,6 +87,9 @@ public class User extends AbstractAuditingEntity implements Serializable {
     @Column(name = "reset_date")
     private Instant resetDate = null;
 
+    @Column(name = "code_verifiaction", length = 50)
+    private String codeVerifiaction;
+    
     @JsonIgnore
     @ManyToMany
     @JoinTable(

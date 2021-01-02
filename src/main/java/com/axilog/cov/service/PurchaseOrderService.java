@@ -48,4 +48,10 @@ public interface PurchaseOrderService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+    
+    /**
+     * @param orderNo
+     * @return
+     */
+    PurchaseOrder findByOrderNo(String orderNo);
 }

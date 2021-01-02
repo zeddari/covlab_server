@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+    <head>
+        <title>Immunization Verification Code</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <link rel="icon" th:href="@{|${baseUrl}/favicon.ico|}" />
+    </head>
+    <body>
+        <p>
+            Dear
+        </p>
+        <p>
+            Your verification Code has been generated with the below value: <br/>
+            <b>Code</b>: <p th:text="${verificationCode}">
+        </p>
+        <p>
+           
+        </p>
+        <p>
+            <span>Regards, </span>
+            <br/>
+            
+        </p>
+    </body>
+</html>

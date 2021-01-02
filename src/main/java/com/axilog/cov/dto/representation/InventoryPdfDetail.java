@@ -13,6 +13,7 @@ public class InventoryPdfDetail {
 
 	private String code;
 	private String description;
+	private String category;
 	private Double quantity;
 	private String uom;
 	

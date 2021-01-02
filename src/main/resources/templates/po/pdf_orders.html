@@ -11,7 +11,7 @@
         padding: 30px;
         border: 1px solid #eee;
         box-shadow: 0 0 10px rgba(0, 0, 0, .15);
-        font-size: 16px;
+        font-size: 12px;
         line-height: 24px;
         font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
         color: #555;
@@ -29,7 +29,7 @@
     }
     
     .invoice-box table tr td:nth-child(2) {
-        text-align: right;
+        text-align: left;
     }
     
     .invoice-box table tr.top table td {
@@ -37,13 +37,14 @@
     }
     
     .invoice-box table tr.top table td.title {
-        font-size: 45px;
+        font-size: 10px;
         line-height: 45px;
         color: #333;
     }
     
     .invoice-box table tr.information table td {
         padding-bottom: 40px;
+        
     }
     
     .invoice-box table tr.heading td {
@@ -80,12 +81,13 @@
             width: 100%;
             display: block;
             text-align: center;
+            font-size:10px;
         }
     }
     
     /** RTL **/
     .rtl {
-        direction: rtl;
+        direction: ltr;
         font-family: Tahoma, 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
     }
     
@@ -108,7 +110,8 @@
                     <table>
                         <tr>
                             <td class="title">
-                                <img th:src="@{content/images/pdf_logo.jpg}"></img>
+                                <img th:src="|@{content/images/pdf_logo.jpg}|"></img>
+                                <b><span>Ministry of Health of Kingdom Saudi Arabia</span></b>
                             </td>
                                                       
                         </tr>
@@ -117,35 +120,43 @@
             </tr>
             
             <tr class="information">
-                <td colspan="2">
-                    <table>
+                
+                             <td colspan="2">
+                   <table>
                         <tr>
-                            <td>
-                   Purchase Order #: <span th:text="${poPdfDetail.headerPdfDetail.orderNumber}"></span><br/>
-                   Created: <span th:text="${poPdfDetail.headerPdfDetail.creationDate}"></span><br/>
-                   Due Date: <span th:text="${poPdfDetail.headerPdfDetail.DueDate}"></span><br/>
-                   Destination: <span th:text="${poPdfDetail.headerPdfDetail.destination}"></span><br/>
-                   Outlet: <span th:text="${poPdfDetail.outlet}"></span>
+                            <td  width="35%">
+                   Purchase Order #: <b><span th:text="${poPdfDetail.headerPdfDetail.orderNumber}"></span></b><br/>
+                   Created: <b><span th:text="${poPdfDetail.headerPdfDetail.creationDate}"></span></b><br/>
+                   Due Date: <b><span th:text="${poPdfDetail.headerPdfDetail.DueDate}"></span></b><br/>
+                   Destination: <b><span th:text="${poPdfDetail.headerPdfDetail.destination}"></span></b><br/>
                             </td>
-                            
-                            <td>
-                                Vendor: <span th:text="${poPdfDetail.headerPdfDetail.vendor}"></span><br/>
-								Contact Person: <span th:text="${poPdfDetail.headerPdfDetail.contactPersonName}"></span><br/>
-								Mobile: <span th:text="${poPdfDetail.headerPdfDetail.contactPersonMobile}"></span><br/>
-								Email: <span th:text="${poPdfDetail.headerPdfDetail.contactPersonEmail}"></span><br/>
+                          <td width="20%"></td>
+                       	 
+                               <td  width="45%">
+                                Vendor: <b><span th:text="${poPdfDetail.headerPdfDetail.vendor}"></span></b><br/>
+								Contact Person: <b><span th:text="${poPdfDetail.headerPdfDetail.contactPersonName}"></span></b><br/>
+								Mobile: <b><span th:text="${poPdfDetail.headerPdfDetail.contactPersonMobile}"></span></b><br/>
+								Email: <b><span th:text="${poPdfDetail.headerPdfDetail.contactPersonEmail}"></span></b><br/>
                             </td>
                         </tr>
-                    </table>
+                   </table>
                 </td>
+                   
             </tr>
-            
- 		<span class="titles-style" th:text="|Products / Count: ${#lists.size(poPdfDetail.listDetails)}|"></span>
+              </table>
+               
+    </div>
+    <div class="invoice-box" id="poPdfDetail.listDetails">
+    <span  width="100%" class="titles-style" th:text="|Products / Count: ${#lists.size(poPdfDetail.listDetails)}|"></span>
+        <table cellpadding="0" cellspacing="0">
+ 		
             
             <tr class="heading" th:if="${not #lists.isEmpty(poPdfDetail.listDetails)}">
                			<td>Code</td>
 						<td>Product Name</td>
+						<td>Category</td>
 						<td>Quantity</td>
-						<td>UO</td>
+						<td>UOM</td>
             </tr>
             
 
@@ -153,6 +164,7 @@
             <tr class="item" th:each="inventory : ${poPdfDetail.listDetails}">
                			<td th:text="${inventory.code}"></td>
 						<td th:text="${inventory.description}"></td>
+						<td th:text="${inventory.category}"></td>
 						<td th:text="${inventory.quantity}"></td>
 						<td th:text="${inventory.uom}"></td>
             </tr>
