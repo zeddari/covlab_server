@@ -186,3 +186,7 @@ contactPersonPhone: '+966 55 086 0179'
 poEmailApprovalLevel1: 'azeddari@gmail.com'
 poEmailApprovalLevel2: 'azeddari@gmail.com'
 baseUrl: http://localhost:4200
+
+# footer & header
+poHeaderImage: 'http://localhost:7001/logo.jpg'
+poFooterImage: 'http://localhost:7001/footer.jpg'

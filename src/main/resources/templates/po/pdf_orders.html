@@ -110,7 +110,8 @@
                     <table>
                         <tr>
                             <td class="title">
-                                <img th:src="|@{content/images/pdf_logo.jpg}|"></img>
+                                <img th:src="@{${headerImage}}"  width="100px" height="100px"></img>
+                                <br/>
                                 <b><span>Ministry of Health of Kingdom Saudi Arabia</span></b>
                             </td>
                                                       
@@ -172,5 +173,6 @@
             
         </table>
     </div>
+    <img th:src="@{${footerImage}}" width="616px" height="856px"></img>
 </body>
 </html>
