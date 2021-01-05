@@ -56,16 +56,28 @@ spring:
     # Remove 'faker' if you do not want the sample data to be loaded automatically
     contexts: dev, faker
   mail:
-    host: outlook.office365.com
-    port: 587
-    username: dev@salehiya.com
-    password: Sa*20200150
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
+    otp:
+      host: outlook.office365.com
+      port: 587
+      username: dev@salehiya.com
+      password: Sa*20200150
+      properties:
+        mail:
+          smtp:
+            auth: true
+            starttls:
+              enable: true
+    po:
+      host: outlook.office365.com
+      port: 587
+      username: dev@salehiya.com
+      password: Sa*20200150
+      properties:
+        mail:
+          smtp:
+            auth: true
+            starttls:
+              enable: true
   messages:
     cache-duration: PT1S # 1 second, see the ISO 8601 standard
   thymeleaf:

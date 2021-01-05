@@ -1,5 +1,6 @@
 package com.axilog.cov.dto.mapper;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Comparator;
 import java.util.List;
 
@@ -18,6 +19,7 @@ public class PurchaseOrderMapper {
 	 */
 	public PurchaseOrderDetail toPurchaseOrderDetail(PurchaseOrder purchaseOrder) {
 		return PurchaseOrderDetail.builder()
+				.id(purchaseOrder.getId())
 				.poNo(purchaseOrder.getOrderNo())
 				.quantity(purchaseOrder.getQuantity())
 				.createdBy(purchaseOrder.getCreatedBy())
@@ -27,7 +29,7 @@ public class PurchaseOrderMapper {
 				.createdAt(purchaseOrder.getCreatedAt())
 				.outlet(purchaseOrder.getOutlet() != null ? purchaseOrder.getOutlet().getOutletName() : null)
 				.status(purchaseOrder.getPoStatuses().stream().max(Comparator.comparing(PoStatus::getUpdatedAt)).get().getStatus())
-				.data(purchaseOrder.getData())
+				//.data(Base64.getEncoder().encodeToString(purchaseOrder.getData() != null ? purchaseOrder.getData() : "".getBytes()))
 				.build();
 	}
 	

@@ -16,5 +16,7 @@ import org.springframework.stereotype.Repository;
 public interface InventoryRepository extends JpaRepository<Inventory, Long>, JpaSpecificationExecutor<Inventory> {
 
 	List<Inventory> findByStatusIn(List<String> status);
+	List<Inventory> findByStatusInAndIsLastInstance(List<String> status, Boolean isLastInstance);
+	List<Inventory> findByStatusInAndIsLastInstanceAndCapacityLessThan(List<String> status, Boolean isLastInstance, Double capapcity);
 	
 }

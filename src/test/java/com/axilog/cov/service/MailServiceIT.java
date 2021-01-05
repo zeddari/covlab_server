@@ -36,7 +36,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
 /**
- * Integration tests for {@link MailService}.
+ * Integration tests for {@link OtpMailService}.
  */
 @SpringBootTest(classes = CovlabServerApp.class)
 public class MailServiceIT {
@@ -63,13 +63,13 @@ public class MailServiceIT {
     @Captor
     private ArgumentCaptor<MimeMessage> messageCaptor;
 
-    private MailService mailService;
+    private OtpMailService mailService;
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
         doNothing().when(javaMailSender).send(any(MimeMessage.class));
-        mailService = new MailService(jHipsterProperties, javaMailSender, messageSource, templateEngine);
+        
     }
 
     @Test

@@ -175,7 +175,7 @@ outlet:
 autoReplenishCron: '*/10 * * * * *'
 
 ## Purchase Order template details
-poEmailReceiver: azeddari@gmail.com
+poEmailReceiver: 'azeddari@gmail.com'
 poSubjectEmail: 'New Po for you'
 vendor: 'Nupco'
 contactPersonName: 'Mohammed Alqahtani'
@@ -190,3 +190,9 @@ baseUrl: http://localhost:4200
 # footer & header
 poHeaderImage: 'http://localhost:7001/logo.jpg'
 poFooterImage: 'http://localhost:7001/footer.jpg'
+poThreesholdCapacity: 25
+poDueDateOffset: 5
+
+poSourceEmail: dev@salehiya.com
+otpSourceEmail: dev@salehiya.com
+

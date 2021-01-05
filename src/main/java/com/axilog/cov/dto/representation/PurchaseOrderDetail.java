@@ -11,6 +11,7 @@ import lombok.Data;
 @Data
 public class PurchaseOrderDetail {
 
+	 private Long id; 
 	 private Long poNo;
 	 private Double quantity;
 	 private String createdBy;
@@ -31,6 +32,7 @@ public class PurchaseOrderDetail {
 	 private String status;
 	 private String codeProduct;
 	 private String descPro;
-	 private byte[] data;
+	 
+	 private String data;
 	
 }

@@ -58,8 +58,8 @@ import com.axilog.cov.repository.PoStatusRepository;
 import com.axilog.cov.repository.SequenceRepository;
 import com.axilog.cov.security.SecurityUtils;
 import com.axilog.cov.service.InventoryService;
-import com.axilog.cov.service.MailService;
 import com.axilog.cov.service.OutletService;
+import com.axilog.cov.service.PoMailService;
 import com.axilog.cov.service.PurchaseOrderQueryService;
 import com.axilog.cov.service.PurchaseOrderService;
 import com.axilog.cov.service.dto.PurchaseOrderCriteria;
@@ -97,7 +97,7 @@ public class PurchaseOrderResource {
     private InventoryService inventoryService;
     
     @Autowired
-    private MailService mailService;
+    private PoMailService poMail;
     
     @Autowired
     private PdfService pdfService;
@@ -128,6 +128,9 @@ public class PurchaseOrderResource {
     
     @Value("${poEmailApprovalLevel2}")
     private String[] poEmailApprovalLevel2;
+    
+    @Value("${poThreesholdCapacity}")
+	private Double poThreesholdCapacity;
     
     public PurchaseOrderResource(PurchaseOrderService purchaseOrderService, PurchaseOrderQueryService purchaseOrderQueryService) {
         this.purchaseOrderService = purchaseOrderService;
@@ -339,7 +342,7 @@ public class PurchaseOrderResource {
         				.build();
         		Context context = pdfService.getContext(poMailDetail, "mailDetail");
         		String html = pdfService.loadAndFillTemplate(context, "mail/poApprovalEmail");
-        		mailService.sendEmailWithAttachmentAndMultiple(poEmailApprovalLevel1, poSubjectEmail, html, true, true, poPdf);
+        		poMail.sendEmailWithAttachmentAndMultiple(poEmailApprovalLevel1, poSubjectEmail, html, true, true, poPdf);
             }
 			
 		}
@@ -389,7 +392,7 @@ public class PurchaseOrderResource {
             		FileOutputStream fos = new FileOutputStream(tempFile);
             		fos.write(result.getData());
             		fos.close();
-        			mailService.sendEmailWithAttachmentAndMultiple(poEmailApprovalLevel2, poSubjectEmail, html, true, true, tempFile);	
+            		poMail.sendEmailWithAttachmentAndMultiple(poEmailApprovalLevel2, poSubjectEmail, html, true, true, tempFile);	
         		}
         		else if (purchaseOrderCommand.getApprovalLevel() == 2) {
         			POMailDetail poMailDetail = POMailDetail.builder()
@@ -399,13 +402,13 @@ public class PurchaseOrderResource {
             				.emailToBeSent(true)
             				.build();
         			Context context = pdfService.getContext(poMailDetail, "mailDetail");
-            		String html = pdfService.loadAndFillTemplate(context, "mail/poApprovalEmail");
-            		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:MM:SS");
+            		String html = pdfService.loadAndFillTemplate(context, "mail/poEmail");
+            		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_H-MM-SS");
             		File tempFile = File.createTempFile("order", sdf.format(DateUtil.now()), null);
             		FileOutputStream fos = new FileOutputStream(tempFile);
             		fos.write(result.getData());
             		fos.close();
-        			mailService.sendEmailWithAttachmentAndMultiple(poEmailReceiver, poSubjectEmail, html, true, true, tempFile);	
+            		poMail.sendEmailWithAttachmentAndMultiple(poEmailReceiver, poSubjectEmail, html, true, true, tempFile);	
         		}
         		
             }
@@ -443,6 +446,6 @@ public class PurchaseOrderResource {
     	 List<String> status = new ArrayList<String>();
          status.add("oos");
          status.add("noos");
-         return inventoryService.findByStatusIn(status);
+         return inventoryService.findByStatusInAndIsLastInstanceAndCapacityLessThan(status, Boolean.TRUE, poThreesholdCapacity);
     }
 }

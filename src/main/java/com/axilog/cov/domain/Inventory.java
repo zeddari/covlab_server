@@ -75,6 +75,9 @@ public class Inventory implements Serializable, Cloneable {
     @Column(name = "is_last_instance")
     private Boolean isLastInstance;
     
+    @Column(name = "creation_time")
+    private Date creationTime;
+    
     @ManyToOne
     @JsonIgnoreProperties(value = "inventories", allowSetters = true)
     private Outlet outlet;

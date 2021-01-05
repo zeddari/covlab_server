@@ -40,6 +40,20 @@ public interface InventoryService {
      * @return
      */
     List<Inventory> findByStatusIn(List<String> status);
+    
+    /**
+     * @param status
+     * @param isLastInstance
+     * @return
+     */
+    List<Inventory> findByStatusInAndIsLastInstance(List<String> status, Boolean isLastInstance);
+    
+    /**
+     * @param status
+     * @param isLastInstance
+     * @return
+     */
+    List<Inventory> findByStatusInAndIsLastInstanceAndCapacityLessThan(List<String> status, Boolean isLastInstance, Double capapcity);
 
     /**
      * Get the "id" inventory.

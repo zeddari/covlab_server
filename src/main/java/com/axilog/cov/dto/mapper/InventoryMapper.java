@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,7 @@ import com.axilog.cov.dto.representation.InventoryPdfDetail;
 import com.axilog.cov.dto.representation.InventoryRepresentation;
 import com.axilog.cov.dto.representation.OverallStatsRepresentation;
 import com.axilog.cov.dto.representation.PoPdfDetail;
+import com.axilog.cov.service.InventoryService;
 import com.axilog.cov.util.DateUtil;
 
 @Component
@@ -40,6 +42,14 @@ public class InventoryMapper {
 	@Value("${contactPersonEmail}")
 	private String contactPersonEmail;
 	
+	@Value("${poThreesholdCapacity}")
+	private Integer poThreesholdCapacity;
+	
+	@Value("${poDueDateOffset}")
+	private Integer poDueDateOffset;
+	
+	@Autowired
+	private InventoryService inventoryService;
 	/**
 	 * @param inventory
 	 * @return
@@ -113,9 +123,9 @@ public class InventoryMapper {
 	 */
 	@Transactional
 	public InventoryPdfDetail toPdfDetail(Inventory inventory) {
-		Double nextCapacity = 20  - inventory.getCapacity();
-		Double desiredQty = nextCapacity * inventory.getActualAvgConsumption();
+		Double desiredQty = (poThreesholdCapacity * inventory.getActualAvgConsumption()) - inventory.getCurrent_balance();
 		inventory.setQuantitiesInTransit(desiredQty);
+		inventoryService.save(inventory);
 		return InventoryPdfDetail.builder()
 				.code(inventory.getProduct().getProductCode())
 				.description(inventory.getProduct().getDescription())
@@ -138,11 +148,9 @@ public class InventoryMapper {
 			}
 			
 		});
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd HH:MM:SS");
+		SimpleDateFormat sdf = new SimpleDateFormat(DateUtil.MOI_DATE_TIME_ENCODING);
 		String creationDate =  sdf.format(DateUtil.now()); 
-		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.DAY_OF_MONTH, 10);
-		Date dateTenDays = cal.getTime();
+		Date dateTenDays = DateUtil.addDay(DateUtil.now(), poDueDateOffset);
 		String dueDate = sdf.format(dateTenDays); 
 		HeaderPdfDetail headerPdfDetail = HeaderPdfDetail.builder().destination(outlet.getOutletName())
 				.creationDate(creationDate)

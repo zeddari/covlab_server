@@ -71,4 +71,17 @@ public class InventoryServiceImpl implements InventoryService {
 		return inventoryRepository.findByStatusIn(status);
 		
 	}
+
+	@Override
+	public List<Inventory> findByStatusInAndIsLastInstance(List<String> status, Boolean isLastInstance) {
+		return inventoryRepository.findByStatusInAndIsLastInstance(status, isLastInstance);
+	}
+
+	@Override
+	public List<Inventory> findByStatusInAndIsLastInstanceAndCapacityLessThan(List<String> status,
+			Boolean isLastInstance, Double capapcity) {
+		return inventoryRepository.findByStatusInAndIsLastInstanceAndCapacityLessThan(status, isLastInstance, capapcity);
+	}
+
+	
 }

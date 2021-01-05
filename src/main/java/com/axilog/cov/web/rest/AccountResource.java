@@ -28,7 +28,7 @@ import com.axilog.cov.domain.Outlet;
 import com.axilog.cov.domain.User;
 import com.axilog.cov.repository.UserRepository;
 import com.axilog.cov.security.SecurityUtils;
-import com.axilog.cov.service.MailService;
+import com.axilog.cov.service.OtpMailService;
 import com.axilog.cov.service.OutletService;
 import com.axilog.cov.service.UserService;
 import com.axilog.cov.service.dto.PasswordChangeDTO;
@@ -60,11 +60,14 @@ public class AccountResource {
 
 	private final Logger log = LoggerFactory.getLogger(AccountResource.class);
 
-	private final UserRepository userRepository;
+	@Autowired
+	private UserRepository userRepository;
 
-	private final UserService userService;
+	@Autowired
+	private UserService userService;
 
-	private final MailService mailService;
+	@Autowired
+	private OtpMailService otpMail;
 
 	@Autowired
 	private OutletService outletService;
@@ -74,12 +77,7 @@ public class AccountResource {
 
 	private static final String ADMIN = "ROLE_ADMIN";
 
-	public AccountResource(UserRepository userRepository, UserService userService, MailService mailService) {
-		this.userRepository = userRepository;
-		this.userService = userService;
-		this.mailService = mailService;
-	}
-
+	
 	/**
 	 * {@code POST  /register} : register the user.
 	 *
@@ -98,7 +96,7 @@ public class AccountResource {
 			throw new InvalidPasswordException();
 		}
 		User user = userService.registerUser(managedUserVM, managedUserVM.getPassword());
-		mailService.sendActivationEmail(user);
+		otpMail.sendActivationEmail(user);
 	}
 
 	/**
@@ -193,7 +191,7 @@ public class AccountResource {
 	public void requestPasswordReset(@RequestBody String mail) {
 		Optional<User> user = userService.requestPasswordReset(mail);
 		if (user.isPresent()) {
-			mailService.sendPasswordResetMail(user.get());
+			otpMail.sendPasswordResetMail(user.get());
 		} else {
 			// Pretend the request has been successful to prevent checking which emails
 			// really exist
@@ -240,7 +238,7 @@ public class AccountResource {
 		userRepository.save(user.get());
 		Context context = pdfService.getContext(verificationCode, "verificationCode");
 		String htmlContent = pdfService.loadAndFillTemplate(context, "mail/verifCodeEmail");
-		mailService.sendEmail(mail, "Verification Code", htmlContent, true, true);
+		otpMail.sendEmail(mail, "Verification Code", htmlContent, true, true);
 	}
 
 	/**
