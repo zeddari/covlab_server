@@ -152,4 +152,5 @@ public class InventoryMapper {
 				.build();
 		return PoPdfDetail.builder().listDetails(inventoryPdfDetails).headerPdfDetail(headerPdfDetail).outlet(outlet.getOutletName()).build();
 	}
+	
 }

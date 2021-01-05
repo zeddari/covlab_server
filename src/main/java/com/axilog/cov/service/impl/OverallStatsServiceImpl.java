@@ -36,39 +36,7 @@ public class OverallStatsServiceImpl implements OverallStatsService {
 		}
 		return OverallStatsRepresentation.builder().build();
 	}
-	@Override
-	public List<ServiceDashRep> getQuantitiesHandByCategory() {
-	
-		List<ServiceDashProjection> list = null;//inventoryRepository.findHandByCategorys();
-		List<ServiceDashRep> data = new ArrayList();
-		if(list!=null && !list.isEmpty()) {
-			for(ServiceDashProjection el : list) {
-				ServiceDashRep a =	ServiceDashRep.builder().code_categorie(el.getCategory()).total_quantities_inHand(el.getQuantitiesCategory()).build();
-				data.add(a);
-				
-			}
-			return data;
-		}
-		
-		data.add(ServiceDashRep.builder().build());
-		return data;
-	}
-	@Override
-	public List<ServiceDashRep> getQuantitiesHandByLocation() {
-		
-		List<ServiceDashProjection> list = null; //inventoryRepository.findHandByLocation();
-		List<ServiceDashRep> data = new ArrayList();
-		if(list!=null && !list.isEmpty()) {
-			for(ServiceDashProjection el : list) {
-				ServiceDashRep a =	ServiceDashRep.builder().outlet_name(el.getLocation()).total_quantities_inHand(el.getQuantitiesLocation()).build();
-				data.add(a);
-				
-			}
-			return data;
-		}
-		
-		data.add(ServiceDashRep.builder().build());
-		return data;
-	}
+
+
 
 }

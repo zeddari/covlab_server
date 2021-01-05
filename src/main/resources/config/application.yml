@@ -172,7 +172,7 @@ outlet:
     pressureMin: 1000
     pressureMax: 1000
 # Auoreplenishment Cron
-autoReplenishCron: '*/10 * * * * *'
+autoReplenishCron: '* * * */10 * *'
 
 ## Purchase Order template details
 poEmailReceiver: regragui.99@gmail.com
