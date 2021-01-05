@@ -175,7 +175,7 @@ outlet:
 autoReplenishCron: '* * * */10 * *'
 
 ## Purchase Order template details
-poEmailReceiver: regragui.99@gmail.com
+poEmailReceiver: azeddari@gmail.com
 poSubjectEmail: 'New Po for you'
 vendor: 'Nupco'
 contactPersonName: 'Mohammed Alqahtani'
@@ -183,6 +183,10 @@ contactPersonEmail: 'm.hmoud.alqahtani@ascend.com.sa'
 contactPersonPhone: '+966 55 086 0179'
 
 ## po approval level1 details
-poEmailApprovalLevel1: 'regragui.99@gmail.com'
-poEmailApprovalLevel2: 'regragui.99@gmail.com'
+poEmailApprovalLevel1: 'azeddari@gmail.com'
+poEmailApprovalLevel2: 'azeddari@gmail.com'
 baseUrl: http://localhost:4200
+
+# footer & header
+poHeaderImage: 'http://localhost:7001/logo.jpg'
+poFooterImage: 'http://localhost:7001/footer.jpg'

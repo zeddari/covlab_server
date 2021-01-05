@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -27,6 +28,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -311,7 +313,9 @@ public class PurchaseOrderResource {
                 poCreatedStatus = poStatusRepository.save(poCreatedStatus);
                 poStatusList.add(poCreatedStatus);
                 
-                PoStatus poPending1Status = PoStatus.builder().status(PurchaseStatusEnum.PENDING_AP1.getLabel()).updatedAt(DateUtil.now()).build();
+                Date nowDate = DateUtil.addSeconds(DateUtil.now(), 2);
+                
+                PoStatus poPending1Status = PoStatus.builder().status(PurchaseStatusEnum.PENDING_AP1.getLabel()).updatedAt(nowDate).build();
                 poPending1Status = poStatusRepository.save(poPending1Status);
                 poStatusList.add(poPending1Status);
                
@@ -350,6 +354,7 @@ public class PurchaseOrderResource {
     
     
     @PostMapping("/purchaseOrders/approval")
+    @Transactional
     public void approvePurchaseOrder(@RequestBody PurchaseOrderCommand purchaseOrderCommand) throws URISyntaxException, IOException {
         log.debug("REST request to save PurchaseOrder : {}", purchaseOrderCommand);
         if (purchaseOrderCommand == null) {
@@ -373,14 +378,14 @@ public class PurchaseOrderResource {
         		if (purchaseOrderCommand.getApprovalLevel() == 1) {
         			POMailDetail poMailDetail = POMailDetail.builder()
             				.poNumber(result.getOrderNo())
-            				.status(PurchaseStatusEnum.PENDING_AP2.getLabel())
+            				.status(PurchaseStatusEnum.SENT_TO_NUPCO.getLabel())
             				.approvalLevel(2)
             				.emailToBeSent(true)
             				.build();
-        			Context context = pdfService.getContext(null, "mailDetail");
+        			Context context = pdfService.getContext(poMailDetail, "mailDetail");
             		String html = pdfService.loadAndFillTemplate(context, "mail/poApprovalEmail");
-            		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:MM:SS");
-            		File tempFile = File.createTempFile("order", sdf.format(DateUtil.now()), null);
+            		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-MM-SS");
+            		File tempFile = File.createTempFile("order", sdf.format(DateUtil.now()));
             		FileOutputStream fos = new FileOutputStream(tempFile);
             		fos.write(result.getData());
             		fos.close();
@@ -393,7 +398,7 @@ public class PurchaseOrderResource {
             				.approvalLevel(3)
             				.emailToBeSent(true)
             				.build();
-        			Context context = pdfService.getContext(null, "mailDetail");
+        			Context context = pdfService.getContext(poMailDetail, "mailDetail");
             		String html = pdfService.loadAndFillTemplate(context, "mail/poApprovalEmail");
             		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:MM:SS");
             		File tempFile = File.createTempFile("order", sdf.format(DateUtil.now()), null);

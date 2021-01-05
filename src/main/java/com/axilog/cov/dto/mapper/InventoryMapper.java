@@ -11,6 +11,7 @@ import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.axilog.cov.domain.Inventory;
 import com.axilog.cov.domain.Outlet;
@@ -110,9 +111,11 @@ public class InventoryMapper {
 	 * @param inventory
 	 * @return
 	 */
+	@Transactional
 	public InventoryPdfDetail toPdfDetail(Inventory inventory) {
 		Double nextCapacity = 20  - inventory.getCapacity();
 		Double desiredQty = nextCapacity * inventory.getActualAvgConsumption();
+		inventory.setQuantitiesInTransit(desiredQty);
 		return InventoryPdfDetail.builder()
 				.code(inventory.getProduct().getProductCode())
 				.description(inventory.getProduct().getDescription())

@@ -27,6 +27,12 @@ public class PdfService {
    
     @Value("${baseUrl}")
     private String baseUrl;
+    
+    @Value("${poFooterImage}")
+    private String poFooterImage;
+    
+    @Value("${poHeaderImage}")
+    private String poHeaderImage;
 
     @Autowired
     private InventoryMapper inventoryMapper;
@@ -65,6 +71,8 @@ public class PdfService {
         Context context = new Context();
         context.setVariable(variableName, details);
         context.setVariable("baseUrl", baseUrl);
+        context.setVariable("footerImage", poFooterImage);
+        context.setVariable("headerImage", poHeaderImage);
         return context;
     }
     
@@ -77,6 +85,8 @@ public class PdfService {
         Context context = new Context();
         context.setVariable(objectName, objectValue);
         context.setVariable("baseUrl", baseUrl);
+        context.setVariable("footerImage", poFooterImage);
+        context.setVariable("headerImage", poHeaderImage);
         return context;
     }
 
