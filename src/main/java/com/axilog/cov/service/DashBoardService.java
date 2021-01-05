@@ -14,8 +14,8 @@ public interface DashBoardService {
 	
 	public List<SeriesDetail>  getKpiByInventoryCompo(String outlet);
 	public DashBoardRepresentation getKpiByRotStock();
-	public ChartDetail getKpiStockByOutlet(String outlet);
-	public ChartDetail getKpiByOutletCategory(String outlet, String category);
+	public List<ChartDetail> getKpiStockByOutlet(String outlet);
+	public List<ChartDetail> getKpiByOutletCategory(String outlet, String category);
 	
 
 }

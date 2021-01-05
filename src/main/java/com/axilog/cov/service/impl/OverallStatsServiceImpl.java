@@ -29,11 +29,20 @@ public class OverallStatsServiceImpl implements OverallStatsService {
 	private  InventoryRepository inventoryRepository;
 	
 	@Override
-	public OverallStatsRepresentation findKpiByLastUpdated() {
-		List<OverallStats> overallStats = overallStatsRepository.getKpiCustomQuery();
-		if (Optional.ofNullable(overallStats).isPresent()) {
-			return inventoryMapper.toOverallStatsRepres(overallStats.get(0));
+	public OverallStatsRepresentation findKpiByLastUpdated(String outlet) {
+		if (outlet == null) {
+			List<OverallStats> overallStats = overallStatsRepository.getKpiCustomQuery();
+			if (Optional.ofNullable(overallStats).isPresent()) {
+				return inventoryMapper.toOverallStatsRepres(overallStats.get(0));
+			}
 		}
+		else {
+			List<OverallStats> overallStats = overallStatsRepository.getKpiOutletCustomQuery(outlet);
+			if (Optional.ofNullable(overallStats).isPresent()) {
+				return inventoryMapper.toOverallStatsRepres(overallStats.get(0));
+			}
+		}
+		
 		return OverallStatsRepresentation.builder().build();
 	}
 

@@ -11,5 +11,5 @@ public interface OverallStatsService {
 	/**
 	 * @return
 	 */
-		public OverallStatsRepresentation findKpiByLastUpdated();
+		public OverallStatsRepresentation findKpiByLastUpdated(String outlet);
 }

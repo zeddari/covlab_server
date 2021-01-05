@@ -8,10 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.axilog.cov.dto.mapper.DashBoardMapper;
 import com.axilog.cov.dto.projection.DashInventoryComProjection;
 import com.axilog.cov.dto.projection.DashInventoryStockProjection;
-import com.axilog.cov.dto.projection.ServiceDashProjection;
 import com.axilog.cov.dto.representation.ChartDetail;
 import com.axilog.cov.dto.representation.DashBoardRepresentation;
 import com.axilog.cov.dto.representation.SeriesDetail;
@@ -51,7 +49,8 @@ public class DashBoardServiceImpl implements DashBoardService {
 	}
 
 	@Override
-	public ChartDetail getKpiStockByOutlet(String outlet) {
+	public List<ChartDetail> getKpiStockByOutlet(String outlet) {
+		List<ChartDetail> chartDetails = new ArrayList<>();
 		List<DashInventoryStockProjection> inventories = dashBoardRepository.getStockOutlet(outlet);
 		List<SeriesDetail> series = new ArrayList<>();
 		if (Optional.ofNullable(inventories).isPresent()) {
@@ -63,15 +62,16 @@ public class DashBoardServiceImpl implements DashBoardService {
 			});
 			
 		}
-		return ChartDetail.builder()
+		chartDetails.add(ChartDetail.builder()
 				.name("Category")
 				.series(series)
-				.build();
+				.build());
+		return chartDetails;
 	}
 
 	@Override
-	public ChartDetail getKpiByOutletCategory(String outlet, String category) {
-
+	public List<ChartDetail> getKpiByOutletCategory(String outlet, String category) {
+		List<ChartDetail> chartDetails = new ArrayList<>();
 		List<DashInventoryStockProjection> inventories = purchaseOrderRepository.getDeliveryOutletCategory(outlet, category);
 		List<SeriesDetail> series = new ArrayList<>();
 		String categoryName = null;
@@ -86,10 +86,11 @@ public class DashBoardServiceImpl implements DashBoardService {
 			if (inventories.size() > 0)
 				categoryName = inventories.get(0).getCategory();
 		}
-		return ChartDetail.builder()
+		chartDetails.add(ChartDetail.builder()
 				.name(categoryName)
 				.series(series)
-				.build();
+				.build());
+		return chartDetails;
 		
 		
 	}
