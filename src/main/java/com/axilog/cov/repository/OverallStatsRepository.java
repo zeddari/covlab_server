@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.axilog.cov.domain.OverallStats;
-import com.axilog.cov.dto.projection.OutletOverviewStatsProjection;
+import com.axilog.cov.dto.projection.OutletOverviewProjection;
 
 /**
  * Spring Data  repository for the OverallStats entity.
@@ -19,8 +19,8 @@ import com.axilog.cov.dto.projection.OutletOverviewStatsProjection;
 public interface OverallStatsRepository extends JpaRepository<OverallStats, Long>, JpaSpecificationExecutor<OverallStats> {
 
 	@Query(value = "SELECT * FROM overall_stats where Last_Updated_At = (select max(Last_Updated_At) from overall_stats)", nativeQuery = true)
-	public List<OutletOverviewStatsProjection> getKpiCustomQuery();
+	public List<OverallStats> getKpiCustomQuery();
 	
-	@Query(value = "SELECT * FROM vct.outlet_overview_stats where Last_Updated_At = (select max(Last_Updated_At) from overall_stats) and outlet_name =:outlet", nativeQuery = true)
-	public List<OutletOverviewStatsProjection> getKpiOutletCustomQuery(@Param("outlet") String outlet);
+	@Query(value = "SELECT * FROM outlet_overview_stats where last_updated_at = (select max(last_updated_at) from outlet_overview_stats) and outlet_name =:outlet", nativeQuery = true)
+	public List<OutletOverviewProjection> getKpiOutletCustomQuery(@Param("outlet") String outlet);
 }

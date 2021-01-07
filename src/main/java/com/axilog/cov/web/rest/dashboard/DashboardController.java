@@ -42,14 +42,14 @@ public class DashboardController {
 	 * @return
 	 * @throws TopologyDataNotFoundException 
 	 */
-	@GetMapping(value = "/cards", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/cards/{outlet}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Find all Kpis cards", notes = "returns a a list of mw links")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved list"),
 			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
 			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
 			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found")})
-	public OverallStatsRepresentation getTopologyData(@RequestBody CardsCommand cardsCommand) throws TopologyDataNotFoundException {
-		return overallStatsService.findKpiByLastUpdated(cardsCommand.getOutlet());
+	public OverallStatsRepresentation getCardData(@PathVariable(name="outlet", required=true) String outlet) throws TopologyDataNotFoundException {
+		return overallStatsService.findKpiByLastUpdated(outlet);
 	}
 	
 	@GetMapping(value = "/inventoryCompo/{outlet}", produces = MediaType.APPLICATION_JSON_VALUE)

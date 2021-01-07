@@ -3,6 +3,7 @@ package com.axilog.cov.web.rest;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -26,6 +27,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,6 +43,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.thymeleaf.context.Context;
 
+import com.axilog.cov.domain.DynamicApprovalConfig;
 import com.axilog.cov.domain.Inventory;
 import com.axilog.cov.domain.Outlet;
 import com.axilog.cov.domain.PoStatus;
@@ -51,12 +54,14 @@ import com.axilog.cov.dto.command.POMailDetail;
 import com.axilog.cov.dto.command.PurchaseOrderCommand;
 import com.axilog.cov.dto.mapper.InventoryMapper;
 import com.axilog.cov.dto.mapper.PurchaseOrderMapper;
+import com.axilog.cov.dto.representation.PoApprovalRepresentation;
 import com.axilog.cov.dto.representation.PoPdfDetail;
 import com.axilog.cov.dto.representation.PurchaseOrderRepresentation;
 import com.axilog.cov.enums.PurchaseStatusEnum;
 import com.axilog.cov.repository.PoStatusRepository;
 import com.axilog.cov.repository.SequenceRepository;
 import com.axilog.cov.security.SecurityUtils;
+import com.axilog.cov.service.ApprovalService;
 import com.axilog.cov.service.InventoryService;
 import com.axilog.cov.service.OutletService;
 import com.axilog.cov.service.PoMailService;
@@ -65,6 +70,7 @@ import com.axilog.cov.service.PurchaseOrderService;
 import com.axilog.cov.service.dto.PurchaseOrderCriteria;
 import com.axilog.cov.service.pdf.PdfService;
 import com.axilog.cov.util.DateUtil;
+import com.axilog.cov.web.rest.errors.ApprovalConfigDoesNotExistException;
 import com.axilog.cov.web.rest.errors.BadRequestAlertException;
 import com.lowagie.text.DocumentException;
 
@@ -131,6 +137,12 @@ public class PurchaseOrderResource {
     
     @Value("${poThreesholdCapacity}")
 	private Double poThreesholdCapacity;
+    
+    @Autowired
+    private ApprovalService approvalService;
+    
+    private String message;
+    boolean atLeastOutletFound = false;
     
     public PurchaseOrderResource(PurchaseOrderService purchaseOrderService, PurchaseOrderQueryService purchaseOrderQueryService) {
         this.purchaseOrderService = purchaseOrderService;
@@ -262,8 +274,20 @@ public class PurchaseOrderResource {
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
     }
     
+    
+    @GetMapping("/purchase-orders/autoreplenish")
+    public ResponseEntity<PoApprovalRepresentation> autoReplenishOnDemand() throws IllegalArgumentException, IllegalAccessException, IOException, DocumentException {
+        return taskForAutoReplunish();
+    }
+
     @Scheduled(cron = "${autoReplenishCron}")
-    public void scheduleTaskForAutoReplunish() throws IOException, DocumentException {
+    public ResponseEntity<PoApprovalRepresentation> taskForAutoReplunish() throws IOException, DocumentException, IllegalArgumentException, IllegalAccessException {
+    	
+    	DynamicApprovalConfig approvalConfig = approvalService.findStartStatus();
+    	if (!isValidApprovalConfig(approvalConfig)) {
+    		throw new BadRequestAlertException("notFound", ENTITY_NAME, "Approval Config Data not valid, please check the config table");
+    	}
+    	
         long now = System.currentTimeMillis() / 1000;
         log.info("schedule tasks For Auto Replunish using cron jobs - " + now);
         List<Inventory> inventories = getProductToBeOrdered();
@@ -298,8 +322,10 @@ public class PurchaseOrderResource {
     		PoPdfDetail detail = inventoryMapper.toPdfListDetail(inventoriesPerOutlet, productsToBeInPo, outlet, currVal);
             if (detail == null || detail.getListDetails() == null || detail.getListDetails().isEmpty()) {
             	log.info("No Po to be ordered");
+            	message = "No Po to be order";
             }
             else {
+            	atLeastOutletFound = true;
             	File poPdf = pdfService.generatePdf(detail);
         		byte[] fileContent = FileUtils.readFileToByteArray(poPdf);
                 List<Product> products = new ArrayList<>();
@@ -318,7 +344,7 @@ public class PurchaseOrderResource {
                 
                 Date nowDate = DateUtil.addSeconds(DateUtil.now(), 2);
                 
-                PoStatus poPending1Status = PoStatus.builder().status(PurchaseStatusEnum.PENDING_AP1.getLabel()).updatedAt(nowDate).build();
+                PoStatus poPending1Status = PoStatus.builder().status(approvalConfig.getCurrentStepStatus()).updatedAt(nowDate).build();
                 poPending1Status = poStatusRepository.save(poPending1Status);
                 poStatusList.add(poPending1Status);
                
@@ -336,84 +362,94 @@ public class PurchaseOrderResource {
         		PurchaseOrder result = purchaseOrderService.save(po);
         		POMailDetail poMailDetail = POMailDetail.builder()
         				.poNumber(currVal)
-        				.status(PurchaseStatusEnum.PENDING_AP2.getLabel())
+        				.status(approvalConfig.getNextStepStatus())
         				.approvalLevel(1)
         				.emailToBeSent(true)
         				.build();
         		Context context = pdfService.getContext(poMailDetail, "mailDetail");
         		String html = pdfService.loadAndFillTemplate(context, "mail/poApprovalEmail");
-        		poMail.sendEmailWithAttachmentAndMultiple(poEmailApprovalLevel1, poSubjectEmail, html, true, true, poPdf);
+        		String[] recipients = approvalConfig.getCurrentStepEmail().split(",");
+        		poMail.sendEmailWithAttachmentAndMultiple(recipients, poSubjectEmail, html, true, true, poPdf);
+        		message = "generated PO with the following details: number: "+currVal;
             }
 			
 		}
 		catch(Exception e) {
 			log.error("Exception when looping over inventory to create their Po", e);
+			throw new BadRequestAlertException("Internal Error", ENTITY_NAME, e.getMessage());
 		}
 		
 	});
-        	 
+        PoApprovalRepresentation po = PoApprovalRepresentation.builder()
+    			.message(message)
+    			.build();
+        if (atLeastOutletFound) {
+        	atLeastOutletFound = false;
+        	return ResponseEntity.ok(po);	
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(po);
         
     }
     
     
     @PostMapping("/purchaseOrders/approval")
     @Transactional
-    public void approvePurchaseOrder(@RequestBody PurchaseOrderCommand purchaseOrderCommand) throws URISyntaxException, IOException {
+    public ResponseEntity<PoApprovalRepresentation> approvePurchaseOrder(@RequestBody PurchaseOrderCommand purchaseOrderCommand) throws URISyntaxException, IOException, IllegalArgumentException, IllegalAccessException {
         log.debug("REST request to save PurchaseOrder : {}", purchaseOrderCommand);
         if (purchaseOrderCommand == null) {
-            throw new BadRequestAlertException("null body", ENTITY_NAME, "idexists");
+        	throw new BadRequestAlertException("date input are null", ENTITY_NAME, "null");
         }
         PurchaseOrder result = purchaseOrderService.findByOrderNo(purchaseOrderCommand.getOrderNo());
         if (result == null) {
-        	throw new BadRequestAlertException("Purchase Order does not exist with Order NO", ENTITY_NAME, "OrderNo does not exist");
+        	throw new BadRequestAlertException("notFound", ENTITY_NAME, "Cannot find an Order whith the input data");
         }
-        List<PoStatus> poStatusExisting = result.getPoStatuses().stream().filter(poSt -> poSt.getStatus().equals(purchaseOrderCommand.getStatus())).collect(Collectors.toList());
+        DynamicApprovalConfig approvalConfig = approvalService.findbyCurrentStatus(purchaseOrderCommand.getStatus());
+    	if (!isValidApprovalConfig(approvalConfig)) {
+    		throw new BadRequestAlertException("Approval Response", ENTITY_NAME, "Approval Config Data not valid, please check the config table");
+    	}
+    	
+    	if (approvalConfig.getFinalStatus().equals(Boolean.TRUE)) {
+    		//throw new BadRequestAlertException("Approval Response", ENTITY_NAME, "Approval is on final state, no action will be done");
+    	}
+    	else {
+    		
+    	}
+    	List<PoStatus> poStatusExisting = result.getPoStatuses().stream().filter(poSt -> poSt.getStatus().equals(purchaseOrderCommand.getStatus())).collect(Collectors.toList());
         if (poStatusExisting == null || poStatusExisting.isEmpty()) {
-            PoStatus poStatus = PoStatus.builder().status(purchaseOrderCommand.getStatus()).updatedAt(DateUtil.now()).build();
-            poStatus = poStatusRepository.save(poStatus);
-            result.getPoStatuses().add(poStatus);
-            result.setUpdatedAt(DateUtil.now());
-            result = purchaseOrderService.save(result);
+        	if (!approvalConfig.getFinalStatus().equals(Boolean.TRUE)) {
+        		 PoStatus poStatus = PoStatus.builder().status(purchaseOrderCommand.getStatus()).updatedAt(DateUtil.now()).build();
+                 poStatus = poStatusRepository.save(poStatus);
+                 result.getPoStatuses().add(poStatus);
+                 result.setUpdatedAt(DateUtil.now());
+                 result = purchaseOrderService.save(result);
+        	}
+           
             
-            //
-            if (purchaseOrderCommand.isEmailToBeSent()) {
-            	
-        		if (purchaseOrderCommand.getApprovalLevel() == 1) {
-        			POMailDetail poMailDetail = POMailDetail.builder()
-            				.poNumber(result.getOrderNo())
-            				.status(PurchaseStatusEnum.SENT_TO_NUPCO.getLabel())
-            				.approvalLevel(2)
-            				.emailToBeSent(true)
-            				.build();
-        			Context context = pdfService.getContext(poMailDetail, "mailDetail");
-            		String html = pdfService.loadAndFillTemplate(context, "mail/poApprovalEmail");
-            		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-MM-SS");
-            		File tempFile = File.createTempFile("order", sdf.format(DateUtil.now()));
-            		FileOutputStream fos = new FileOutputStream(tempFile);
-            		fos.write(result.getData());
-            		fos.close();
-            		poMail.sendEmailWithAttachmentAndMultiple(poEmailApprovalLevel2, poSubjectEmail, html, true, true, tempFile);	
-        		}
-        		else if (purchaseOrderCommand.getApprovalLevel() == 2) {
-        			POMailDetail poMailDetail = POMailDetail.builder()
-            				.poNumber(result.getOrderNo())
-            				.status(PurchaseStatusEnum.SENT_TO_NUPCO.getLabel())
-            				.approvalLevel(3)
-            				.emailToBeSent(true)
-            				.build();
-        			Context context = pdfService.getContext(poMailDetail, "mailDetail");
-            		String html = pdfService.loadAndFillTemplate(context, "mail/poEmail");
-            		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_H-MM-SS");
-            		File tempFile = File.createTempFile("order", sdf.format(DateUtil.now()), null);
-            		FileOutputStream fos = new FileOutputStream(tempFile);
-            		fos.write(result.getData());
-            		fos.close();
-            		poMail.sendEmailWithAttachmentAndMultiple(poEmailReceiver, poSubjectEmail, html, true, true, tempFile);	
-        		}
-        		
-            }
+            POMailDetail poMailDetail = POMailDetail.builder()
+    				.poNumber(result.getOrderNo())
+    				.status(approvalConfig.getNextStepStatus())
+    				.approvalLevel(2)
+    				.emailToBeSent(true)
+    				.build();
+			Context context = pdfService.getContext(poMailDetail, "mailDetail");
+			String html = "";
+			if (approvalConfig.getFinalStatus().equals(Boolean.TRUE)) {
+				html = pdfService.loadAndFillTemplate(context, "mail/poEmail");
+			}
+			else {
+				html = pdfService.loadAndFillTemplate(context, "mail/poApprovalEmail");
+			}
+    		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH-MM-SS");
+    		File tempFile = File.createTempFile("order", sdf.format(DateUtil.now()));
+    		FileOutputStream fos = new FileOutputStream(tempFile);
+    		fos.write(result.getData());
+    		fos.close();
+    		
+    		String[] recipients = approvalConfig.getCurrentStepEmail().split(",");
+    		poMail.sendEmailWithAttachmentAndMultiple(recipients, poSubjectEmail, html, true, true, tempFile);	
+    		return ResponseEntity.ok(PoApprovalRepresentation.builder().message("Success Po Generation").build());
         }
-
+    	return ResponseEntity.ok(PoApprovalRepresentation.builder().message("No Action Has been done").build());
     }
     
     @GetMapping("/poInventory")
@@ -448,4 +484,18 @@ public class PurchaseOrderResource {
          status.add("noos");
          return inventoryService.findByStatusInAndIsLastInstanceAndCapacityLessThan(status, Boolean.TRUE, poThreesholdCapacity);
     }
+    
+    private boolean isValidApprovalConfig(DynamicApprovalConfig approvalConfig) throws IllegalArgumentException, IllegalAccessException {
+    	 if (approvalConfig.getFinalStatus() == null ||
+    			 approvalConfig.getStartStatus() == null ||
+    			 approvalConfig.getCurrentStep() == null || approvalConfig.getCurrentStep().isEmpty() ||
+    			 approvalConfig.getCurrentStepEmail() == null || approvalConfig.getCurrentStepEmail().isEmpty() ||
+    			 approvalConfig.getCurrentStepStatus() == null || approvalConfig.getCurrentStepStatus().isEmpty() ||
+    			 approvalConfig.getNextStep() == null || approvalConfig.getNextStep().isEmpty() ||
+    			 approvalConfig.getNextStepStatus() == null || approvalConfig.getNextStepStatus().isEmpty()
+    			 )
+         return false;   
+         return true;        
+    }
+    
 }
