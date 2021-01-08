@@ -38,7 +38,7 @@ public class OverallStatsServiceImpl implements OverallStatsService {
 				return inventoryMapper.toOverallStatsRepres(overallStatsOutlet.get(0));
 			}
 		}
-		
+		 
 		return OverallStatsRepresentation.builder().build();
 	}
 
