@@ -4,15 +4,15 @@ import java.util.Date;
 
 public interface  OutletOverviewProjection {
 	
-	public String getOutletName();
-	public Double getCurrentBalance();
+	public Long getCurrentBalance();
 	public Double getDeliveryOnTimeInFull();
-	public Date getLastUpdatedAt();
+	public Date   getLastUpdatedAt();
+	public String getOutletName();
 	public Double getOverallOutletPerformanceScore();
 	public Double getStockoutRatio();
-	public Double getTotalVaccinesConsumed();
-    public Double getTotalVaccinesReceivedAtNupco();
-    public Double getTotalVaccinesReceivedAtOutlets();
+	public Long getTotalVaccinesConsumed();
+    public Long getTotalVaccinesReceivedAtNupco();
+    public Long getTotalVaccinesReceivedAtOutlets();
     public Double getWarehouseFillingRate();
     public Double getWastageVaccines();
     

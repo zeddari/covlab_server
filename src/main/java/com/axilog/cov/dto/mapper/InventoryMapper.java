@@ -101,7 +101,7 @@ public class InventoryMapper {
 	/**
 	 * @param overallStats
 	 * @return
-	 */
+	 */								  
 	public OverallStatsRepresentation toOverallStatsRepres(OverallStats overallStats) {
 		return OverallStatsRepresentation.builder()
 				.deliveryOnTimeInFull(overallStats.getDeliveryOnTimeInFull())
@@ -118,7 +118,7 @@ public class InventoryMapper {
 	}
 	
 	
-	public OverallStatsRepresentation toOverallStatsRepres(OutletOverviewProjection overallStats) {
+	public OverallStatsRepresentation toOverallStatsRepresOutlet(OutletOverviewProjection overallStats) {
 		return OverallStatsRepresentation.builder()
 				.deliveryOnTimeInFull(overallStats.getDeliveryOnTimeInFull())
 				.lastUpdatedAt(overallStats.getLastUpdatedAt())

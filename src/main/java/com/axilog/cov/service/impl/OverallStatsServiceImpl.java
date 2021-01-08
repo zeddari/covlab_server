@@ -28,14 +28,14 @@ public class OverallStatsServiceImpl implements OverallStatsService {
 	public OverallStatsRepresentation findKpiByLastUpdated(String outlet) {
 		if (outlet.equals("all")) {
 			List<OverallStats> overallStats = overallStatsRepository.getKpiCustomQuery();
-			if (Optional.ofNullable(overallStats).isPresent()) {
+			if (Optional.ofNullable(overallStats).isPresent() && overallStats.size() > 0) {
 				return inventoryMapper.toOverallStatsRepres(overallStats.get(0));
 			}
 		}
 		else {
 			List<OutletOverviewProjection> overallStatsOutlet = overallStatsRepository.getKpiOutletCustomQuery(outlet);
 			if (Optional.ofNullable(overallStatsOutlet).isPresent() && overallStatsOutlet.size() > 0) {
-				return inventoryMapper.toOverallStatsRepres(overallStatsOutlet.get(0));
+				return inventoryMapper.toOverallStatsRepresOutlet(overallStatsOutlet.get(0));
 			}
 		}
 		 
