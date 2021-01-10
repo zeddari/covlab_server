@@ -111,7 +111,8 @@ spring:
   output:
     ansi:
       console-available: true
-
+  servlet:    multipart:      enabled: false
+   
 server:
   servlet:
     session:

@@ -2,11 +2,14 @@ package com.axilog.cov.domain;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -17,6 +20,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.axilog.cov.domain.converter.JsonToMapConverter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.AllArgsConstructor;
@@ -74,6 +78,14 @@ public class PurchaseOrder implements Serializable {
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Product> products;
 
+    @Column(name = "hot_json")
+    private String hotJson;
+
+    
+//    @Column(name = "hot_json", columnDefinition = "json")
+//    @Convert(attributeName = "data", converter = JsonToMapConverter.class)
+//    private Map<String, Object> hotJson = new HashMap<>();
+    
     // jhipster-needle-entity-add-field - JHipster will add fields here
     public Long getId() {
         return id;

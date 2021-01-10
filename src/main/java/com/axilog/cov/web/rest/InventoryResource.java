@@ -1,9 +1,11 @@
 package com.axilog.cov.web.rest;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +25,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.axilog.cov.domain.Inventory;
@@ -33,6 +38,7 @@ import com.axilog.cov.service.InventoryQueryService;
 import com.axilog.cov.service.InventoryService;
 import com.axilog.cov.service.dto.InventoryCriteria;
 import com.axilog.cov.util.DateUtil;
+import com.axilog.cov.util.XlsxFileUtil;
 import com.axilog.cov.web.rest.errors.BadRequestAlertException;
 
 import io.github.jhipster.web.util.HeaderUtil;
@@ -129,6 +135,28 @@ public class InventoryResource {
             .body(result);
     }
     
+    
+    @PostMapping(value ="/inventory/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Inventory> updateInventoryFromXlsFile(@RequestParam(value = "file", required = false) MultipartFile file) throws URISyntaxException, IOException {
+        log.debug("REST request to upload Inventory : {}");
+        if (file == null) {
+            throw new BadRequestAlertException("Empty file", ENTITY_NAME, "Please upload correct file");
+        }
+        Map<Integer, List<String>> data = XlsxFileUtil.readFileFromStream(file.getInputStream());
+        InventoryCommand inventoryCommand = InventoryCommand.builder().build();
+        Optional<Inventory> inventoryOptional = inventoryService.findOne(inventoryCommand.getId());
+        if (!inventoryOptional.isPresent()) {
+        	throw new BadRequestAlertException("Id Does not Exist", ENTITY_NAME, "idnull");
+        }
+        Inventory result = inventoryOptional.get();
+        result.setReceivedQty(inventoryCommand.getCurrentBalance());
+        result.setQuantitiesInTransit(inventoryCommand.getQuantitiesInTransit());
+        result.setLastUpdatedAt(DateUtil.now());
+        result = inventoryService.save(result);
+        return ResponseEntity.ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
+            .body(result);
+    }
     
     @PutMapping("/inventory/update/new")
     public ResponseEntity<Inventory> updateNewInventoryByCriteria(@RequestBody InventoryCommand inventoryCommand) throws URISyntaxException {

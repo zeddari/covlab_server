@@ -11,8 +11,10 @@ import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -70,6 +72,7 @@ import com.axilog.cov.service.PurchaseOrderService;
 import com.axilog.cov.service.dto.PurchaseOrderCriteria;
 import com.axilog.cov.service.pdf.PdfService;
 import com.axilog.cov.util.DateUtil;
+import com.axilog.cov.util.JsonUtils;
 import com.axilog.cov.web.rest.errors.ApprovalConfigDoesNotExistException;
 import com.axilog.cov.web.rest.errors.BadRequestAlertException;
 import com.lowagie.text.DocumentException;
@@ -358,6 +361,7 @@ public class PurchaseOrderResource {
         				.orderNo(currVal)
         				.data(fileContent)
         				.outlet(outlet)
+        				.hotJson(JsonUtils.toJsonString(detail.getListDetails()))
         				.build();
         		PurchaseOrder result = purchaseOrderService.save(po);
         		POMailDetail poMailDetail = POMailDetail.builder()
