@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import com.axilog.cov.domain.Inventory;
 import com.axilog.cov.dto.projection.DashInventoryComProjection;
+import com.axilog.cov.dto.projection.DashInventoryStockAllOutletProjection;
 import com.axilog.cov.dto.projection.DashInventoryStockProjection;
 import com.axilog.cov.dto.projection.ServiceDashProjection;
 
@@ -28,6 +29,10 @@ public interface DashBoardRepository extends JpaRepository<Inventory, Long>, Jpa
 	
 	@Query(value = "SELECT * FROM kpi_inventory_stock_outlet where outlet_name =:outlet ", nativeQuery = true)
 	List<DashInventoryStockProjection>  getStockOutlet(@Param ( "outlet" ) String outlet);
+	
+	
+	@Query(value = "SELECT * FROM kpi_stock_by_outlet ", nativeQuery = true)
+	List<DashInventoryStockAllOutletProjection>  getStockForAllOutlet();
 	
 	
 	 

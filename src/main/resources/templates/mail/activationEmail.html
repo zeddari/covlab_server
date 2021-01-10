@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" lang="en">
     <head>
-        <title th:text="#{email.activation.title}">JHipster activation</title>
+        <title th:text="#{email.activation.title}">Immunization account activation</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <link rel="icon" th:href="@{|${baseUrl}/favicon.ico|}" />
     </head>
@@ -10,16 +10,17 @@
             Dear
         </p>
         <p th:text="#{email.activation.text1}">
-            Your JHipster account has been created, please click on the URL below to activate it:
+            Your Immunization account has been created.<br/>
+            Please contact your administrator for activation:  <p th:text="${activationContactEmail}">
         </p>
         <p>
-            <a th:with="url=(@{|${baseUrl}/account/activate?key=${user.activationKey}|})" th:href="${url}"
-            th:text="${url}">Activation link</a>
+           
+
         </p>
         <p>
             <span th:text="#{email.activation.text2}">Regards, </span>
             <br/>
-            <em th:text="#{email.signature}">JHipster.</em>
+            <em th:text="#{email.signature}">Immunization Operation center team.</em>
         </p>
     </body>
 </html>

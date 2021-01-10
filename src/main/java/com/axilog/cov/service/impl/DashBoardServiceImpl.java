@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.axilog.cov.dto.projection.DashInventoryComProjection;
+import com.axilog.cov.dto.projection.DashInventoryStockAllOutletProjection;
 import com.axilog.cov.dto.projection.DashInventoryStockProjection;
 import com.axilog.cov.dto.representation.ChartDetail;
 import com.axilog.cov.dto.representation.DashBoardRepresentation;
@@ -93,6 +94,27 @@ public class DashBoardServiceImpl implements DashBoardService {
 		return chartDetails;
 		
 		
+	}
+
+	@Override
+	public List<ChartDetail> getKpiStockForAllOutlet() {
+		List<ChartDetail> chartDetails = new ArrayList<>();
+		List<DashInventoryStockAllOutletProjection> inventories = dashBoardRepository.getStockForAllOutlet();
+		List<SeriesDetail> series = new ArrayList<>();
+		if (Optional.ofNullable(inventories).isPresent()) {
+			inventories.forEach(inventory -> {
+				series.add(SeriesDetail.builder()
+						.name(inventory.getOutletName())
+						.value(inventory.getValue())
+						.build());
+			});
+			
+		}
+		chartDetails.add(ChartDetail.builder()
+				.name("Location")
+				.series(series)
+				.build());
+		return chartDetails;
 	}
 
 }

@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.axilog.cov.domain.Inventory;
 import com.axilog.cov.domain.Outlet;
 import com.axilog.cov.domain.OverallStats;
+import com.axilog.cov.domain.OverallStatsOutlet;
 import com.axilog.cov.domain.Product;
 import com.axilog.cov.dto.projection.OutletOverviewProjection;
 import com.axilog.cov.dto.representation.HeaderPdfDetail;
@@ -103,6 +104,21 @@ public class InventoryMapper {
 	 * @return
 	 */								  
 	public OverallStatsRepresentation toOverallStatsRepres(OverallStats overallStats) {
+		return OverallStatsRepresentation.builder()
+				.deliveryOnTimeInFull(overallStats.getDeliveryOnTimeInFull())
+				.lastUpdatedAt(overallStats.getLastUpdatedAt())
+				.overallOutletPerformanceScore(overallStats.getOverallOutletPerformanceScore())
+				.stockoutRatio(overallStats.getStockoutRatio())
+				.totalVaccinesConsumed(overallStats.getTotalVaccinesConsumed())
+				.totalVaccinesReceivedAtNupco(overallStats.getTotalVaccinesReceivedAtNupco())
+				.totalVaccinesReceivedAtOutlets(overallStats.getTotalVaccinesReceivedAtOutlets())
+				.warehouseFillingRate(overallStats.getWarehouseFillingRate())
+				.wastageVaccines(overallStats.getWastageVaccines())
+				.currentBalance(overallStats.getCurrentBalance())
+				.build();
+	}
+	
+	public OverallStatsRepresentation toOverallStatsRepres(OverallStatsOutlet overallStats) {
 		return OverallStatsRepresentation.builder()
 				.deliveryOnTimeInFull(overallStats.getDeliveryOnTimeInFull())
 				.lastUpdatedAt(overallStats.getLastUpdatedAt())

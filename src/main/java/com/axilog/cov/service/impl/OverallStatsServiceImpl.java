@@ -11,6 +11,7 @@ import com.axilog.cov.domain.OverallStats;
 import com.axilog.cov.dto.mapper.InventoryMapper;
 import com.axilog.cov.dto.projection.OutletOverviewProjection;
 import com.axilog.cov.dto.representation.OverallStatsRepresentation;
+import com.axilog.cov.repository.OverallStatsOutletRepository;
 import com.axilog.cov.repository.OverallStatsRepository;
 import com.axilog.cov.service.OverallStatsService;
 
@@ -22,21 +23,17 @@ public class OverallStatsServiceImpl implements OverallStatsService {
 	private OverallStatsRepository overallStatsRepository;
 	
 	@Autowired
+	private OverallStatsOutletRepository overallStatsOutletRepository;
+	
+	@Autowired
 	private InventoryMapper inventoryMapper;
 	
 	@Override
 	public OverallStatsRepresentation findKpiByLastUpdated(String outlet) {
-		if (outlet.equals("all")) {
-			List<OverallStats> overallStats = overallStatsRepository.getKpiCustomQuery();
-			if (Optional.ofNullable(overallStats).isPresent() && overallStats.size() > 0) {
-				return inventoryMapper.toOverallStatsRepres(overallStats.get(0));
-			}
-		}
-		else {
-			List<OutletOverviewProjection> overallStatsOutlet = overallStatsRepository.getKpiOutletCustomQuery(outlet);
-			if (Optional.ofNullable(overallStatsOutlet).isPresent() && overallStatsOutlet.size() > 0) {
-				return inventoryMapper.toOverallStatsRepresOutlet(overallStatsOutlet.get(0));
-			}
+		List<OutletOverviewProjection> overallStatsOutlet = overallStatsRepository.getKpiOutletCustomQuery(outlet);
+//		Optional<OverallStatsOutlet> optionalStatOutlet = overallStatsOutlet.stream().filter(stat -> stat.getOutletName().equals(outlet)).max(Comparator.comparing(OverallStatsOutlet::getLastUpdatedAt));
+		if (overallStatsOutlet != null && overallStatsOutlet.size() > 0) {
+			return inventoryMapper.toOverallStatsRepresOutlet(overallStatsOutlet.get(0));
 		}
 		 
 		return OverallStatsRepresentation.builder().build();

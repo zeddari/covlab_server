@@ -49,6 +49,9 @@ public class OtpMailService {
 
     @Value("${otpSourceEmail}")
     private String otpSourceEmail; 
+    
+    @Value("${activationContactEmail}")
+    private String activationContactEmail; 
   
 
     @Async
@@ -142,6 +145,7 @@ public class OtpMailService {
         Context context = new Context(locale);
         context.setVariable(USER, user);
         context.setVariable(BASE_URL, jHipsterProperties.getMail().getBaseUrl());
+        context.setVariable("activationContactEmail", activationContactEmail);
         String content = templateEngine.process(templateName, context);
         String subject = messageSource.getMessage(titleKey, null, locale);
         sendEmail(user.getEmail(), subject, content, false, true);

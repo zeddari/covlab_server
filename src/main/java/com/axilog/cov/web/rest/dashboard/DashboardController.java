@@ -80,6 +80,16 @@ public class DashboardController {
 		return dashBoardService.getKpiStockByOutlet(outlet);
 	}
 	
+	@GetMapping(value = "/stockForAllOutlet", produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiOperation(value = "Kpi stock per outlet", notes = "returns a a list of mw links")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved list"),
+			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found")})
+	public List<ChartDetail> getKpiStockOutlet() throws TopologyDataNotFoundException {
+		return dashBoardService.getKpiStockForAllOutlet();
+	}
+	
 	@PostMapping(value = "/delivery/{outlet}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Kpi stock per outlet", notes = "returns a a list of mw links")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved list"),
