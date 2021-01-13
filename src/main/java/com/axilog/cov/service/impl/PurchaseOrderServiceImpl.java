@@ -2,6 +2,11 @@ package com.axilog.cov.service.impl;
 
 import com.axilog.cov.service.PurchaseOrderService;
 import com.axilog.cov.domain.PurchaseOrder;
+import com.axilog.cov.dto.projection.PoUpdateProjection;
+import com.axilog.cov.dto.representation.InventoryPdfDetail;
+import com.axilog.cov.dto.representation.OverallStatsRepresentation;
+import com.axilog.cov.dto.representation.PoPdfDetail;
+import com.axilog.cov.dto.representation.PoUpdateRepresentation;
 import com.axilog.cov.repository.PurchaseOrderRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -69,4 +75,15 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 		}
 		return null;
 	}
+
+	@Override
+	public PoUpdateRepresentation savepo(PoUpdateRepresentation poUpdateRepresentation) {
+		
+		Optional<PurchaseOrder> purchaseOrders = purchaseOrderRepository.findById(poUpdateRepresentation.getId());
+			
+			return purchaseOrderRepository.save(purchaseOrders);
+				
+			
+	}
 }
+	

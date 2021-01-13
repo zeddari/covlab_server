@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.axilog.cov.domain.PurchaseOrder;
+import com.axilog.cov.dto.representation.PoUpdateRepresentation;
 
 /**
  * Service Interface for managing {@link PurchaseOrder}.
@@ -54,4 +55,7 @@ public interface PurchaseOrderService {
      * @return
      */
     PurchaseOrder findByOrderNo(String orderNo);
+    
+    PoUpdateRepresentation savepo(PoUpdateRepresentation poUpdateRepresentation);
+    
 }

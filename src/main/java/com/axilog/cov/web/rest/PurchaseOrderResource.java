@@ -30,6 +30,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,6 +59,7 @@ import com.axilog.cov.dto.mapper.InventoryMapper;
 import com.axilog.cov.dto.mapper.PurchaseOrderMapper;
 import com.axilog.cov.dto.representation.PoApprovalRepresentation;
 import com.axilog.cov.dto.representation.PoPdfDetail;
+import com.axilog.cov.dto.representation.PoUpdateRepresentation;
 import com.axilog.cov.dto.representation.PurchaseOrderRepresentation;
 import com.axilog.cov.enums.PurchaseStatusEnum;
 import com.axilog.cov.repository.PoStatusRepository;
@@ -298,8 +300,6 @@ public class PurchaseOrderResource {
         List<Outlet> outlets = outletService.findAll();
         
         
-        
-        
         outlets.forEach(outlet -> {
 		try {
 			List<Product> productsHavePo = new ArrayList<>();
@@ -361,7 +361,7 @@ public class PurchaseOrderResource {
         				.orderNo(currVal)
         				.data(fileContent)
         				.outlet(outlet)
-        				.hotJson(JsonUtils.toJsonString(detail.getListDetails()))
+        				.hotJson(JsonUtils.toJsonString(detail))
         				.build();
         		PurchaseOrder result = purchaseOrderService.save(po);
         		POMailDetail poMailDetail = POMailDetail.builder()
@@ -394,7 +394,23 @@ public class PurchaseOrderResource {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(po);
         
     }
-    
+    @PostMapping(value = "/purchaseOrders/edit", consumes = MediaType.APPLICATION_JSON_VALUE )
+    public ResponseEntity<PurchaseOrder> updatePurchaseOrder1(@RequestBody PoPdfDetail detail) throws URISyntaxException, IOException, DocumentException {
+        log.debug("REST request to update PurchaseOrder : {}", detail);
+        File poPdf = pdfService.generatePdf(detail);
+		byte[] fileContent = FileUtils.readFileToByteArray(poPdf);
+        if (detail == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        PurchaseOrder persistedPo = purchaseOrderService.findByOrderNo(detail.getHeaderPdfDetail().getOrderNumber());
+        // update po
+        persistedPo.setData(fileContent);
+        persistedPo.setHotJson(JsonUtils.toJsonString(detail));
+        PurchaseOrder result = purchaseOrderService.save(persistedPo);
+        return ResponseEntity.ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, Long.toString(result.getOrderNo())))
+            .body(result);
+    }
     
     @PostMapping("/purchaseOrders/approval")
     @Transactional
@@ -455,6 +471,7 @@ public class PurchaseOrderResource {
         }
     	return ResponseEntity.ok(PoApprovalRepresentation.builder().message("No Action Has been done").build());
     }
+    
     
     @GetMapping("/poInventory")
     public ModelAndView studentsView(ModelAndView modelAndView) {
