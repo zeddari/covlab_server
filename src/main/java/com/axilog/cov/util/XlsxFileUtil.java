@@ -42,21 +42,34 @@ public class XlsxFileUtil {
 	}
 	
 	
-	public static Map<Integer, List<String>> readFileFromStream(InputStream in) throws IOException {
+	public static Map<Integer, List<String>> readFileFromStream(InputStream in, int startLine) throws IOException {
 		Workbook workbook = new XSSFWorkbook(in);
 		Sheet sheet = workbook.getSheetAt(2);
 
 		Map<Integer, List<String>> data = new HashMap<>();
-		int i = 0;
+		int i = startLine;
+		int rowIdx = 0;
 		for (Row row : sheet) {
+			if (rowIdx < startLine) {
+				rowIdx++;
+				continue;
+			}
 		    data.put(i, new ArrayList<String>());
 		    for (Cell cell : row) {
 		        switch (cell.getCellTypeEnum()) {
-		            case STRING:  break;
-		            case NUMERIC: break;
-		            case BOOLEAN: break;
-		            case FORMULA: break;
-		            default: data.get(new Integer(i)).add(" ");
+		            case STRING:  
+		            	data.get(new Integer(i)).add(cell.getStringCellValue());
+		            	break;
+		            case NUMERIC: 
+		            	data.get(new Integer(i)).add(Double.toString(cell.getNumericCellValue()));
+		            	break;
+		            case BOOLEAN: 
+		            	data.get(new Integer(i)).add(Boolean.toString(cell.getBooleanCellValue())); 
+		            	break;
+		            case FORMULA: 
+		            	data.get(new Integer(i)).add(Double.toString(cell.getNumericCellValue()));
+		            	break;
+		            default: data.get(new Integer(i)).add("NA");
 		        }
 		    }
 		    i++;

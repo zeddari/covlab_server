@@ -5,7 +5,7 @@ import com.axilog.cov.domain.Inventory;
 import com.axilog.cov.repository.InventoryRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -81,6 +81,11 @@ public class InventoryServiceImpl implements InventoryService {
 	public List<Inventory> findByStatusInAndIsLastInstanceAndCapacityLessThan(List<String> status,
 			Boolean isLastInstance, Double capapcity) {
 		return inventoryRepository.findByStatusInAndIsLastInstanceAndCapacityLessThan(status, isLastInstance, capapcity);
+	}
+
+	@Override
+	public Optional<Inventory> findByExample(Example<Inventory> inventoryExample) {
+		return inventoryRepository.findOne(inventoryExample);
 	}
 
 	

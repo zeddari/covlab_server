@@ -2,6 +2,7 @@ package com.axilog.cov.service;
 
 import com.axilog.cov.domain.Product;
 
+import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -37,6 +38,14 @@ public interface ProductService {
      */
     Optional<Product> findOne(Long id);
 
+    
+    /**
+     * @param exampleProduct
+     * @return
+     */
+    Optional<Product> findOne(Example<Product> exampleProduct);
+    
+    
     /**
      * Delete the "id" product.
      *

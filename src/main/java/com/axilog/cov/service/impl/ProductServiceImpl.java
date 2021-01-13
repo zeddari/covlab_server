@@ -5,7 +5,7 @@ import com.axilog.cov.domain.Product;
 import com.axilog.cov.repository.ProductRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -54,4 +54,9 @@ public class ProductServiceImpl implements ProductService {
         log.debug("Request to delete Product : {}", id);
         productRepository.deleteById(id);
     }
+
+	@Override
+	public Optional<Product> findOne(Example<Product> exampleProduct) {
+		return productRepository.findOne(exampleProduct);
+	}
 }

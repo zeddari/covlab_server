@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -31,11 +32,15 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.axilog.cov.domain.Inventory;
+import com.axilog.cov.domain.Outlet;
+import com.axilog.cov.domain.Product;
 import com.axilog.cov.dto.command.InventoryCommand;
 import com.axilog.cov.dto.mapper.InventoryMapper;
 import com.axilog.cov.dto.representation.InventoryRepresentation;
 import com.axilog.cov.service.InventoryQueryService;
 import com.axilog.cov.service.InventoryService;
+import com.axilog.cov.service.OutletService;
+import com.axilog.cov.service.ProductService;
 import com.axilog.cov.service.dto.InventoryCriteria;
 import com.axilog.cov.util.DateUtil;
 import com.axilog.cov.util.XlsxFileUtil;
@@ -69,6 +74,11 @@ public class InventoryResource {
     @Autowired
     private InventoryMapper inventoryMapper;
     
+    @Autowired
+    private OutletService outletService;
+    
+    @Autowired
+    private ProductService productService;
     
     public InventoryResource(InventoryService inventoryService, InventoryQueryService inventoryQueryService) {
         this.inventoryService = inventoryService;
@@ -137,25 +147,52 @@ public class InventoryResource {
     
     
     @PostMapping(value ="/inventory/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Inventory> updateInventoryFromXlsFile(@RequestParam(value = "file", required = false) MultipartFile file) throws URISyntaxException, IOException {
+    public ResponseEntity<Inventory> updateInventoryFromXlsFile(@RequestParam(value = "file", required = false) MultipartFile file, @RequestParam(value = "outlet", required = false) String outlet) throws URISyntaxException, IOException {
         log.debug("REST request to upload Inventory : {}");
         if (file == null) {
-            throw new BadRequestAlertException("Empty file", ENTITY_NAME, "Please upload correct file");
+            throw new BadRequestAlertException("Corrupted File", ENTITY_NAME, "Please upload correct file");
         }
-        Map<Integer, List<String>> data = XlsxFileUtil.readFileFromStream(file.getInputStream());
-        InventoryCommand inventoryCommand = InventoryCommand.builder().build();
-        Optional<Inventory> inventoryOptional = inventoryService.findOne(inventoryCommand.getId());
-        if (!inventoryOptional.isPresent()) {
-        	throw new BadRequestAlertException("Id Does not Exist", ENTITY_NAME, "idnull");
+        Map<Integer, List<String>> data = XlsxFileUtil.readFileFromStream(file.getInputStream(), 2);
+        if (data == null || data.isEmpty()) {
+        	 throw new BadRequestAlertException("Empty file", ENTITY_NAME, "Please upload a completed excel file");
         }
-        Inventory result = inventoryOptional.get();
-        result.setReceivedQty(inventoryCommand.getCurrentBalance());
-        result.setQuantitiesInTransit(inventoryCommand.getQuantitiesInTransit());
-        result.setLastUpdatedAt(DateUtil.now());
-        result = inventoryService.save(result);
-        return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
-            .body(result);
+        Optional<Outlet> outletOpt = outletService.findByExample(Example.of(Outlet.builder().outletName(outlet).build()));
+    	if (!outletOpt.isPresent()) {
+    		throw new BadRequestAlertException("Bad Outlet", ENTITY_NAME, "The selected outlet does not exist");
+    	}
+    	
+    	data.forEach((index, list) -> {
+    		String nupcoCode = list.get(1);
+    		Double consumedQuantity = Double.parseDouble(list.get(6));
+    		Optional<Product> productOpt = productService.findOne(Example.of(Product.builder().productCode(nupcoCode).build()));
+        	if (!productOpt.isPresent()) {
+        		throw new BadRequestAlertException("Bad NupcoCode", ENTITY_NAME, "NupcoCode does not exist: "+nupcoCode);
+        	}
+    		Example<Inventory> exampleInventory = Example.of(Inventory.builder()
+    				.outlet(outletOpt.get())
+    				
+    				.build());
+            Optional<Inventory> inventoryOptional = inventoryService.findByExample(exampleInventory);
+            if (!inventoryOptional.isPresent()) {
+            	throw new BadRequestAlertException("Id Does not Exist", ENTITY_NAME, "idnull");
+            }
+            
+            //save current ine with lastInstance as false
+            Inventory result = inventoryOptional.get();
+            result.setLastUpdatedAt(DateUtil.now());
+            result.setIsLastInstance(Boolean.FALSE);
+            result = inventoryService.save(result);
+            
+            //create new one as last instance
+            result.setCurrent_balance(result.getCurrent_balance() - consumedQuantity);
+            result.setId(null);
+            result.setIsLastInstance(Boolean.TRUE);
+            result = inventoryService.save(result);
+    	}
+    	);
+    	return ResponseEntity.ok()
+                .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, ""))
+                .body(null);
     }
     
     @PutMapping("/inventory/update/new")

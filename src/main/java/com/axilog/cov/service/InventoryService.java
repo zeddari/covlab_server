@@ -3,6 +3,7 @@ package com.axilog.cov.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -10,6 +11,10 @@ import com.axilog.cov.domain.Inventory;
 
 /**
  * Service Interface for managing {@link Inventory}.
+ */
+/**
+ * @author lenovo
+ *
  */
 public interface InventoryService {
 
@@ -70,6 +75,11 @@ public interface InventoryService {
      */
     void delete(Long id);
 
+	/**
+	 * @return
+	 */
 	List<String> getOutletWithTemperatureIssue();
+	
+	Optional<Inventory> findByExample(Example<Inventory> inventoryExample);
  
 }

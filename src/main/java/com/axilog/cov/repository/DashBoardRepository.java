@@ -34,6 +34,9 @@ public interface DashBoardRepository extends JpaRepository<Inventory, Long>, Jpa
 	@Query(value = "SELECT * FROM kpi_stock_by_outlet ", nativeQuery = true)
 	List<DashInventoryStockAllOutletProjection>  getStockForAllOutlet();
 	
+	@Query(value = "SELECT * FROM kpi_avg_stock_days where outletName =:outlet and category =:category", nativeQuery = true)
+	List<DashInventoryStockProjection>  getAvgStockDaysOutletCategory(@Param ( "outlet" ) String outlet, @Param ( "category" ) String category);
+	
 	
 	 
 	

@@ -117,4 +117,24 @@ public class DashBoardServiceImpl implements DashBoardService {
 		return chartDetails;
 	}
 
+	@Override
+	public List<ChartDetail> getAvgStockDaysByOutletCategory(String outlet, String category) {
+		List<ChartDetail> chartDetails = new ArrayList<>();
+		List<DashInventoryStockProjection> inventories = dashBoardRepository.getAvgStockDaysOutletCategory(outlet, category);
+		List<SeriesDetail> series = new ArrayList<>();
+		if (Optional.ofNullable(inventories).isPresent()) {
+			inventories.forEach(inventory -> {
+				series.add(SeriesDetail.builder()
+						.name(inventory.getProduct())
+						.value(inventory.getValue())
+						.build());
+			});
+		}
+		chartDetails.add(ChartDetail.builder()
+				.name(category)
+				.series(series)
+				.build());
+		return chartDetails;
+	}
+
 }

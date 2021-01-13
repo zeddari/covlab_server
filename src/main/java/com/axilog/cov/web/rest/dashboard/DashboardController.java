@@ -101,4 +101,15 @@ public class DashboardController {
 		return dashBoardService.getKpiByOutletCategory(outlet, chartCommand.getCategory());
 	}
 	
+	@PostMapping(value = "/avgStockDays/{outlet}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiOperation(value = "avgStockDays Kpi per outlet", notes = "returns a a list of mw links")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved list"),
+			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found")})
+	public List<ChartDetail> getAvgStockDaysKpiOutletCategory(@PathVariable(name="outlet", required=true) String outlet,
+			@RequestBody(required = true) DeliveryChartCommand chartCommand) throws TopologyDataNotFoundException {
+		return dashBoardService.getAvgStockDaysByOutletCategory(outlet, chartCommand.getCategory());
+	}
+	
 }
