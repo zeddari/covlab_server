@@ -31,12 +31,15 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.axilog.cov.domain.ImportHistory;
 import com.axilog.cov.domain.Inventory;
 import com.axilog.cov.domain.Outlet;
 import com.axilog.cov.domain.Product;
 import com.axilog.cov.dto.command.InventoryCommand;
 import com.axilog.cov.dto.mapper.InventoryMapper;
 import com.axilog.cov.dto.representation.InventoryRepresentation;
+import com.axilog.cov.security.SecurityUtils;
+import com.axilog.cov.service.ImportHistoryService;
 import com.axilog.cov.service.InventoryQueryService;
 import com.axilog.cov.service.InventoryService;
 import com.axilog.cov.service.OutletService;
@@ -79,6 +82,9 @@ public class InventoryResource {
     
     @Autowired
     private ProductService productService;
+    
+    @Autowired
+    private ImportHistoryService importHistoryService;
     
     public InventoryResource(InventoryService inventoryService, InventoryQueryService inventoryQueryService) {
         this.inventoryService = inventoryService;
@@ -147,8 +153,10 @@ public class InventoryResource {
     
     
     @PostMapping(value ="/inventory/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Inventory> updateInventoryFromXlsFile(@RequestParam(value = "file", required = false) MultipartFile file, @RequestParam(value = "outlet", required = false) String outlet) throws URISyntaxException, IOException {
+    public ResponseEntity<Void> updateInventoryFromXlsFile(@RequestParam(value = "file", required = false) MultipartFile file, @RequestParam(value = "outlet", required = false) String outlet) throws URISyntaxException, IOException {
         log.debug("REST request to upload Inventory : {}");
+        String currentUser = SecurityUtils.getCurrentUserLogin().get();
+        String jobId = Long.toString(DateUtil.uniqueCurrentTimeMS());
         if (file == null) {
             throw new BadRequestAlertException("Corrupted File", ENTITY_NAME, "Please upload correct file");
         }
@@ -162,36 +170,93 @@ public class InventoryResource {
     	}
     	
     	data.forEach((index, list) -> {
-    		String nupcoCode = list.get(1);
-    		Double consumedQuantity = Double.parseDouble(list.get(6));
-    		Optional<Product> productOpt = productService.findOne(Example.of(Product.builder().productCode(nupcoCode).build()));
-        	if (!productOpt.isPresent()) {
-        		throw new BadRequestAlertException("Bad NupcoCode", ENTITY_NAME, "NupcoCode does not exist: "+nupcoCode);
-        	}
-    		Example<Inventory> exampleInventory = Example.of(Inventory.builder()
-    				.outlet(outletOpt.get())
-    				
-    				.build());
-            Optional<Inventory> inventoryOptional = inventoryService.findByExample(exampleInventory);
-            if (!inventoryOptional.isPresent()) {
-            	throw new BadRequestAlertException("Id Does not Exist", ENTITY_NAME, "idnull");
-            }
-            
-            //save current ine with lastInstance as false
-            Inventory result = inventoryOptional.get();
-            result.setLastUpdatedAt(DateUtil.now());
-            result.setIsLastInstance(Boolean.FALSE);
-            result = inventoryService.save(result);
-            
-            //create new one as last instance
-            result.setCurrent_balance(result.getCurrent_balance() - consumedQuantity);
-            result.setId(null);
-            result.setIsLastInstance(Boolean.TRUE);
-            result = inventoryService.save(result);
+    		try {
+    			String nupcoCode = list.get(1);
+        		Double consumedQuantity = Double.parseDouble(list.get(6));
+        		Optional<Product> productOpt = productService.findOne(Example.of(Product.builder().productCode(nupcoCode).build()));
+            	if (!productOpt.isPresent()) {
+            		ImportHistory importHistory = ImportHistory.builder()
+            				.importedAt(DateUtil.now())
+            				.imported_by(currentUser)
+            				.nupcoCode(nupcoCode)
+            				.result("NOK")
+            				.status("PARTIAL")
+            				.fileName(file.getOriginalFilename())
+            				.message("Nupco code does not exist")
+            				.jobId(jobId)
+            				.outlet(outlet)
+            				.build();
+            		importHistoryService.save(importHistory);
+            		//throw new BadRequestAlertException("Bad NupcoCode", ENTITY_NAME, "NupcoCode does not exist: "+nupcoCode);
+            	}
+            	else {
+            		Example<Inventory> exampleInventory = Example.of(Inventory.builder()
+            				.outlet(outletOpt.get())
+            				.product(productOpt.get())
+            				.isLastInstance(true)
+            				.build());
+                    Optional<Inventory> inventoryOptional = inventoryService.findByExample(exampleInventory);
+                    if (!inventoryOptional.isPresent()) {
+                    	ImportHistory importHistory = ImportHistory.builder()
+                				.importedAt(DateUtil.now())
+                				.imported_by(currentUser)
+                				.nupcoCode(nupcoCode)
+                				.result("NOK")
+                				.status("PARTIAL")
+                				.fileName(file.getOriginalFilename())
+                				.message("No inventory item exist for this nupco code")
+                				.jobId(jobId)
+                				.outlet(outlet)
+                				.build();
+                		importHistoryService.save(importHistory);
+                    }
+                    else {
+                    	//save current ine with lastInstance as false
+                        Inventory result = inventoryOptional.get();
+                        result.setLastUpdatedAt(DateUtil.now());
+                        result.setIsLastInstance(Boolean.FALSE);
+                        result = inventoryService.save(result);
+                        
+                        //create new one as last instance
+                        result.setCurrent_balance(result.getCurrent_balance() - consumedQuantity);
+                        result.setId(null);
+                        result.setIsLastInstance(Boolean.TRUE);
+                        result = inventoryService.save(result);
+                        
+                        ImportHistory importHistory = ImportHistory.builder()
+                				.importedAt(DateUtil.now())
+                				.imported_by(currentUser)
+                				.nupcoCode(nupcoCode)
+                				.result("OK")
+                				.fileName(file.getOriginalFilename())
+                				.message("Update done with success for this nupco Code")
+                				.jobId(jobId)
+                				.outlet(outlet)
+                				.build();
+                        importHistoryService.save(importHistory);
+                    }
+                    
+            	}
+    		}
+    		catch(Exception e) {
+    			ImportHistory importHistory = ImportHistory.builder()
+        				.importedAt(DateUtil.now())
+        				.imported_by(currentUser)
+        				.nupcoCode(e.getMessage())
+        				.result("NOK")
+        				.status("PARTIAL")
+        				.fileName(file.getOriginalFilename())
+        				.message(list.toString())
+        				.jobId(jobId)
+        				.outlet(outlet)
+        				.build();
+        		importHistoryService.save(importHistory);
+    		}
+    		
     	}
     	);
     	return ResponseEntity.ok()
-                .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, ""))
+                .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, "The import has been finished, check the import history"))
                 .body(null);
     }
     

@@ -26,10 +26,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
@@ -58,6 +60,7 @@ import com.axilog.cov.dto.mapper.InventoryMapper;
 import com.axilog.cov.dto.mapper.PurchaseOrderMapper;
 import com.axilog.cov.dto.representation.PoApprovalRepresentation;
 import com.axilog.cov.dto.representation.PoPdfDetail;
+import com.axilog.cov.dto.representation.PoUpdateRepresentation;
 import com.axilog.cov.dto.representation.PurchaseOrderRepresentation;
 import com.axilog.cov.enums.PurchaseStatusEnum;
 import com.axilog.cov.repository.PoStatusRepository;
@@ -265,6 +268,20 @@ public class PurchaseOrderResource {
     }
 
     /**
+     * {@code GET  /purchase-orders/:id} : get the "id" purchaseOrder.
+     *
+     * @param id the id of the purchaseOrder to retrieve.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the purchaseOrder, or with status {@code 404 (Not Found)}.
+     */
+    @GetMapping("/purchase-orders/orderNo/{orderNo}")
+    public ResponseEntity<PurchaseOrder> getPurchaseOrderByPoNumber(@PathVariable Long orderNo) {
+        log.debug("REST request to get PurchaseOrder : {}", orderNo);
+        Example<PurchaseOrder> examplePurchaseOrder = Example.of(PurchaseOrder.builder().orderNo(orderNo).build());
+        Optional<PurchaseOrder> purchaseOrder = purchaseOrderService.findOne(examplePurchaseOrder);
+        return ResponseUtil.wrapOrNotFound(purchaseOrder);
+    }
+
+    /**
      * {@code DELETE  /purchase-orders/:id} : delete the "id" purchaseOrder.
      *
      * @param id the id of the purchaseOrder to delete.
@@ -296,8 +313,6 @@ public class PurchaseOrderResource {
         List<Inventory> inventories = getProductToBeOrdered();
         List<PurchaseOrder> orders = purchaseOrderService.findAll();
         List<Outlet> outlets = outletService.findAll();
-        
-        
         
         
         outlets.forEach(outlet -> {
@@ -351,7 +366,7 @@ public class PurchaseOrderResource {
                 poPending1Status = poStatusRepository.save(poPending1Status);
                 poStatusList.add(poPending1Status);
                
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd HH:MM:SS");
+                SimpleDateFormat sdf = new SimpleDateFormat(DateUtil.MOI_DATE_TIME_ENCODING);
                 PurchaseOrder po = PurchaseOrder.builder()
         				.products(products)
         				.createdAt(DateUtil.now())
@@ -361,7 +376,7 @@ public class PurchaseOrderResource {
         				.orderNo(currVal)
         				.data(fileContent)
         				.outlet(outlet)
-        				.hotJson(JsonUtils.toJsonString(detail.getListDetails()))
+        				.hotJson(JsonUtils.toJsonString(detail))
         				.build();
         		PurchaseOrder result = purchaseOrderService.save(po);
         		POMailDetail poMailDetail = POMailDetail.builder()
@@ -371,7 +386,7 @@ public class PurchaseOrderResource {
         				.emailToBeSent(true)
         				.build();
         		Context context = pdfService.getContext(poMailDetail, "mailDetail");
-        		String html = pdfService.loadAndFillTemplate(context, "mail/poApprovalEmail");
+        		String html = pdfService.loadAndFillTemplate(context, "mail/poValidationEmail");
         		String[] recipients = approvalConfig.getCurrentStepEmail().split(",");
         		poMail.sendEmailWithAttachmentAndMultiple(recipients, poSubjectEmail, html, true, true, poPdf);
         		message = "generated PO with the following details: number: "+currVal;
@@ -394,7 +409,23 @@ public class PurchaseOrderResource {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(po);
         
     }
-    
+    @PostMapping(value = "/purchaseOrders/edit", consumes = MediaType.APPLICATION_JSON_VALUE )
+    public ResponseEntity<PurchaseOrder> updatePurchaseOrder1(@RequestBody PoPdfDetail detail) throws URISyntaxException, IOException, DocumentException {
+        log.debug("REST request to update PurchaseOrder : {}", detail);
+        File poPdf = pdfService.generatePdf(detail);
+		byte[] fileContent = FileUtils.readFileToByteArray(poPdf);
+        if (detail == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        PurchaseOrder persistedPo = purchaseOrderService.findByOrderNo(detail.getHeaderPdfDetail().getOrderNumber());
+        // update po
+        persistedPo.setData(fileContent);
+        persistedPo.setHotJson(JsonUtils.toJsonString(detail));
+        PurchaseOrder result = purchaseOrderService.save(persistedPo);
+        return ResponseEntity.ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, Long.toString(result.getOrderNo())))
+            .body(result);
+    }
     
     @PostMapping("/purchaseOrders/approval")
     @Transactional
@@ -420,13 +451,11 @@ public class PurchaseOrderResource {
     	}
     	List<PoStatus> poStatusExisting = result.getPoStatuses().stream().filter(poSt -> poSt.getStatus().equals(purchaseOrderCommand.getStatus())).collect(Collectors.toList());
         if (poStatusExisting == null || poStatusExisting.isEmpty()) {
-        	if (!approvalConfig.getFinalStatus().equals(Boolean.TRUE)) {
-        		 PoStatus poStatus = PoStatus.builder().status(purchaseOrderCommand.getStatus()).updatedAt(DateUtil.now()).build();
-                 poStatus = poStatusRepository.save(poStatus);
-                 result.getPoStatuses().add(poStatus);
-                 result.setUpdatedAt(DateUtil.now());
-                 result = purchaseOrderService.save(result);
-        	}
+        	PoStatus poStatus = PoStatus.builder().status(purchaseOrderCommand.getStatus()).updatedAt(DateUtil.now()).build();
+            poStatus = poStatusRepository.save(poStatus);
+            result.getPoStatuses().add(poStatus);
+            result.setUpdatedAt(DateUtil.now());
+            result = purchaseOrderService.save(result);
            
             
             POMailDetail poMailDetail = POMailDetail.builder()
@@ -455,6 +484,7 @@ public class PurchaseOrderResource {
         }
     	return ResponseEntity.ok(PoApprovalRepresentation.builder().message("No Action Has been done").build());
     }
+    
     
     @GetMapping("/poInventory")
     public ModelAndView studentsView(ModelAndView modelAndView) {

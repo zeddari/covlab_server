@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +14,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 
@@ -61,7 +63,11 @@ public class XlsxFileUtil {
 		            	data.get(new Integer(i)).add(cell.getStringCellValue());
 		            	break;
 		            case NUMERIC: 
-		            	data.get(new Integer(i)).add(Double.toString(cell.getNumericCellValue()));
+		            	cell.setCellType(XSSFCell.CELL_TYPE_NUMERIC);
+		                Double doubleValue = cell.getNumericCellValue();
+		                BigDecimal bd = new BigDecimal(doubleValue.toString());
+		                Long lonVal = bd.longValue();
+		            	data.get(new Integer(i)).add(Long.toString(lonVal));
 		            	break;
 		            case BOOLEAN: 
 		            	data.get(new Integer(i)).add(Boolean.toString(cell.getBooleanCellValue())); 
