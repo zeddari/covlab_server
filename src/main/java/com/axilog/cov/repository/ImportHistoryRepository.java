@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
+import com.axilog.cov.domain.DynamicApprovalConfig;
 import com.axilog.cov.domain.ImportHistory;
 import com.axilog.cov.domain.Outlet;
 
@@ -14,6 +15,6 @@ import com.axilog.cov.domain.Outlet;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface ImportHistoryRepository extends JpaRepository<ImportHistory, Long>, JpaSpecificationExecutor<ImportHistory> {
+public interface ImportHistoryRepository extends JpaRepository<ImportHistory, Integer>, JpaSpecificationExecutor<ImportHistory> {
 
 }
