@@ -58,6 +58,7 @@ import com.axilog.cov.dto.command.POMailDetail;
 import com.axilog.cov.dto.command.PurchaseOrderCommand;
 import com.axilog.cov.dto.mapper.InventoryMapper;
 import com.axilog.cov.dto.mapper.PurchaseOrderMapper;
+import com.axilog.cov.dto.representation.InventoryPdfDetail;
 import com.axilog.cov.dto.representation.PoApprovalRepresentation;
 import com.axilog.cov.dto.representation.PoPdfDetail;
 import com.axilog.cov.dto.representation.PoUpdateRepresentation;
@@ -70,6 +71,7 @@ import com.axilog.cov.service.ApprovalService;
 import com.axilog.cov.service.InventoryService;
 import com.axilog.cov.service.OutletService;
 import com.axilog.cov.service.PoMailService;
+import com.axilog.cov.service.ProductService;
 import com.axilog.cov.service.PurchaseOrderQueryService;
 import com.axilog.cov.service.PurchaseOrderService;
 import com.axilog.cov.service.dto.PurchaseOrderCriteria;
@@ -84,6 +86,7 @@ import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
 import io.swagger.annotations.Api;
+import liquibase.pro.packaged.in;
 
 /**
  * REST controller for managing {@link com.axilog.cov.domain.PurchaseOrder}.
@@ -125,6 +128,9 @@ public class PurchaseOrderResource {
     
     @Autowired
     private SequenceRepository sequenceRepository;
+    
+    @Autowired
+    private ProductService productService;
     
     @Autowired
     private OutletService outletService;
@@ -280,6 +286,24 @@ public class PurchaseOrderResource {
         Optional<PurchaseOrder> purchaseOrder = purchaseOrderService.findOne(examplePurchaseOrder);
         return ResponseUtil.wrapOrNotFound(purchaseOrder);
     }
+    
+    /**
+     * {@code GET  /purchase-orders/:id} : get the "id" purchaseOrder.
+     *
+     * @param id the id of the purchaseOrder to retrieve.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the purchaseOrder, or with status {@code 404 (Not Found)}.
+     */
+    @GetMapping("/purchase-orders/sent/{orderNo}")
+    public ResponseEntity<PurchaseOrder> getSentPurchaseOrderByPoNumber(@PathVariable Long orderNo) {
+        log.debug("REST request to get PurchaseOrder : {}", orderNo);
+        Set<PoStatus> poStatuses = new HashSet<>();
+        poStatuses.add(PoStatus.builder().status("SENT_TO_NUPCO").build());
+        
+        Example<PurchaseOrder> examplePurchaseOrder = Example.of(PurchaseOrder.builder().orderNo(orderNo).poStatuses(poStatuses).build());
+        
+        Optional<PurchaseOrder> purchaseOrder = purchaseOrderService.findOne(examplePurchaseOrder);
+        return ResponseUtil.wrapOrNotFound(purchaseOrder);
+    }
 
     /**
      * {@code DELETE  /purchase-orders/:id} : delete the "id" purchaseOrder.
@@ -321,7 +345,7 @@ public class PurchaseOrderResource {
 	        if (orders != null) {
 	        	orders.forEach(order -> {
 	        		if (!order.getPoStatuses().contains(PoStatus.builder().status("CLOSED").build()) && order.getOutlet()!=null && order.getOutlet().equals(outlet)) {
-	        			productsHavePo.addAll(order.getProducts());
+	        			//productsHavePo.addAll(order.getProducts());
 	        		}
 	        		
 	        	});
@@ -422,11 +446,66 @@ public class PurchaseOrderResource {
         persistedPo.setData(fileContent);
         persistedPo.setHotJson(JsonUtils.toJsonString(detail));
         PurchaseOrder result = purchaseOrderService.save(persistedPo);
+        
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, Long.toString(result.getOrderNo())))
             .body(result);
     }
     
+    
+    @PostMapping(value = "/purchaseOrders/acquire", consumes = MediaType.APPLICATION_JSON_VALUE )
+    public ResponseEntity<PurchaseOrder> acquirePurchaseOrder(@RequestBody PoPdfDetail detail) throws URISyntaxException, IOException, DocumentException {
+        log.debug("REST request to update PurchaseOrder : {}", detail);
+        File poPdf = pdfService.generatePdf(detail);
+		byte[] fileContent = FileUtils.readFileToByteArray(poPdf);
+        if (detail == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        PurchaseOrder persistedPo = purchaseOrderService.findByOrderNo(detail.getHeaderPdfDetail().getOrderNumber());
+        // update po
+        persistedPo.setData(fileContent);
+        persistedPo.setHotJson(JsonUtils.toJsonString(detail));
+        List<PoStatus> poStatusExisting = persistedPo.getPoStatuses().stream().filter(poSt -> poSt.getStatus().equals("GRN_PARTIAL")).collect(Collectors.toList());
+        if (poStatusExisting.isEmpty()) {
+        	persistedPo.getPoStatuses().add(PoStatus.builder().status("GRN_PARTIAL").build());
+        }
+        else {
+        	List<InventoryPdfDetail> listDetails = detail.getListDetails().stream().filter(rowDetail -> !rowDetail.getQuantity().equals(rowDetail.getReceivedQuantity())).collect(Collectors.toList());
+        	if (listDetails.isEmpty()) {
+        		persistedPo.getPoStatuses().add(PoStatus.builder().status("GRN_COMPLETED").build());
+        	}
+        }
+        PurchaseOrder result = purchaseOrderService.save(persistedPo);
+        
+        // check received qte
+        detail.getListDetails().forEach(rowDetail -> {
+        	Optional<Product> productOpt = productService.findOne(Example.of(Product.builder().productCode(rowDetail.getCode()).build()));
+        	if (!productOpt.isPresent()) {
+        		Optional<Inventory> invOpt = inventoryService.findByExample(Example.of(Inventory.builder().product(productOpt.get()).build()));
+            	if (invOpt.isPresent()) {
+            		Inventory inventory = invOpt.get();
+            		inventory.setIsLastInstance(Boolean.FALSE);
+            		inventory = inventoryService.save(inventory);
+                    
+                    //create new entry with new date
+            		inventory.setReceivedQty(rowDetail.getReceivedQuantity());
+            		inventory.setQuantitiesInTransit(rowDetail.getQuantity() - rowDetail.getReceivedQuantity());
+        			inventory.setCurrent_balance(inventory.getCurrent_balance() + rowDetail.getReceivedQuantity());
+                    
+        			inventory.setLastUpdatedAt(DateUtil.now());
+        			inventory.setId(null);
+                    inventory.setIsLastInstance(Boolean.TRUE);
+                    inventory = inventoryService.save(inventory);
+                    
+        			
+            	}
+        	}
+        	
+        });
+        return ResponseEntity.ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, Long.toString(result.getOrderNo())))
+            .body(result);
+    }
     @PostMapping("/purchaseOrders/approval")
     @Transactional
     public ResponseEntity<PoApprovalRepresentation> approvePurchaseOrder(@RequestBody PurchaseOrderCommand purchaseOrderCommand) throws URISyntaxException, IOException, IllegalArgumentException, IllegalAccessException {
