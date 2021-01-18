@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.axilog.cov.domain.Inventory;
+import com.axilog.cov.domain.Outlet;
+import com.axilog.cov.domain.Product;
 
 /**
  * Service Interface for managing {@link Inventory}.
@@ -81,5 +83,7 @@ public interface InventoryService {
 	List<String> getOutletWithTemperatureIssue();
 	
 	Optional<Inventory> findByExample(Example<Inventory> inventoryExample);
+
+	List<Inventory> findByOutletAndProductAndIsLastInstance(Outlet outlet, Product product, Boolean isLastInstance);
  
 }

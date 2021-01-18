@@ -135,11 +135,13 @@ public class InventoryMapper {
 	
 	
 	public OverallStatsRepresentation toOverallStatsRepresOutlet(OutletOverviewProjection overallStats) {
+		DecimalFormat formatter = (DecimalFormat)NumberFormat.getNumberInstance(Locale.US);
+		formatter.applyPattern("##.##");
 		return OverallStatsRepresentation.builder()
 				.deliveryOnTimeInFull(overallStats.getDeliveryOnTimeInFull())
 				.lastUpdatedAt(overallStats.getLastUpdatedAt())
 				.overallOutletPerformanceScore(overallStats.getOverallOutletPerformanceScore())
-				.stockoutRatio(overallStats.getStockoutRatio())
+				.stockoutRatio(Double.parseDouble(formatter.format(overallStats.getStockoutRatio())))
 				.totalVaccinesConsumed(overallStats.getTotalVaccinesConsumed())
 				.totalVaccinesReceivedAtNupco(overallStats.getTotalVaccinesReceivedAtNupco())
 				.totalVaccinesReceivedAtOutlets(overallStats.getTotalVaccinesReceivedAtOutlets())

@@ -1,8 +1,8 @@
 package com.axilog.cov.service.impl;
 
-import com.axilog.cov.service.InventoryService;
-import com.axilog.cov.domain.Inventory;
-import com.axilog.cov.repository.InventoryRepository;
+import java.util.List;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Example;
@@ -11,8 +11,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
+import com.axilog.cov.domain.Inventory;
+import com.axilog.cov.domain.Outlet;
+import com.axilog.cov.domain.Product;
+import com.axilog.cov.repository.InventoryRepository;
+import com.axilog.cov.service.InventoryService;
 
 /**
  * Service Implementation for managing {@link Inventory}.
@@ -86,6 +89,11 @@ public class InventoryServiceImpl implements InventoryService {
 	@Override
 	public Optional<Inventory> findByExample(Example<Inventory> inventoryExample) {
 		return inventoryRepository.findOne(inventoryExample);
+	}
+	
+	@Override
+	public List<Inventory> findByOutletAndProductAndIsLastInstance(Outlet outlet, Product product, Boolean isLastInstance) {
+		return inventoryRepository.findByOutletAndProductAndIsLastInstance(outlet, product, isLastInstance);
 	}
 
 	

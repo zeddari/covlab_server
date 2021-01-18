@@ -105,11 +105,10 @@ public class ImportHistoryResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of importHistory in body.
      */
     @GetMapping("/importsHistory")
-    public ResponseEntity<List<ImportHistory>> getAllImportHistory(ImportHistoryCriteria criteria, Pageable pageable) {
-        log.debug("REST request to get importHistory by criteria: {}", criteria);
-        Page<ImportHistory> page = importHistoryQueryService.findByCriteria(criteria, pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    public ResponseEntity<List<ImportHistory>> getAllImportHistory() {
+        log.debug("REST request to get importHistory by findAll");
+        List<ImportHistory> page = importHistoryService.findAll();
+        return ResponseEntity.ok().body(page);
     }
 
     /**

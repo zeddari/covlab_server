@@ -2,8 +2,6 @@ package com.axilog.cov.service;
 
 import java.util.List;
 
-import javax.persistence.criteria.JoinType;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -12,11 +10,13 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import io.github.jhipster.service.QueryService;
-
-import com.axilog.cov.domain.*; // for static metamodels
+// for static metamodels
+import com.axilog.cov.domain.ImportHistory;
+import com.axilog.cov.domain.ImportHistory_;
 import com.axilog.cov.repository.ImportHistoryRepository;
 import com.axilog.cov.service.dto.ImportHistoryCriteria;
+
+import io.github.jhipster.service.QueryService;
 
 /**
  * Service for executing complex queries for {@link ImportHistory} entities in the database.
@@ -101,7 +101,7 @@ public class ImportHistoryQueryService extends QueryService<ImportHistory> {
         //        specification = specification.and(likeUpperSpecification(criteria.getimportedAt(), ImportHistory_.importedAt));
           //  }
             if (criteria.getimportedBy()!= null) {
-                specification = specification.and(buildStringSpecification(criteria.getimportedBy(), ImportHistory_.importedby));
+                specification = specification.and(buildStringSpecification(criteria.getimportedBy(), ImportHistory_.imported_by));
             }
             if (criteria.getnupcoCode() != null) {
                 specification = specification.and(buildStringSpecification(criteria.getnupcoCode(), ImportHistory_.nupcoCode));

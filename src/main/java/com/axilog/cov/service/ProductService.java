@@ -1,12 +1,13 @@
 package com.axilog.cov.service;
 
-import com.axilog.cov.domain.Product;
+import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.Optional;
+import com.axilog.cov.domain.Product;
 
 /**
  * Service Interface for managing {@link Product}.
@@ -28,6 +29,11 @@ public interface ProductService {
      * @return the list of entities.
      */
     Page<Product> findAll(Pageable pageable);
+    
+    /**
+     * @return
+     */
+    List<Product> findAll();
 
 
     /**

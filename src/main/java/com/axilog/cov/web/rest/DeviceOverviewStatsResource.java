@@ -63,9 +63,8 @@ public class DeviceOverviewStatsResource {
     @GetMapping("/device-overview-stats")
     public ResponseEntity<List<DeviceOverviewStats>> getAllDeviceOverviewStats(DeviceOverviewStatsCriteria criteria, Pageable pageable) {
         log.debug("REST request to get DeviceOverviewStats by criteria: {}", criteria);
-        Page<DeviceOverviewStats> page = deviceOverviewStatsQueryService.findByCriteria(criteria, pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-        return ResponseEntity.ok().headers(headers).body(page.getContent());
+        List<DeviceOverviewStats> deviceOverviewStats = deviceOverviewStatsService.findAll();
+        return ResponseEntity.ok().body(deviceOverviewStats);
     }
 
     /**

@@ -18,6 +18,8 @@ public interface ImportHistoryService {
 
 
 	Page<ImportHistory> findAll(Pageable pageable);
+	
+	List<ImportHistory> findAll();
 
 	Optional<ImportHistory> findOne(Integer id);
 }

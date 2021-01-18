@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -58,5 +59,10 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public Optional<Product> findOne(Example<Product> exampleProduct) {
 		return productRepository.findOne(exampleProduct);
+	}
+
+	@Override
+	public List<Product> findAll() {
+		return productRepository.findAll();
 	}
 }

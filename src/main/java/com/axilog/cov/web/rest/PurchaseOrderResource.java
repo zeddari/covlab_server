@@ -3,7 +3,6 @@ package com.axilog.cov.web.rest;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -11,10 +10,8 @@ import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -61,7 +58,6 @@ import com.axilog.cov.dto.mapper.PurchaseOrderMapper;
 import com.axilog.cov.dto.representation.InventoryPdfDetail;
 import com.axilog.cov.dto.representation.PoApprovalRepresentation;
 import com.axilog.cov.dto.representation.PoPdfDetail;
-import com.axilog.cov.dto.representation.PoUpdateRepresentation;
 import com.axilog.cov.dto.representation.PurchaseOrderRepresentation;
 import com.axilog.cov.enums.PurchaseStatusEnum;
 import com.axilog.cov.repository.PoStatusRepository;
@@ -78,15 +74,14 @@ import com.axilog.cov.service.dto.PurchaseOrderCriteria;
 import com.axilog.cov.service.pdf.PdfService;
 import com.axilog.cov.util.DateUtil;
 import com.axilog.cov.util.JsonUtils;
-import com.axilog.cov.web.rest.errors.ApprovalConfigDoesNotExistException;
 import com.axilog.cov.web.rest.errors.BadRequestAlertException;
+import com.axilog.cov.web.rest.errors.NotFoundAlertException;
 import com.lowagie.text.DocumentException;
 
 import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
 import io.swagger.annotations.Api;
-import liquibase.pro.packaged.in;
 
 /**
  * REST controller for managing {@link com.axilog.cov.domain.PurchaseOrder}.
@@ -299,10 +294,16 @@ public class PurchaseOrderResource {
         Set<PoStatus> poStatuses = new HashSet<>();
         poStatuses.add(PoStatus.builder().status("SENT_TO_NUPCO").build());
         
-        Example<PurchaseOrder> examplePurchaseOrder = Example.of(PurchaseOrder.builder().orderNo(orderNo).poStatuses(poStatuses).build());
+        Example<PurchaseOrder> examplePurchaseOrder = Example.of(PurchaseOrder.builder().orderNo(orderNo).build());
         
         Optional<PurchaseOrder> purchaseOrder = purchaseOrderService.findOne(examplePurchaseOrder);
-        return ResponseUtil.wrapOrNotFound(purchaseOrder);
+        if (purchaseOrder.isPresent()) {
+        	List<PoStatus> listStatus = purchaseOrder.get().getPoStatuses().stream().filter(status -> status.getStatus().equals("SENT_TO_NUPCO")).collect(Collectors.toList());
+        	if (!listStatus.isEmpty()) {
+        		return ResponseUtil.wrapOrNotFound(purchaseOrder);
+        	}
+        }
+        throw new NotFoundAlertException("notFound", ENTITY_NAME, "No Po has ben sent to nupco with this Number");
     }
 
     /**
@@ -467,12 +468,16 @@ public class PurchaseOrderResource {
         persistedPo.setHotJson(JsonUtils.toJsonString(detail));
         List<PoStatus> poStatusExisting = persistedPo.getPoStatuses().stream().filter(poSt -> poSt.getStatus().equals("GRN_PARTIAL")).collect(Collectors.toList());
         if (poStatusExisting.isEmpty()) {
-        	persistedPo.getPoStatuses().add(PoStatus.builder().status("GRN_PARTIAL").build());
+        	PoStatus poStatus = PoStatus.builder().status("GRN_PARTIAL").updatedAt(DateUtil.now()).build();
+        	poStatus = poStatusRepository.save(poStatus);
+        	persistedPo.getPoStatuses().add(poStatus);
         }
         else {
         	List<InventoryPdfDetail> listDetails = detail.getListDetails().stream().filter(rowDetail -> !rowDetail.getQuantity().equals(rowDetail.getReceivedQuantity())).collect(Collectors.toList());
         	if (listDetails.isEmpty()) {
-        		persistedPo.getPoStatuses().add(PoStatus.builder().status("GRN_COMPLETED").build());
+        		PoStatus poStatus = PoStatus.builder().status("GRN_COMPLETED").updatedAt(DateUtil.now()).build();
+            	poStatus = poStatusRepository.save(poStatus);
+        		persistedPo.getPoStatuses().add(poStatus);
         	}
         }
         PurchaseOrder result = purchaseOrderService.save(persistedPo);
@@ -480,10 +485,10 @@ public class PurchaseOrderResource {
         // check received qte
         detail.getListDetails().forEach(rowDetail -> {
         	Optional<Product> productOpt = productService.findOne(Example.of(Product.builder().productCode(rowDetail.getCode()).build()));
-        	if (!productOpt.isPresent()) {
-        		Optional<Inventory> invOpt = inventoryService.findByExample(Example.of(Inventory.builder().product(productOpt.get()).build()));
-            	if (invOpt.isPresent()) {
-            		Inventory inventory = invOpt.get();
+        	if (productOpt.isPresent()) {
+        		List<Inventory> invOpt = inventoryService.findByOutletAndProductAndIsLastInstance(result.getOutlet(), productOpt.get(), Boolean.TRUE);
+            	if (invOpt != null && !invOpt.isEmpty()) {
+            		Inventory inventory = invOpt.get(0);
             		inventory.setIsLastInstance(Boolean.FALSE);
             		inventory = inventoryService.save(inventory);
                     

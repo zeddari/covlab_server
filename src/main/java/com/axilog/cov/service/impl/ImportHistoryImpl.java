@@ -11,7 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.axilog.cov.domain.Category;
 import com.axilog.cov.domain.ImportHistory;
 import com.axilog.cov.repository.ImportHistoryRepository;
 import com.axilog.cov.service.ImportHistoryService;
@@ -42,5 +41,10 @@ public class ImportHistoryImpl implements ImportHistoryService {
         log.debug("Request to get Category : {}", id);
         return importHistoryRepository.findById(id);
     }
+
+	@Override
+	public List<ImportHistory> findAll() {
+		return importHistoryRepository.findAll();
+	}
 
 }

@@ -195,8 +195,9 @@ public class InventoryResource {
             				.product(productOpt.get())
             				.isLastInstance(true)
             				.build());
-                    Optional<Inventory> inventoryOptional = inventoryService.findByExample(exampleInventory);
-                    if (!inventoryOptional.isPresent()) {
+                    //Optional<Inventory> inventoryOptional = inventoryService.findByExample(exampleInventory);
+            		List<Inventory> inventories = inventoryService.findByOutletAndProductAndIsLastInstance(outletOpt.get(), productOpt.get(), Boolean.TRUE);
+                    if (inventories == null || inventories.isEmpty()) {
                     	ImportHistory importHistory = ImportHistory.builder()
                 				.importedAt(DateUtil.now())
                 				.imported_by(currentUser)
@@ -212,13 +213,14 @@ public class InventoryResource {
                     }
                     else {
                     	//save current ine with lastInstance as false
-                        Inventory result = inventoryOptional.get();
+                        Inventory result = inventories.get(0);
                         result.setLastUpdatedAt(DateUtil.now());
                         result.setIsLastInstance(Boolean.FALSE);
                         result = inventoryService.save(result);
                         
                         //create new one as last instance
                         result.setCurrent_balance(result.getCurrent_balance() - consumedQuantity);
+                        result.setConsumedQty(result.getConsumedQty() - consumedQuantity);
                         result.setId(null);
                         result.setIsLastInstance(Boolean.TRUE);
                         result = inventoryService.save(result);
@@ -227,6 +229,7 @@ public class InventoryResource {
                 				.importedAt(DateUtil.now())
                 				.imported_by(currentUser)
                 				.nupcoCode(nupcoCode)
+                				.status("COMPLETED")
                 				.result("OK")
                 				.fileName(file.getOriginalFilename())
                 				.message("Update done with success for this nupco Code")
@@ -244,7 +247,7 @@ public class InventoryResource {
         				.imported_by(currentUser)
         				.nupcoCode(e.getMessage())
         				.result("NOK")
-        				.status("PARTIAL")
+        				.status("FAILURE")
         				.fileName(file.getOriginalFilename())
         				.message(list.toString())
         				.jobId(jobId)
@@ -275,10 +278,11 @@ public class InventoryResource {
         result = inventoryService.save(result);
         
         //create new entry with new date
-        result.setReceivedQty(inventoryCommand.getCurrentBalance());
-        result.setCurrent_balance(result.getCurrent_balance() + inventoryCommand.getCurrentBalance());
+        result.setReceivedQty(result.getReceivedQty() + inventoryCommand.getCurrentBalance());
         
+        result.setCurrent_balance(result.getCurrent_balance() + inventoryCommand.getCurrentBalance());
         result.setCurrent_balance(result.getCurrent_balance() - inventoryCommand.getConsumeQty());
+        
         result.setConsumedQty(result.getConsumedQty() + inventoryCommand.getConsumeQty());
         
         result.setLastUpdatedAt(DateUtil.now());
@@ -309,7 +313,7 @@ public class InventoryResource {
         log.debug("REST request to get Inventories by criteria: {}", criteria);
         List<Inventory> inventories = inventoryQueryService.findByCriteria(criteria);
         inventories = inventories.stream()
-                	.filter(inventory -> inventory.getIsLastInstance().equals(Boolean.TRUE)) // 
+                	.filter(inventory -> inventory.getIsLastInstance() != null ? inventory.getIsLastInstance().equals(Boolean.TRUE) : false) // 
                 	.collect(Collectors.toList());
         
         //sort descending by lastUpdated

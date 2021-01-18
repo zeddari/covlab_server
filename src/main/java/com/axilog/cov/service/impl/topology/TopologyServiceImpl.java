@@ -15,16 +15,21 @@ import com.axilog.cov.domain.Category;
 import com.axilog.cov.domain.DeviceOverviewStats;
 import com.axilog.cov.domain.Inventory;
 import com.axilog.cov.domain.Outlet;
+import com.axilog.cov.domain.OverallStatsOutlet;
 import com.axilog.cov.domain.Product;
 import com.axilog.cov.dto.mapper.InventoryMapper;
 import com.axilog.cov.dto.mapper.TopologyMapper;
+import com.axilog.cov.dto.projection.OutletOverviewProjection;
 import com.axilog.cov.dto.topology.MapDataBuilder;
 import com.axilog.cov.dto.topology.representation.EdgeRepresentation;
+import com.axilog.cov.dto.topology.representation.KpiTable;
 import com.axilog.cov.dto.topology.representation.NodeIdListRepresentation;
 import com.axilog.cov.dto.topology.representation.NodeRepresentation;
 import com.axilog.cov.dto.topology.representation.TopologyRepresentation;
 import com.axilog.cov.exception.TopologyDataNotFoundException;
 import com.axilog.cov.repository.InventoryRepository;
+import com.axilog.cov.repository.OverallStatsOutletRepository;
+import com.axilog.cov.repository.OverallStatsRepository;
 import com.axilog.cov.service.DeviceOverviewStatsService;
 import com.axilog.cov.service.OutletService;
 import com.axilog.cov.service.topology.TopologyService;
@@ -64,6 +69,10 @@ public class TopologyServiceImpl implements TopologyService {
 	
 	private String geoData;
 	
+	@Autowired
+	private OverallStatsRepository overallStatsRepository;
+	
+	
 	@Override
 	public TopologyRepresentation buildTopologyData() throws TopologyDataNotFoundException {
 		/** get all network elements */
@@ -71,6 +80,7 @@ public class TopologyServiceImpl implements TopologyService {
 		List<DeviceOverviewStats> deviceOverviewStats = deviceOverviewStatsService.findAll();
 		List<NodeRepresentation> nodes = new ArrayList<NodeRepresentation>();
 		List<EdgeRepresentation> edges = new ArrayList<>();
+		List<OutletOverviewProjection> overallStatsOutlet = overallStatsRepository.getKpiOutletCustomQuery("all");
 		geoData = MapDataBuilder.headerGeo();
 		outlets.forEach(outlet -> {
 			
@@ -82,7 +92,7 @@ public class TopologyServiceImpl implements TopologyService {
 			NodeRepresentation node = TopologyMapper.toNodeRepresentation(outlet, outletHealth);
 			
 			/** get details of outlet inventory */
-			Inventory inventory = Inventory.builder().isLastInstance(true).outlet(outlet).product(Product.builder().category(Category.builder().id(9L).build()).build()).build();
+			Inventory inventory = Inventory.builder().isLastInstance(true).outlet(outlet).product(Product.builder().category(Category.builder().categoryCode("COVID VACCINE").build()).build()).build();
 			Example<Inventory> exampleInventory= Example.of(inventory);
 			Optional<Inventory> optInventory = inventoryRepository.findOne(exampleInventory);
 			if (optInventory.isPresent()) {
@@ -102,7 +112,15 @@ public class TopologyServiceImpl implements TopologyService {
 		nodes.add(buildMinisteryode());
 		String geo = geoData.substring(0, geoData.length() -1);
 		geo +=MapDataBuilder.footerGeo();
-		return TopologyRepresentation.builder().nodes(nodes).edges(edges).geoData(geo).build();
+		KpiTable kpiTable = KpiTable.builder()
+				.build();
+		if (overallStatsOutlet != null && !overallStatsOutlet.isEmpty()) {
+			kpiTable.setNumberOfVaccine(overallStatsOutlet.get(0).getTotalVaccinesReceivedAtOutlets());
+			kpiTable.setConsumedVaccine(overallStatsOutlet.get(0).getTotalVaccinesConsumed());
+			kpiTable.setNumberOfOutlets(outlets.size());
+		}
+		
+		return TopologyRepresentation.builder().kpiTable(kpiTable).nodes(nodes).edges(edges).geoData(geo).build();
 	}
 
 

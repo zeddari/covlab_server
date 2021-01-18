@@ -108,9 +108,8 @@ public class OutletResource {
     @GetMapping("/outlets")
     public ResponseEntity<List<Outlet>> getAllOutlets(OutletCriteria criteria, Pageable pageable) {
         log.debug("REST request to get Outlets by criteria: {}", criteria);
-        Page<Outlet> page = outletQueryService.findByCriteria(criteria, pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-        return ResponseEntity.ok().headers(headers).body(page.getContent());
+        List<Outlet> oulets = outletService.findAll();
+        return ResponseEntity.ok().body(oulets);
     }
 
     /**

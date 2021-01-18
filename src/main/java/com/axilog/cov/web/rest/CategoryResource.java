@@ -108,9 +108,8 @@ public class CategoryResource {
     @GetMapping("/categories")
     public ResponseEntity<List<Category>> getAllCategories(CategoryCriteria criteria, Pageable pageable) {
         log.debug("REST request to get Categories by criteria: {}", criteria);
-        Page<Category> page = categoryQueryService.findByCriteria(criteria, pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-        return ResponseEntity.ok().headers(headers).body(page.getContent());
+        List<Category> categories = categoryService.findAll();
+        return ResponseEntity.ok().body(categories);
     }
 
     /**
