@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.axilog.cov.domain.Category;
 import com.axilog.cov.domain.ImportHistory;
+import com.axilog.cov.dto.representation.ImportHistoryDetail;
 
 /**
  * Service Interface for managing {@link Category}.
@@ -19,7 +20,7 @@ public interface ImportHistoryService {
 
 	Page<ImportHistory> findAll(Pageable pageable);
 	
-	List<ImportHistory> findAll();
+	List<ImportHistoryDetail> findAll();
 
 	Optional<ImportHistory> findOne(Integer id);
 }

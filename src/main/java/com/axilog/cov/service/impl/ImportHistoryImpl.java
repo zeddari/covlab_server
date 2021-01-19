@@ -1,5 +1,6 @@
 package com.axilog.cov.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,6 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.axilog.cov.domain.ImportHistory;
+import com.axilog.cov.dto.projection.DashInventoryStockProjection;
+import com.axilog.cov.dto.representation.ChartDetail;
+import com.axilog.cov.dto.representation.ImportHistoryDetail;
+import com.axilog.cov.dto.representation.SeriesDetail;
 import com.axilog.cov.repository.ImportHistoryRepository;
 import com.axilog.cov.service.ImportHistoryService;
 
@@ -43,8 +48,27 @@ public class ImportHistoryImpl implements ImportHistoryService {
     }
 
 	@Override
-	public List<ImportHistory> findAll() {
-		return importHistoryRepository.findAll();
-	}
+	public List<ImportHistoryDetail> findAll() {
+		List<ImportHistoryDetail> importHistoryDetail = new ArrayList<>();
+		List<ImportHistory> imports = importHistoryRepository.findAll();
 
+		if (Optional.ofNullable(imports).isPresent()) {
+			imports.forEach(inventory -> {
+				importHistoryDetail.add(ImportHistoryDetail.builder()
+						.fileName(inventory.getFileName())
+						.jobId(inventory.getJobId())
+						.outlet(inventory.getOutlet())
+						.importedAt(inventory.getImportedAt())
+						.imported_by(inventory.getImported_by())
+						.status(inventory.getStatus())
+						.message(inventory.getMessage())
+						.nupcoCode(inventory.getNupcoCode())
+						.result(inventory.getResult())
+						.build());
+				
+			});
+		
+			}
+		return importHistoryDetail;
+		}
 }

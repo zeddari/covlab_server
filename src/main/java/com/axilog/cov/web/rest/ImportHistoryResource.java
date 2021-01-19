@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.axilog.cov.domain.ImportHistory;
+import com.axilog.cov.dto.representation.ImportHistoryDetail;
 import com.axilog.cov.service.ImportHistoryQueryService;
 import com.axilog.cov.service.ImportHistoryService;
 import com.axilog.cov.service.dto.ImportHistoryCriteria;
@@ -105,9 +106,9 @@ public class ImportHistoryResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of importHistory in body.
      */
     @GetMapping("/importsHistory")
-    public ResponseEntity<List<ImportHistory>> getAllImportHistory() {
+    public ResponseEntity<List<ImportHistoryDetail>> getAllImportHistory() {
         log.debug("REST request to get importHistory by findAll");
-        List<ImportHistory> page = importHistoryService.findAll();
+        List<ImportHistoryDetail> page = importHistoryService.findAll();
         return ResponseEntity.ok().body(page);
     }
 
