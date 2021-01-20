@@ -13,6 +13,7 @@ import com.axilog.cov.dto.projection.DashInventoryStockAllOutletProjection;
 import com.axilog.cov.dto.projection.DashInventoryStockProjection;
 import com.axilog.cov.dto.representation.ChartDetail;
 import com.axilog.cov.dto.representation.DashBoardRepresentation;
+import com.axilog.cov.dto.representation.LineChartDetail;
 import com.axilog.cov.dto.representation.SeriesDetail;
 import com.axilog.cov.repository.DashBoardRepository;
 import com.axilog.cov.repository.PurchaseOrderRepository;
@@ -135,6 +136,12 @@ public class DashBoardServiceImpl implements DashBoardService {
 				.series(series)
 				.build());
 		return chartDetails;
+	}
+
+	@Override
+	public LineChartDetail getVaccinationDailyTrend() {
+		
+		return null;
 	}
 
 }

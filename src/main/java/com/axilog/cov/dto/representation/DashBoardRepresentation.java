@@ -10,4 +10,5 @@ import lombok.Data;
 public class DashBoardRepresentation {
 
 	 List<ChartDetail> dashBoardDetails;
+	 List<LineChartDetail> listLineChartDetails;
 }

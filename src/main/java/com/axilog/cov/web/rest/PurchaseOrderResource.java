@@ -7,6 +7,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -72,6 +73,7 @@ import com.axilog.cov.service.PurchaseOrderQueryService;
 import com.axilog.cov.service.PurchaseOrderService;
 import com.axilog.cov.service.dto.PurchaseOrderCriteria;
 import com.axilog.cov.service.pdf.PdfService;
+import com.axilog.cov.service.xlsx.XlsService;
 import com.axilog.cov.util.DateUtil;
 import com.axilog.cov.util.JsonUtils;
 import com.axilog.cov.web.rest.errors.BadRequestAlertException;
@@ -111,6 +113,9 @@ public class PurchaseOrderResource {
     
     @Autowired
     private PdfService pdfService;
+    
+    @Autowired
+    private XlsService xlsService;
     
     @Autowired
     private InventoryMapper inventoryMapper;
@@ -370,7 +375,9 @@ public class PurchaseOrderResource {
             else {
             	atLeastOutletFound = true;
             	File poPdf = pdfService.generatePdf(detail);
+            	File poXlsx = xlsService.exportExcel(detail);
         		byte[] fileContent = FileUtils.readFileToByteArray(poPdf);
+        		byte[] fileContentXlsx = FileUtils.readFileToByteArray(poXlsx);
                 List<Product> products = new ArrayList<>();
                 if (inventories != null) {
                 	products = inventories.stream().map(Inventory:: getProduct).collect(Collectors.toList());
@@ -400,6 +407,7 @@ public class PurchaseOrderResource {
         				.poStatuses(poStatusList)
         				.orderNo(currVal)
         				.data(fileContent)
+        				.dataXlsx(fileContentXlsx)
         				.outlet(outlet)
         				.hotJson(JsonUtils.toJsonString(detail))
         				.build();
@@ -616,4 +624,16 @@ public class PurchaseOrderResource {
          return true;        
     }
     
+    @GetMapping("/export/excel")
+    public void exportToExcel(HttpServletResponse response, PoPdfDetail poPdfDetail) throws IOException {
+        response.setContentType("application/octet-stream");
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+        String currentDateTime = dateFormatter.format(new Date());
+         
+        String headerKey = "Content-Disposition";
+        String headerValue = "attachment; filename=users_" + currentDateTime + ".xlsx";
+        response.setHeader(headerKey, headerValue);
+        xlsService.exportExcel(poPdfDetail);   
+    }  
+   
 }

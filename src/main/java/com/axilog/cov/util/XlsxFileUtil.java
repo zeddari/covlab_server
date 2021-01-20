@@ -2,6 +2,7 @@ package com.axilog.cov.util;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
@@ -10,16 +11,120 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import com.axilog.cov.dto.representation.HeaderPdfDetail;
+import com.axilog.cov.dto.representation.InventoryPdfDetail;
+import com.axilog.cov.dto.representation.PoPdfDetail;
 
 
 
 public class XlsxFileUtil {
+	public XSSFWorkbook workbook;
+    private XSSFSheet sheet;
+    private PoPdfDetail poPdfDetail;
+    
+    public XlsxFileUtil( PoPdfDetail poPdfDetail) {
+        this.poPdfDetail = poPdfDetail;
+        workbook = new XSSFWorkbook();
+    }
+    
+    public void writeHeaderLine(PoPdfDetail poPdfDetail) {
+        sheet = workbook.createSheet("pocreate");
+        HeaderPdfDetail headerPdfDetail =  poPdfDetail.getHeaderPdfDetail();   
+        String outlet = poPdfDetail.getOutlet();
+       
+        Row row1 = sheet.createRow(0);
+        Row row2 = sheet.createRow(1);
+        Row row3 = sheet.createRow(2);
+        Row row4 = sheet.createRow(3);
+        Row row5 = sheet.createRow(5);
+        
+        CellStyle style = workbook.createCellStyle();
+        XSSFFont font = workbook.createFont();
+        font.setBold(true);
+        font.setFontHeight(16);
+        style.setFont(font);
+         
+        createCell(row1, 0, "Purchase Order #:", style);      
+        createCell(row1, 1, headerPdfDetail.getOrderNumber(), style);       
+        createCell(row1, 2, "Vendor:", style);    
+        createCell(row1, 3,  headerPdfDetail.getVendor(), style);
+        
+        createCell(row2, 0, "Created :", style);      
+        createCell(row2, 1, headerPdfDetail.getCreationDate(), style);       
+        createCell(row2, 2, "Contact Person:", style);    
+        createCell(row2, 3,  headerPdfDetail.getContactPersonName(), style);
+        
+        createCell(row3, 0, "Due Date:", style);      
+        createCell(row3, 1, headerPdfDetail.getCreationDate(), style);       
+        createCell(row3, 2, "Mobile:", style);    
+        createCell(row3, 3,  headerPdfDetail.getContactPersonMobile(), style);
+        
+        createCell(row4, 0, "Destination:", style);      
+        createCell(row4, 1, outlet, style);       
+        createCell(row4, 2, "Email:", style);    
+        createCell(row4, 3,  headerPdfDetail.getContactPersonEmail(), style);
+        
+        createCell(row5, 0, "Code Product", style);      
+        createCell(row5, 1, "Description Prodcut:", style);       
+        createCell(row5, 2, "Category:", style);    
+        createCell(row5, 3,  "Quantity:", style);
+        createCell(row5, 4,  "UOM:", style);       
+
+      }
+ 
+
+    private void createCell(Row row, int columnCount, Object value, CellStyle style) {
+        sheet.autoSizeColumn(columnCount);
+        Cell cell = row.createCell(columnCount);
+        if (value instanceof Integer) {
+            cell.setCellValue((Integer) value);
+        } else if (value instanceof Boolean) {
+            cell.setCellValue((Boolean) value);
+        }else if (value instanceof Double) {
+            cell.setCellValue((Double) value);
+        }else {
+            cell.setCellValue((String) value);
+        }
+        cell.setCellStyle(style);
+    }
+    
+    public void writeDataLines(PoPdfDetail poPdfDetail) {
+    	List<InventoryPdfDetail> listPo= poPdfDetail.getListDetails();
+    
+    	int rowCount = 6;
+   	 
+        CellStyle style = workbook.createCellStyle();
+        XSSFFont font = workbook.createFont();
+        font.setFontHeight(14);
+        style.setFont(font);
+       
+        for (InventoryPdfDetail po : listPo) {
+            Row row = sheet.createRow(rowCount++);
+            int columnCount = 0;
+             
+            createCell(row, columnCount++, po.getCode(), style);
+            createCell(row, columnCount++, po.getDescription(), style);
+            createCell(row, columnCount++, po.getCategory(), style);
+            createCell(row, columnCount++, po.getQuantity(), style);
+            createCell(row, columnCount++, po.getUom(), style);
+		   
+             
+        }
+   }
+   
+  
 
 	public static void readFile(String fileLocation) throws IOException {
 		FileInputStream file = new FileInputStream(new File(fileLocation));
@@ -82,4 +187,6 @@ public class XlsxFileUtil {
 		}
 		return data;
 	}
+	
+	
 }

@@ -1,5 +1,6 @@
 package com.axilog.cov.repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,6 +13,7 @@ import com.axilog.cov.domain.Inventory;
 import com.axilog.cov.dto.projection.DashInventoryComProjection;
 import com.axilog.cov.dto.projection.DashInventoryStockAllOutletProjection;
 import com.axilog.cov.dto.projection.DashInventoryStockProjection;
+import com.axilog.cov.dto.projection.DashLineCharteProjection;
 import com.axilog.cov.dto.projection.ServiceDashProjection;
 
 /**
@@ -38,6 +40,5 @@ public interface DashBoardRepository extends JpaRepository<Inventory, Long>, Jpa
 	List<DashInventoryStockProjection>  getAvgStockDaysOutletCategory(@Param ( "outlet" ) String outlet, @Param ( "category" ) String category);
 	
 	
-	 
 	
 }

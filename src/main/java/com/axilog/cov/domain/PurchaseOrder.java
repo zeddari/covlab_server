@@ -68,6 +68,9 @@ public class PurchaseOrder implements Serializable {
     
     @Column(name = "data")
     private byte[] data;
+    
+    @Column(name = "data_xlsx")
+    private byte[] dataXlsx;
 
     @OneToMany(fetch = FetchType.EAGER)
     private Set<PoStatus> poStatuses = new HashSet<>();
