@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class AreaDataDetail {
 	
 	 public String label;	
-	 public List<Integer> data;
+	 public List<Long> data;
 	 
 
 }

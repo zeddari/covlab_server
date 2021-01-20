@@ -113,14 +113,14 @@ public class DashboardController {
 		return dashBoardService.getAvgStockDaysByOutletCategory(outlet, chartCommand.getCategory());
 	}
 	
-	@GetMapping(value = "vaccinationDaily", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/vaccinationDaily/{outlet}", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "vaccination Daily trend", notes = "returns a a list of mw links")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved list"),
 			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
 			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
 			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found")})
-	public LineChartDetail getVaccinationDaily() throws TopologyDataNotFoundException {
-		return dashBoardService.getVaccinationDailyTrend();
+	public LineChartDetail getVaccinationDaily(@PathVariable("outlet") String outlet) throws TopologyDataNotFoundException {
+		return dashBoardService.getVaccinationDailyTrend(outlet);
 	}
 	
 }

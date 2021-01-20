@@ -421,7 +421,8 @@ public class PurchaseOrderResource {
         		Context context = pdfService.getContext(poMailDetail, "mailDetail");
         		String html = pdfService.loadAndFillTemplate(context, "mail/poValidationEmail");
         		String[] recipients = approvalConfig.getCurrentStepEmail().split(",");
-        		poMail.sendEmailWithAttachmentAndMultiple(recipients, poSubjectEmail, html, true, true, poPdf);
+        		String[] cc = approvalConfig.getCurrentStepEmailcc().split(",");
+        		poMail.sendEmailWithAttachmentAndMultiple(recipients, cc, poSubjectEmail, html, true, true, poPdf, poXlsx);
         		message = "generated PO with the following details: number: "+currVal;
             }
 			
@@ -570,8 +571,14 @@ public class PurchaseOrderResource {
     		fos.write(result.getData());
     		fos.close();
     		
+    		File tempXlsFile = File.createTempFile("order", sdf.format(DateUtil.now()));
+    		FileOutputStream xlsfos = new FileOutputStream(tempXlsFile);
+    		xlsfos.write(result.getDataXlsx());
+    		xlsfos.close();
+    		
     		String[] recipients = approvalConfig.getCurrentStepEmail().split(",");
-    		poMail.sendEmailWithAttachmentAndMultiple(recipients, poSubjectEmail, html, true, true, tempFile);	
+    		String[] cc = approvalConfig.getCurrentStepEmailcc().split(",");
+    		poMail.sendEmailWithAttachmentAndMultiple(recipients, cc, poSubjectEmail, html, true, true, tempFile, tempXlsFile);	
     		return ResponseEntity.ok(PoApprovalRepresentation.builder().message("Success Po Generation").build());
         }
     	return ResponseEntity.ok(PoApprovalRepresentation.builder().message("No Action Has been done").build());
@@ -624,16 +631,22 @@ public class PurchaseOrderResource {
          return true;        
     }
     
-    @GetMapping("/export/excel")
-    public void exportToExcel(HttpServletResponse response, PoPdfDetail poPdfDetail) throws IOException {
-        response.setContentType("application/octet-stream");
+    @GetMapping("/export/excel/{orderNo}")
+    public byte[] exportToExcel(HttpServletResponse response, @PathVariable("orderNo") Long orderNo) throws IOException {
+    	response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-Disposition", "attachment; filename=deployment-definitions.xlsx");
         DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
         String currentDateTime = dateFormatter.format(new Date());
+        
+        Example<PurchaseOrder> examplePurchaseOrder = Example.of(PurchaseOrder.builder().orderNo(orderNo).build());
+        Optional<PurchaseOrder> purchaseOrder = purchaseOrderService.findOne(examplePurchaseOrder);
          
         String headerKey = "Content-Disposition";
-        String headerValue = "attachment; filename=users_" + currentDateTime + ".xlsx";
+        String headerValue = "attachment; filename=orders_" + currentDateTime + ".xlsx";
         response.setHeader(headerKey, headerValue);
-        xlsService.exportExcel(poPdfDetail);   
+        if (purchaseOrder.isPresent())
+        	return purchaseOrder.get().getDataXlsx();
+        return null;
     }  
    
 }

@@ -1,5 +1,6 @@
 package com.axilog.cov.service.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -9,8 +10,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.axilog.cov.dto.projection.DashInventoryComProjection;
+import com.axilog.cov.dto.projection.DashInventoryDailyTrendProjection;
 import com.axilog.cov.dto.projection.DashInventoryStockAllOutletProjection;
 import com.axilog.cov.dto.projection.DashInventoryStockProjection;
+import com.axilog.cov.dto.representation.AreaDataDetail;
 import com.axilog.cov.dto.representation.ChartDetail;
 import com.axilog.cov.dto.representation.DashBoardRepresentation;
 import com.axilog.cov.dto.representation.LineChartDetail;
@@ -18,6 +21,7 @@ import com.axilog.cov.dto.representation.SeriesDetail;
 import com.axilog.cov.repository.DashBoardRepository;
 import com.axilog.cov.repository.PurchaseOrderRepository;
 import com.axilog.cov.service.DashBoardService;
+import com.axilog.cov.util.DateUtil;
 
 @Service
 @Transactional
@@ -139,9 +143,21 @@ public class DashBoardServiceImpl implements DashBoardService {
 	}
 
 	@Override
-	public LineChartDetail getVaccinationDailyTrend() {
-		
-		return null;
+	public LineChartDetail getVaccinationDailyTrend(String outlet) {
+		SimpleDateFormat sdf = new SimpleDateFormat(DateUtil.SIMPLE_DATE_PATTERN);
+		List<DashInventoryDailyTrendProjection> dailyTrendData = dashBoardRepository.getKpiDailyTrend(outlet);
+		if (dailyTrendData == null) return LineChartDetail.builder().build();
+		AreaDataDetail areaDataDetail = AreaDataDetail.builder().label("Daily Trend").build();
+		List<Long> datas = new ArrayList<>();
+		List<String> areaChartLabels = new ArrayList<>();
+		dailyTrendData.forEach(trend -> {
+			areaChartLabels.add(sdf.format(trend.getDate()));
+			datas.add(trend.getValue());
+		});
+		areaDataDetail.setData(datas);
+		List<AreaDataDetail> areaDataDetails = new ArrayList<>();
+		areaDataDetails.add(areaDataDetail);
+		return LineChartDetail.builder().areaChartLabels(areaChartLabels).areaDataDetail(areaDataDetails).build();
 	}
 
 }

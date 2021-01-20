@@ -19,6 +19,6 @@ public interface DashBoardService {
 	public List<ChartDetail> getKpiStockForAllOutlet();
 	public List<ChartDetail> getKpiByOutletCategory(String outlet, String category);
 	public List<ChartDetail> getAvgStockDaysByOutletCategory(String outlet, String category);
-	public LineChartDetail getVaccinationDailyTrend();
+	public LineChartDetail getVaccinationDailyTrend(String outlet);
 
 	}
