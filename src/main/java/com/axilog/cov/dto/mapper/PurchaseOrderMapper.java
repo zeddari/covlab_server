@@ -29,6 +29,9 @@ public class PurchaseOrderMapper {
 				.createdAt(purchaseOrder.getCreatedAt())
 				.outlet(purchaseOrder.getOutlet() != null ? purchaseOrder.getOutlet().getOutletName() : null)
 				.status(purchaseOrder.getPoStatuses().stream().max(Comparator.comparing(PoStatus::getUpdatedAt)).isPresent() ? purchaseOrder.getPoStatuses().stream().max(Comparator.comparing(PoStatus::getUpdatedAt)).get().getStatus() : null)
+				.approvalOwner(purchaseOrder.getApprovalOwner())
+				.approvalTime(purchaseOrder.getApprovalTime())
+				.approvalReceivingTime(purchaseOrder.getApprovalReceivingTime())
 				//.data(Base64.getEncoder().encodeToString(purchaseOrder.getData() != null ? purchaseOrder.getData() : "".getBytes()))
 				.build();
 	}

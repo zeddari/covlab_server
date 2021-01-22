@@ -71,6 +71,15 @@ public class PurchaseOrder implements Serializable {
     
     @Column(name = "data_xlsx")
     private byte[] dataXlsx;
+    
+    @Column(name = "approval_time")
+    private Date approvalTime;
+    
+    @Column(name = "approval_owner")
+    private String approvalOwner;
+    
+    @Column(name = "approval_receiving_time")
+    private Date approvalReceivingTime;
 
     @OneToMany(fetch = FetchType.EAGER)
     private Set<PoStatus> poStatuses = new HashSet<>();
