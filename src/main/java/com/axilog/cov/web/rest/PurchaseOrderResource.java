@@ -18,12 +18,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.soap.Detail;
 
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.cloudfoundry.com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -549,6 +551,33 @@ public class PurchaseOrderResource {
             result.getPoStatuses().add(poStatus);
             result.setUpdatedAt(DateUtil.now());
             result = purchaseOrderService.save(result);
+            
+            String json = result.getHotJson();
+            
+            final Outlet outlet = result.getOutlet();
+            if (purchaseOrderCommand.getStatus().equals(PurchaseStatusEnum.SENT_TO_NUPCO.getLabel())) {
+            	result.getProducts().forEach(product -> {
+            		List<Inventory> inventories = inventoryService.findByOutletAndProductAndIsLastInstance(outlet, product, Boolean.TRUE);
+                	if (inventories != null && !inventories.isEmpty()) {
+                		Inventory inventory = inventories.get(0);
+                		PoPdfDetail pdfDetail;
+						try {
+							pdfDetail = JsonUtils.toJsonObject(json);
+							Optional<InventoryPdfDetail> invOpt = pdfDetail.getListDetails().stream().filter(detail -> detail.getCode().equals(product.getProductCode())).findFirst();
+	                		if (invOpt.isPresent()) {
+	                			inventory.setQuantitiesInTransit(invOpt.get().getQuantity());	
+	                			inventoryService.save(inventory);
+	                		}
+						} catch (JsonProcessingException e) {
+							e.printStackTrace();
+						}
+                		
+                		
+                	}
+            	});
+            }
+            
+            
            
             
             POMailDetail poMailDetail = POMailDetail.builder()

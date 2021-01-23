@@ -158,8 +158,8 @@ public class InventoryMapper {
 	@Transactional
 	public InventoryPdfDetail toPdfDetail(Inventory inventory) {
 		Double desiredQty = (poThreesholdCapacity * inventory.getActualAvgConsumption()) - (inventory.getCurrent_balance() + inventory.getQuantitiesInTransit());
-		inventory.setQuantitiesInTransit(desiredQty);
-		inventoryService.save(inventory);
+		//inventory.setQuantitiesInTransit(desiredQty);
+		//inventoryService.save(inventory);
 		return InventoryPdfDetail.builder()
 				.code(inventory.getProduct().getProductCode())
 				.description(inventory.getProduct().getDescription())
