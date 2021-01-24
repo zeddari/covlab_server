@@ -81,7 +81,7 @@ public class PoMailService {
     }
     
     @Async
-    public void sendEmailWithAttachmentAndMultiple(String[] to, String subject, String content, boolean isMultipart, boolean isHtml, File fileToAttach) {
+    public void sendEmailWithAttachmentAndMultiple(String[] to, String[] cc, String subject, String content, boolean isMultipart, boolean isHtml, File fileToAttach, File fileXlsxToAttach) {
         log.debug(
             "Send email[multipart '{}' and html '{}'] to '{}' with subject '{}' and content={}",
             isMultipart,
@@ -94,13 +94,16 @@ public class PoMailService {
         // Prepare message using a Spring helper
         MimeMessage mimeMessage = poMailSender.createMimeMessage();
         FileSystemResource file = new FileSystemResource(fileToAttach);
+        FileSystemResource fileXlsx = new FileSystemResource(fileXlsxToAttach);
         try {
             MimeMessageHelper message = new MimeMessageHelper(mimeMessage, isMultipart, StandardCharsets.UTF_8.name());
             message.setTo(to);
+            message.setCc(cc);
             message.setFrom(poSourceEmail);
             message.setSubject(subject);
             message.setText(content, isHtml);
             message.addAttachment("orders.pdf", file);
+            message.addAttachment("orders.xlsx", fileXlsx);
             poMailSender.send(mimeMessage);
             log.debug("Sent email to User '{}'", to);
         } catch (MailException | MessagingException e) {

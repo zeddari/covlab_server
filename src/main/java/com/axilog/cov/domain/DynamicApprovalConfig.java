@@ -32,6 +32,9 @@ public class DynamicApprovalConfig implements Serializable {
 
     @Column(name = "current_step_email")
     private String currentStepEmail;
+    
+    @Column(name = "current_step_email_cc")
+    private String currentStepEmailcc;
 
     @Column(name = "current_step_status")
     private String currentStepStatus;
