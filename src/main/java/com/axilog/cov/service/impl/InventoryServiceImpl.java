@@ -1,5 +1,6 @@
 package com.axilog.cov.service.impl;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -94,6 +95,12 @@ public class InventoryServiceImpl implements InventoryService {
 	@Override
 	public List<Inventory> findByOutletAndProductAndIsLastInstance(Outlet outlet, Product product, Boolean isLastInstance) {
 		return inventoryRepository.findByOutletAndProductAndIsLastInstance(outlet, product, isLastInstance);
+	}
+
+	@Override
+	public List<Inventory> findInventoryHistoryBetweenDate(Date lastUpdatedAtstart, Date lastUpdatedAtend) {
+		return inventoryRepository.findByLastUpdatedAtBetween(lastUpdatedAtstart, lastUpdatedAtend);
+
 	}
 
 	
