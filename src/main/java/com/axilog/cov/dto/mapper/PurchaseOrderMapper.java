@@ -6,8 +6,11 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+import com.axilog.cov.domain.GrnHistory;
 import com.axilog.cov.domain.PoStatus;
 import com.axilog.cov.domain.PurchaseOrder;
+import com.axilog.cov.dto.representation.GrnHistoryDetail;
+import com.axilog.cov.dto.representation.GrnHistoryRepresentation;
 import com.axilog.cov.dto.representation.PurchaseOrderDetail;
 import com.axilog.cov.dto.representation.PurchaseOrderRepresentation;
 
@@ -35,7 +38,22 @@ public class PurchaseOrderMapper {
 				//.data(Base64.getEncoder().encodeToString(purchaseOrder.getData() != null ? purchaseOrder.getData() : "".getBytes()))
 				.build();
 	}
-	
+	public GrnHistoryDetail toGrnHistoryDetail(GrnHistory grnHistory) {
+		return GrnHistoryDetail.builder()
+				.id(grnHistory.getId())
+				.grnNumber(grnHistory.getGrnNumber())
+				.createdAt(grnHistory.getCreatedAt())
+				.createdBy(grnHistory.getCreatedBy())
+				.status(grnHistory.getStatus())
+				.productCode(grnHistory.getProductCode())
+				.uom(grnHistory.getUom())
+				.category(grnHistory.getCategory())
+				.description(grnHistory.getDescription())
+				.poQuantity(grnHistory.getPoQuantity())
+				.received(grnHistory.getReceived())
+				.outletName(grnHistory.getOutletName())
+				.build();
+	}
 	/**
 	 * @param Liste purchaseOrder 
 	 * @return
@@ -50,5 +68,15 @@ public class PurchaseOrderMapper {
 		return purchaseOrderRepresentation;
 	}
 	
+	
+	public GrnHistoryRepresentation toGrnHistoryRepresentation(List<GrnHistory> grnHistories) {
+		if (grnHistories == null) return GrnHistoryRepresentation.builder().build();
+		GrnHistoryRepresentation grnHistoryRepresentation = GrnHistoryRepresentation.builder().build();
+		grnHistoryRepresentation.setGrnHistoryData(new ArrayList<>());
+		grnHistories.forEach(grnHistory -> {
+			grnHistoryRepresentation.getGrnHistoryData().add(toGrnHistoryDetail(grnHistory));
+		});
+		return grnHistoryRepresentation;
+	}
 }
 

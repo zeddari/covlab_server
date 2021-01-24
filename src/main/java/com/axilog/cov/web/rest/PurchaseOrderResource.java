@@ -46,6 +46,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.thymeleaf.context.Context;
 
 import com.axilog.cov.domain.DynamicApprovalConfig;
+import com.axilog.cov.domain.GrnHistory;
 import com.axilog.cov.domain.Inventory;
 import com.axilog.cov.domain.Outlet;
 import com.axilog.cov.domain.PoStatus;
@@ -56,6 +57,7 @@ import com.axilog.cov.dto.command.POMailDetail;
 import com.axilog.cov.dto.command.PurchaseOrderCommand;
 import com.axilog.cov.dto.mapper.InventoryMapper;
 import com.axilog.cov.dto.mapper.PurchaseOrderMapper;
+import com.axilog.cov.dto.representation.GrnHistoryRepresentation;
 import com.axilog.cov.dto.representation.InventoryPdfDetail;
 import com.axilog.cov.dto.representation.PoApprovalRepresentation;
 import com.axilog.cov.dto.representation.PoPdfDetail;
@@ -648,5 +650,13 @@ public class PurchaseOrderResource {
         	return purchaseOrder.get().getDataXlsx();
         return null;
     }  
+    
+    @GetMapping("/purchaseOrders/grnHistory")
+    public ResponseEntity<GrnHistoryRepresentation> getAllGrnHistory() {
+        log.debug("REST request to get All GrnHistory");
+        List<GrnHistory> grnHistories = purchaseOrderService.findAllGrn();
+        GrnHistoryRepresentation grnHistoryRepresentation = purchaseOrderMapper.toGrnHistoryRepresentation(grnHistories);
+        return ResponseEntity.ok().body(grnHistoryRepresentation);
+    }
    
 }
