@@ -48,12 +48,20 @@ public interface InventoryService {
      */
     List<Inventory> findByStatusIn(List<String> status);
     
+   
     /**
      * @param status
      * @param isLastInstance
      * @return
      */
     List<Inventory> findByStatusInAndIsLastInstance(List<String> status, Boolean isLastInstance);
+    
+    /**
+     * @param status
+     * @param isLastInstance
+     * @return
+     */
+    List<Inventory> findByStatusInAndIsLastInstanceAndOutlet(List<String> status, Boolean isLastInstance, Outlet outlet);
     
     /**
      * @param status

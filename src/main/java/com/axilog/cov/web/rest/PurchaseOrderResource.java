@@ -250,6 +250,21 @@ public class PurchaseOrderResource {
         PurchaseOrderRepresentation purchaseOrderRepresentation = purchaseOrderMapper.toPurchaseRepresentation(poList);
         return ResponseEntity.ok().body(purchaseOrderRepresentation);
     }
+    
+    /**
+     * @param criteria
+     * @param pageable
+     * @return
+     */
+    @GetMapping("/approval/config/{currentStatus}")
+    public ResponseEntity<DynamicApprovalConfig> getNextStatus(@PathVariable("currentStatus") String currentStatus) {
+        log.debug("REST request to get PurchaseOrders by currentStatus: {}", currentStatus);
+        DynamicApprovalConfig approvalConfig = approvalService.findbyCurrentStatus(currentStatus);
+        if (approvalConfig == null) {
+        	throw new BadRequestAlertException("notFound", ENTITY_NAME, "Approval Config Data not valid, please check the config table");
+        }
+        return ResponseEntity.ok().body(approvalConfig);
+    }
     /**
      * {@code GET  /purchase-orders/count} : count all the purchaseOrders.
      *
@@ -602,8 +617,10 @@ public class PurchaseOrderResource {
     		
     		File tempXlsFile = File.createTempFile("order", sdf.format(DateUtil.now()));
     		FileOutputStream xlsfos = new FileOutputStream(tempXlsFile);
-    		xlsfos.write(result.getDataXlsx());
-    		xlsfos.close();
+    		if (xlsfos != null && result != null && result.getDataXlsx() != null) {
+    			xlsfos.write(result.getDataXlsx());
+    			xlsfos.close();
+    		}
     		
     		String[] recipients = approvalConfig.getCurrentStepEmail().split(",");
     		String[] cc = approvalConfig.getCurrentStepEmailcc().split(",");
