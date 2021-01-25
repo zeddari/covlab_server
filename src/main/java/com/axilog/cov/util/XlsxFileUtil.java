@@ -11,11 +11,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
 
+
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -51,11 +52,20 @@ public class XlsxFileUtil {
         Row row5 = sheet.createRow(5);
         
         CellStyle style = workbook.createCellStyle();
+        CellStyle styleheader = workbook.createCellStyle();
         XSSFFont font = workbook.createFont();
+        XSSFFont fontheader = workbook.createFont();
         font.setBold(true);
-        font.setFontHeight(16);
+        font.setFontHeight(14);
+        fontheader.setBold(true);
+        fontheader.setFontHeight(14);
         style.setFont(font);
-         
+        styleheader.setFont(fontheader);
+        styleheader.setBorderBottom(HSSFCellStyle.BORDER_MEDIUM);
+        styleheader.setBorderTop(HSSFCellStyle.BORDER_MEDIUM);
+        styleheader.setBorderRight(HSSFCellStyle.BORDER_MEDIUM);
+        styleheader.setBorderLeft(HSSFCellStyle.BORDER_MEDIUM);
+        styleheader.setAlignment(HorizontalAlignment.CENTER);
         createCell(row1, 0, "Purchase Order #:", style);      
         createCell(row1, 1, headerPdfDetail.getOrderNumber(), style);       
         createCell(row1, 2, "Vendor:", style);    
@@ -76,11 +86,11 @@ public class XlsxFileUtil {
         createCell(row4, 2, "Email:", style);    
         createCell(row4, 3,  headerPdfDetail.getContactPersonEmail(), style);
         
-        createCell(row5, 0, "Code Product", style);      
-        createCell(row5, 1, "Description Prodcut:", style);       
-        createCell(row5, 2, "Category:", style);    
-        createCell(row5, 3,  "Quantity:", style);
-        createCell(row5, 4,  "UOM:", style);       
+        createCell(row5, 0, "Code Product", styleheader);      
+        createCell(row5, 1, "Description Prodcut:", styleheader);       
+        createCell(row5, 2, "Category:", styleheader);    
+        createCell(row5, 3,  "Quantity:", styleheader);
+        createCell(row5, 4,  "UOM:", styleheader);       
 
       }
  
@@ -100,15 +110,20 @@ public class XlsxFileUtil {
         cell.setCellStyle(style);
     }
     
-    public void writeDataLines(PoPdfDetail poPdfDetail) {
+    @SuppressWarnings("deprecation")
+	public void writeDataLines(PoPdfDetail poPdfDetail) {
     	List<InventoryPdfDetail> listPo= poPdfDetail.getListDetails();
     
     	int rowCount = 6;
    	 
         CellStyle style = workbook.createCellStyle();
         XSSFFont font = workbook.createFont();
-        font.setFontHeight(14);
+        font.setFontHeight(12);
         style.setFont(font);
+        style.setBorderBottom(HSSFCellStyle.BORDER_MEDIUM);
+        style.setBorderTop(HSSFCellStyle.BORDER_MEDIUM);
+        style.setBorderRight(HSSFCellStyle.BORDER_MEDIUM);
+        style.setBorderLeft(HSSFCellStyle.BORDER_MEDIUM);
        
         for (InventoryPdfDetail po : listPo) {
             Row row = sheet.createRow(rowCount++);

@@ -7,6 +7,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.axilog.cov.domain.GrnHistory;
 import com.axilog.cov.domain.PurchaseOrder;
 import com.axilog.cov.dto.representation.PoUpdateRepresentation;
 
@@ -66,4 +67,9 @@ public interface PurchaseOrderService {
     
     PoUpdateRepresentation savepo(PoUpdateRepresentation poUpdateRepresentation);
     
+    
+    /**
+     * @return
+     */
+    List<GrnHistory> findAllGrn();
 }

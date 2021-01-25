@@ -5,14 +5,17 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.axilog.cov.domain.GrnHistory;
 import com.axilog.cov.domain.PurchaseOrder;
 import com.axilog.cov.dto.representation.PoUpdateRepresentation;
+import com.axilog.cov.repository.GrnHistoryRepository;
 import com.axilog.cov.repository.PurchaseOrderRepository;
 import com.axilog.cov.service.PurchaseOrderService;
 
@@ -26,6 +29,9 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
     private final Logger log = LoggerFactory.getLogger(PurchaseOrderServiceImpl.class);
 
     private final PurchaseOrderRepository purchaseOrderRepository;
+    
+    @Autowired
+    private GrnHistoryRepository grnHistoryRepository;
 
     public PurchaseOrderServiceImpl(PurchaseOrderRepository purchaseOrderRepository) {
         this.purchaseOrderRepository = purchaseOrderRepository;
@@ -85,6 +91,11 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 	@Override
 	public Optional<PurchaseOrder> findOne(Example<PurchaseOrder> example) {
 		return purchaseOrderRepository.findOne(example);
+	}
+
+	@Override
+	public List<GrnHistory> findAllGrn() {
+		return grnHistoryRepository.findAll();
 	}
 }
 	

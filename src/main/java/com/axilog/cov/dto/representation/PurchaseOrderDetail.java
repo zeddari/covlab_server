@@ -15,6 +15,7 @@ public class PurchaseOrderDetail {
 	 private Long poNo;
 	 private Double quantity;
 	 private String createdBy;
+	 private String approvalOwner;
 	 
 	 @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	 private Date createdOn;	
@@ -27,6 +28,12 @@ public class PurchaseOrderDetail {
 	 
 	 @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	 private Date createdAt;
+	 
+	 @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+	 private Date approvalTime;
+	 
+	 @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+	 private Date approvalReceivingTime;
 	 
 	 private String outlet;
 	 private String status;

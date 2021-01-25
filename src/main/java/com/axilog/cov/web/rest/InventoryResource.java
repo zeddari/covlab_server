@@ -12,6 +12,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +42,7 @@ import com.axilog.cov.domain.Outlet;
 import com.axilog.cov.domain.PoStatus;
 import com.axilog.cov.domain.Product;
 import com.axilog.cov.dto.command.InventoryCommand;
+import com.axilog.cov.dto.command.InventoryHistoryCommand;
 import com.axilog.cov.dto.mapper.InventoryMapper;
 import com.axilog.cov.dto.representation.InventoryRepresentation;
 import com.axilog.cov.security.SecurityUtils;
@@ -348,6 +351,15 @@ public class InventoryResource {
         
         //sort descending by lastUpdated
         inventories = inventories.stream().sorted(Comparator.comparing(Inventory::getLastUpdatedAt, Comparator.nullsLast(Comparator.reverseOrder()))).collect(Collectors.toList());
+        InventoryRepresentation inventoryRepresentation = inventoryMapper.toInventoryRepresentation(inventories);
+        return ResponseEntity.ok().body(inventoryRepresentation);
+    }
+    
+    @PostMapping("/inventoryHistory/list")
+    public ResponseEntity<InventoryRepresentation> getAllRepresentationInventoriesHistory(@Valid InventoryHistoryCommand inventoryHistoryCommand) {
+        log.debug("REST request to get Inventories by FindByLastUpdatedAtBetween: {}");
+        
+        List<Inventory> inventories = inventoryService.findInventoryHistoryBetweenDate(inventoryHistoryCommand.getStartDate(), inventoryHistoryCommand.getEndDate());
         InventoryRepresentation inventoryRepresentation = inventoryMapper.toInventoryRepresentation(inventories);
         return ResponseEntity.ok().body(inventoryRepresentation);
     }

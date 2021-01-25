@@ -1,5 +1,6 @@
 package com.axilog.cov.service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -93,5 +94,7 @@ public interface InventoryService {
 	Optional<Inventory> findByExample(Example<Inventory> inventoryExample);
 
 	List<Inventory> findByOutletAndProductAndIsLastInstance(Outlet outlet, Product product, Boolean isLastInstance);
+
+	List<Inventory> findInventoryHistoryBetweenDate(Date lastUpdatedAtstart, Date lastUpdatedAtend);
  
 }
