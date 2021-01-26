@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 public class PoPdfDetail {
 
 	private List<InventoryPdfDetail> listDetails;
+	private List<InventoryPdfDetail> listChangedDetails;
 	private HeaderPdfDetail headerPdfDetail;
 	private String outlet;
 }

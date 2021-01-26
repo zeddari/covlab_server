@@ -327,17 +327,18 @@ public class InventoryResource {
         statuses.add("noos");
         
         Outlet outletExample = Outlet.builder().outletName(outlet).build();
+        Optional<Outlet> optOutlet = outletService.findByExample(Example.of(outletExample));
+        	
         List<Inventory> inventories = new ArrayList<>();
         InventoryRepresentation inventoryRepresentation = InventoryRepresentation.builder().build();
         if (outlet.equals("all")) {
         	inventories = inventoryService.findByStatusInAndIsLastInstance(statuses, Boolean.TRUE);
         	inventoryRepresentation = inventoryMapper.toInventoryRepresentation(inventories);
         }
-        else {
-        	inventories = inventoryService.findByStatusInAndIsLastInstanceAndOutlet(statuses, Boolean.TRUE, outletExample);
+        else if (optOutlet.isPresent()) {
+        	inventories = inventoryService.findByStatusInAndIsLastInstanceAndOutlet(statuses, Boolean.TRUE, optOutlet.get());
         	inventoryRepresentation = inventoryMapper.toInventoryRepresentation(inventories);
         }
-        
         return ResponseEntity.ok(inventoryRepresentation);
     }
 
@@ -356,7 +357,7 @@ public class InventoryResource {
     }
     
     @PostMapping("/inventoryHistory/list")
-    public ResponseEntity<InventoryRepresentation> getAllRepresentationInventoriesHistory(@Valid InventoryHistoryCommand inventoryHistoryCommand) {
+    public ResponseEntity<InventoryRepresentation> getAllRepresentationInventoriesHistory(@RequestBody @Valid InventoryHistoryCommand inventoryHistoryCommand) {
         log.debug("REST request to get Inventories by FindByLastUpdatedAtBetween: {}");
         
         List<Inventory> inventories = inventoryService.findInventoryHistoryBetweenDate(inventoryHistoryCommand.getStartDate(), inventoryHistoryCommand.getEndDate());

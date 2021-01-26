@@ -97,5 +97,10 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 	public List<GrnHistory> findAllGrn() {
 		return grnHistoryRepository.findAll();
 	}
+
+	@Override
+	public GrnHistory saveGrn(GrnHistory entity) {
+		return grnHistoryRepository.save(entity);
+	}
 }
 	
