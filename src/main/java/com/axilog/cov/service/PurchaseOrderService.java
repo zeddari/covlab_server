@@ -72,4 +72,9 @@ public interface PurchaseOrderService {
      * @return
      */
     List<GrnHistory> findAllGrn();
+    
+    /**
+     * @return
+     */
+    GrnHistory saveGrn(GrnHistory entity);
 }

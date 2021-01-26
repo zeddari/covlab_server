@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.cloudfoundry.com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -46,6 +47,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.thymeleaf.context.Context;
 
 import com.axilog.cov.domain.DynamicApprovalConfig;
+import com.axilog.cov.domain.GrnHistSequence;
 import com.axilog.cov.domain.GrnHistory;
 import com.axilog.cov.domain.Inventory;
 import com.axilog.cov.domain.Outlet;
@@ -63,6 +65,7 @@ import com.axilog.cov.dto.representation.PoApprovalRepresentation;
 import com.axilog.cov.dto.representation.PoPdfDetail;
 import com.axilog.cov.dto.representation.PurchaseOrderRepresentation;
 import com.axilog.cov.enums.PurchaseStatusEnum;
+import com.axilog.cov.repository.GrnHistSequenceRepository;
 import com.axilog.cov.repository.PoStatusRepository;
 import com.axilog.cov.repository.SequenceRepository;
 import com.axilog.cov.security.SecurityUtils;
@@ -130,6 +133,9 @@ public class PurchaseOrderResource {
     
     @Autowired
     private SequenceRepository sequenceRepository;
+    
+    @Autowired
+    private GrnHistSequenceRepository grnHistSequenceRepository;
     
     @Autowired
     private ProductService productService;
@@ -249,6 +255,21 @@ public class PurchaseOrderResource {
         List<PurchaseOrder> poList = purchaseOrderService.findAll();
         PurchaseOrderRepresentation purchaseOrderRepresentation = purchaseOrderMapper.toPurchaseRepresentation(poList);
         return ResponseEntity.ok().body(purchaseOrderRepresentation);
+    }
+    
+    /**
+     * @param criteria
+     * @param pageable
+     * @return
+     */
+    @GetMapping("/approval/config/{currentStatus}")
+    public ResponseEntity<DynamicApprovalConfig> getNextStatus(@PathVariable("currentStatus") String currentStatus) {
+        log.debug("REST request to get PurchaseOrders by currentStatus: {}", currentStatus);
+        DynamicApprovalConfig approvalConfig = approvalService.findbyCurrentStatus(currentStatus);
+        if (approvalConfig == null) {
+        	throw new BadRequestAlertException("notFound", ENTITY_NAME, "Approval Config Data not valid, please check the config table");
+        }
+        return ResponseEntity.ok().body(approvalConfig);
     }
     /**
      * {@code GET  /purchase-orders/count} : count all the purchaseOrders.
@@ -478,10 +499,12 @@ public class PurchaseOrderResource {
         persistedPo.setData(fileContent);
         persistedPo.setHotJson(JsonUtils.toJsonString(detail));
         List<PoStatus> poStatusExisting = persistedPo.getPoStatuses().stream().filter(poSt -> poSt.getStatus().equals("GRN_PARTIAL")).collect(Collectors.toList());
+        String grnStatus = "";
         if (poStatusExisting.isEmpty()) {
         	PoStatus poStatus = PoStatus.builder().status("GRN_PARTIAL").updatedAt(DateUtil.now()).build();
         	poStatus = poStatusRepository.save(poStatus);
         	persistedPo.getPoStatuses().add(poStatus);
+        	grnStatus = "GRN_PARTIAL";
         }
         else {
         	List<InventoryPdfDetail> listDetails = detail.getListDetails().stream().filter(rowDetail -> !rowDetail.getQuantity().equals(rowDetail.getReceivedQuantity())).collect(Collectors.toList());
@@ -489,10 +512,60 @@ public class PurchaseOrderResource {
         		PoStatus poStatus = PoStatus.builder().status("GRN_COMPLETED").updatedAt(DateUtil.now()).build();
             	poStatus = poStatusRepository.save(poStatus);
         		persistedPo.getPoStatuses().add(poStatus);
+        		grnStatus = "GRN_COMPLETED";
+        	}
+        	else {
+        		grnStatus = "GRN_PARTIAL";
         	}
         }
         PurchaseOrder result = purchaseOrderService.save(persistedPo);
         
+	     // add grn history
+	   	 String json = result.getHotJson();
+	     final Outlet outlet = result.getOutlet();
+	     final String grnLastStatus = grnStatus;
+	   	 
+	     GrnHistSequence currentSeq = grnHistSequenceRepository.curVal();
+	     Long nextVal = currentSeq.getCurrentNumber() + 1;
+		 currentSeq.setCurrentNumber(nextVal);
+		 grnHistSequenceRepository.save(currentSeq);
+			
+	     result.getProducts().forEach(product -> {
+	     		String login = "NA";
+	           if (SecurityUtils.getCurrentUserLogin().isPresent()) {
+	           	login = SecurityUtils.getCurrentUserLogin().get();
+	           }
+	   		List<Inventory> inventories = inventoryService.findByOutletAndProductAndIsLastInstance(outlet, product, Boolean.TRUE);
+	       	if (inventories != null && !inventories.isEmpty()) {
+	       		Inventory inventory = inventories.get(0);
+	       		PoPdfDetail pdfDetail;
+					try {
+						pdfDetail = JsonUtils.toJsonObject(json);
+						Optional<InventoryPdfDetail> invOpt = pdfDetail.getListChangedDetails().stream().filter(detailPo -> detailPo.getCode().equals(product.getProductCode())).findFirst();
+		           		if (invOpt.isPresent()) {
+		           			GrnHistory grnHistory = GrnHistory.builder()
+		           					.grnNumber(Long.toString(nextVal))
+		           	    			.createdAt(DateUtil.now())
+		           	    			.createdBy(login)
+		           	    			.productCode(inventory.getProduct().getProductCode())
+		           	    			.category(invOpt.get().getCategory())
+		           	    			.description(invOpt.get().getDescription())
+		           	    			.poQuantity(invOpt.get().getQuantity())
+		           	    			.received(invOpt.get().getReceivedQuantity())
+		           	    			.uom(invOpt.get().getUom())
+		           	    			.status(grnLastStatus)
+		           	    			.orderNo(pdfDetail.getHeaderPdfDetail().getOrderNumber())
+		           	    			.outletName(outlet.getOutletName())
+		           	    			.build();
+		           			purchaseOrderService.saveGrn(grnHistory);
+		           		}
+						} catch (JsonProcessingException e) {
+							e.printStackTrace();
+						}
+	       		
+	       		
+	       	}
+	   	});
         // check received qte
         detail.getListDetails().forEach(rowDetail -> {
         	Optional<Product> productOpt = productService.findOne(Example.of(Product.builder().productCode(rowDetail.getCode()).build()));
@@ -533,24 +606,53 @@ public class PurchaseOrderResource {
         if (result == null) {
         	throw new BadRequestAlertException("notFound", ENTITY_NAME, "Cannot find an Order whith the input data");
         }
+        log.info("get next status from config table for po {}, current status is: {}", purchaseOrderCommand.getOrderNo(), purchaseOrderCommand.getStatus());
         DynamicApprovalConfig approvalConfig = approvalService.findbyCurrentStatus(purchaseOrderCommand.getStatus());
     	if (!isValidApprovalConfig(approvalConfig)) {
     		throw new BadRequestAlertException("Approval Response", ENTITY_NAME, "Approval Config Data not valid, please check the config table");
     	}
     	
-    	if (approvalConfig.getFinalStatus().equals(Boolean.TRUE)) {
-    		//throw new BadRequestAlertException("Approval Response", ENTITY_NAME, "Approval is on final state, no action will be done");
-    	}
-    	else {
-    		
-    	}
+    	 String json = result.getHotJson();
+         final Outlet outlet = result.getOutlet();
+         String login = "NA";
+         if (SecurityUtils.getCurrentUserLogin().isPresent()) {
+         	login = SecurityUtils.getCurrentUserLogin().get();
+         }
     	List<PoStatus> poStatusExisting = result.getPoStatuses().stream().filter(poSt -> poSt.getStatus().equals(purchaseOrderCommand.getStatus())).collect(Collectors.toList());
         if (poStatusExisting == null || poStatusExisting.isEmpty()) {
         	PoStatus poStatus = PoStatus.builder().status(purchaseOrderCommand.getStatus()).updatedAt(DateUtil.now()).build();
             poStatus = poStatusRepository.save(poStatus);
             result.getPoStatuses().add(poStatus);
             result.setUpdatedAt(DateUtil.now());
+            result.setApprovalOwner(login);
+            result.setApprovalReceivingTime(result.getApprovalTime());
+            result.setApprovalTime(DateUtil.now());
             result = purchaseOrderService.save(result);
+            
+           
+            if (purchaseOrderCommand.getStatus().equals(PurchaseStatusEnum.SENT_TO_NUPCO.getLabel())) {
+            	result.getProducts().forEach(product -> {
+            		List<Inventory> inventories = inventoryService.findByOutletAndProductAndIsLastInstance(outlet, product, Boolean.TRUE);
+                	if (inventories != null && !inventories.isEmpty()) {
+                		Inventory inventory = inventories.get(0);
+                		PoPdfDetail pdfDetail;
+						try {
+							pdfDetail = JsonUtils.toJsonObject(json);
+							Optional<InventoryPdfDetail> invOpt = pdfDetail.getListDetails().stream().filter(detail -> detail.getCode().equals(product.getProductCode())).findFirst();
+	                		if (invOpt.isPresent()) {
+	                			inventory.setQuantitiesInTransit(invOpt.get().getQuantity());	
+	                			inventoryService.save(inventory);
+	                		}
+						} catch (JsonProcessingException e) {
+							e.printStackTrace();
+						}
+                		
+                		
+                	}
+            	});
+            }
+            
+            
            
             
             POMailDetail poMailDetail = POMailDetail.builder()
@@ -575,8 +677,10 @@ public class PurchaseOrderResource {
     		
     		File tempXlsFile = File.createTempFile("order", sdf.format(DateUtil.now()));
     		FileOutputStream xlsfos = new FileOutputStream(tempXlsFile);
-    		xlsfos.write(result.getDataXlsx());
-    		xlsfos.close();
+    		if (xlsfos != null && result != null && result.getDataXlsx() != null) {
+    			xlsfos.write(result.getDataXlsx());
+    			xlsfos.close();
+    		}
     		
     		String[] recipients = approvalConfig.getCurrentStepEmail().split(",");
     		String[] cc = approvalConfig.getCurrentStepEmailcc().split(",");
@@ -621,7 +725,8 @@ public class PurchaseOrderResource {
     }
     
     private boolean isValidApprovalConfig(DynamicApprovalConfig approvalConfig) throws IllegalArgumentException, IllegalAccessException {
-    	 if (approvalConfig.getFinalStatus() == null ||
+    	if (approvalConfig == null) return false; 
+    	if (approvalConfig.getFinalStatus() == null ||
     			 approvalConfig.getStartStatus() == null ||
     			 approvalConfig.getCurrentStep() == null || approvalConfig.getCurrentStep().isEmpty() ||
     			 approvalConfig.getCurrentStepEmail() == null || approvalConfig.getCurrentStepEmail().isEmpty() ||

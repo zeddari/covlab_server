@@ -20,6 +20,7 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long>, Jpa
 
 	List<Inventory> findByStatusIn(List<String> status);
 	List<Inventory> findByStatusInAndIsLastInstance(List<String> status, Boolean isLastInstance);
+	List<Inventory> findByStatusInAndIsLastInstanceAndOutlet(List<String> status, Boolean isLastInstance, Outlet outlet);
 	List<Inventory> findByStatusInAndIsLastInstanceAndCapacityLessThan(List<String> status, Boolean isLastInstance, Double capapcity);
 	List<Inventory> findByOutletAndProductAndIsLastInstance(Outlet outlet, Product product, Boolean isLastInstance);
 	List<Inventory> findByLastUpdatedAtBetween(Date lastUpdatedAtstart, Date lastUpdatedAtend);

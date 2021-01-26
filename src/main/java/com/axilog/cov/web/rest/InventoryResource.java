@@ -3,10 +3,13 @@ package com.axilog.cov.web.rest;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
@@ -36,6 +39,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.axilog.cov.domain.ImportHistory;
 import com.axilog.cov.domain.Inventory;
 import com.axilog.cov.domain.Outlet;
+import com.axilog.cov.domain.PoStatus;
 import com.axilog.cov.domain.Product;
 import com.axilog.cov.dto.command.InventoryCommand;
 import com.axilog.cov.dto.command.InventoryHistoryCommand;
@@ -310,6 +314,33 @@ public class InventoryResource {
         Page<Inventory> page = inventoryQueryService.findByCriteria(criteria, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+    
+    /**
+     * @param outlet
+     * @return
+     */
+    @GetMapping("/inventories/badstock/{outlet}")
+    public ResponseEntity<InventoryRepresentation> getInventoriesForBadStock(@PathVariable("outlet") String outlet) {
+        log.debug("REST request to get Inventories for bad stock");
+        List<String> statuses = new ArrayList<String>();
+        statuses.add("oos");
+        statuses.add("noos");
+        
+        Outlet outletExample = Outlet.builder().outletName(outlet).build();
+        Optional<Outlet> optOutlet = outletService.findByExample(Example.of(outletExample));
+        	
+        List<Inventory> inventories = new ArrayList<>();
+        InventoryRepresentation inventoryRepresentation = InventoryRepresentation.builder().build();
+        if (outlet.equals("all")) {
+        	inventories = inventoryService.findByStatusInAndIsLastInstance(statuses, Boolean.TRUE);
+        	inventoryRepresentation = inventoryMapper.toInventoryRepresentation(inventories);
+        }
+        else if (optOutlet.isPresent()) {
+        	inventories = inventoryService.findByStatusInAndIsLastInstanceAndOutlet(statuses, Boolean.TRUE, optOutlet.get());
+        	inventoryRepresentation = inventoryMapper.toInventoryRepresentation(inventories);
+        }
+        return ResponseEntity.ok(inventoryRepresentation);
     }
 
     @GetMapping("/inventory/list")

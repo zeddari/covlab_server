@@ -38,6 +38,8 @@ public class GrnHistoryDetail {
    private Double received;
 
    private String outletName;
+   
+   private String orderNo;
 	 
 	 
 	

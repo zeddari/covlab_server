@@ -52,6 +52,7 @@ public class PurchaseOrderMapper {
 				.poQuantity(grnHistory.getPoQuantity())
 				.received(grnHistory.getReceived())
 				.outletName(grnHistory.getOutletName())
+				.orderNo(grnHistory.getOrderNo())
 				.build();
 	}
 	/**
