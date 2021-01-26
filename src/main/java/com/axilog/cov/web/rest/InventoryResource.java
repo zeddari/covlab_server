@@ -285,7 +285,8 @@ public class InventoryResource {
         
         result.setCurrent_balance(result.getCurrent_balance() + inventoryCommand.getCurrentBalance());
         result.setCurrent_balance(result.getCurrent_balance() - inventoryCommand.getConsumeQty());
-        
+        result.setReceivedUserQte(inventoryCommand.getCurrentBalance());
+        result.setConsumedUserQte(inventoryCommand.getConsumeQty());
         result.setConsumedQty(result.getConsumedQty() + inventoryCommand.getConsumeQty());
         
         result.setLastUpdatedAt(DateUtil.now());
@@ -325,8 +326,17 @@ public class InventoryResource {
         return ResponseEntity.ok().body(inventoryRepresentation);
     }
     
+    @GetMapping("/inventoryHistory/all")
+    public ResponseEntity<InventoryRepresentation> getAllRepresentationInventoriesHistory() {
+        log.debug("REST request to get Inventories by FindAll: {}");
+        
+        List<Inventory> inventories = inventoryService.findAll();
+        InventoryRepresentation inventoryRepresentation = inventoryMapper.toInventoryRepresentation(inventories);
+        return ResponseEntity.ok().body(inventoryRepresentation);
+    }
+    
     @PostMapping("/inventoryHistory/list")
-    public ResponseEntity<InventoryRepresentation> getAllRepresentationInventoriesHistory(@Valid InventoryHistoryCommand inventoryHistoryCommand) {
+    public ResponseEntity<InventoryRepresentation> getAllRepresentationInventoriesHistory(@RequestBody @Valid InventoryHistoryCommand inventoryHistoryCommand) {
         log.debug("REST request to get Inventories by FindByLastUpdatedAtBetween: {}");
         
         List<Inventory> inventories = inventoryService.findInventoryHistoryBetweenDate(inventoryHistoryCommand.getStartDate(), inventoryHistoryCommand.getEndDate());

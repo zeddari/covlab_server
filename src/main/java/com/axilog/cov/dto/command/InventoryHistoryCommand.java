@@ -15,9 +15,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class InventoryHistoryCommand {
 	
-	@NotNull
 	private Date startDate;
 	
-	@NotNull
 	private Date endDate;
 }

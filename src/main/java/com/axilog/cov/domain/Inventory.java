@@ -78,6 +78,13 @@ public class Inventory implements Serializable, Cloneable {
     @Column(name = "creation_time")
     private Date creationTime;
     
+    @Column(name = "received_user_qte")
+    private Double receivedUserQte;
+    
+    @Column(name = "consumed_user_qte")
+    private Double consumedUserQte;
+    
+    
     @ManyToOne
     @JsonIgnoreProperties(value = "inventories", allowSetters = true)
     private Outlet outlet;
