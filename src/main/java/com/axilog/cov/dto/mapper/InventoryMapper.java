@@ -82,6 +82,8 @@ public class InventoryMapper {
 				.category(inventory.getProduct().getCategory().getCategoryCode())
 				.temperature(formatter.format(inventory.getProduct().getDeviceOverviewStats() != null ? inventory.getProduct().getDeviceOverviewStats().getTemperature() : 0))
 				.nupcoCode(inventory.getProduct().getProductCode())
+				.consumedUserQte(inventory.getConsumedUserQte())
+				.receivedUserQte(inventory.getReceivedUserQte())
 				.build();
 	}
 	

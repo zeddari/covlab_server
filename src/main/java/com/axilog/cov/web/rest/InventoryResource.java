@@ -289,7 +289,8 @@ public class InventoryResource {
         
         result.setCurrent_balance(result.getCurrent_balance() + inventoryCommand.getCurrentBalance());
         result.setCurrent_balance(result.getCurrent_balance() - inventoryCommand.getConsumeQty());
-        
+        result.setReceivedUserQte(inventoryCommand.getCurrentBalance());
+        result.setConsumedUserQte(inventoryCommand.getConsumeQty());
         result.setConsumedQty(result.getConsumedQty() + inventoryCommand.getConsumeQty());
         
         result.setLastUpdatedAt(DateUtil.now());
@@ -352,6 +353,15 @@ public class InventoryResource {
         
         //sort descending by lastUpdated
         inventories = inventories.stream().sorted(Comparator.comparing(Inventory::getLastUpdatedAt, Comparator.nullsLast(Comparator.reverseOrder()))).collect(Collectors.toList());
+        InventoryRepresentation inventoryRepresentation = inventoryMapper.toInventoryRepresentation(inventories);
+        return ResponseEntity.ok().body(inventoryRepresentation);
+    }
+    
+    @GetMapping("/inventoryHistory/all")
+    public ResponseEntity<InventoryRepresentation> getAllRepresentationInventoriesHistory() {
+        log.debug("REST request to get Inventories by FindAll: {}");
+        
+        List<Inventory> inventories = inventoryService.findAll();
         InventoryRepresentation inventoryRepresentation = inventoryMapper.toInventoryRepresentation(inventories);
         return ResponseEntity.ok().body(inventoryRepresentation);
     }

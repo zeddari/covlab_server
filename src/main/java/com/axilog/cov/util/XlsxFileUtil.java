@@ -66,7 +66,7 @@ public class XlsxFileUtil {
         styleheader.setBorderRight(HSSFCellStyle.BORDER_MEDIUM);
         styleheader.setBorderLeft(HSSFCellStyle.BORDER_MEDIUM);
         styleheader.setAlignment(HorizontalAlignment.CENTER);
-        createCell(row1, 0, "Purchase Order #:", style);      
+        createCell(row1, 0, "Order #:", style);      
         createCell(row1, 1, headerPdfDetail.getOrderNumber(), style);       
         createCell(row1, 2, "Vendor:", style);    
         createCell(row1, 3,  headerPdfDetail.getVendor(), style);
@@ -77,7 +77,7 @@ public class XlsxFileUtil {
         createCell(row2, 3,  headerPdfDetail.getContactPersonName(), style);
         
         createCell(row3, 0, "Due Date:", style);      
-        createCell(row3, 1, headerPdfDetail.getCreationDate(), style);       
+        createCell(row3, 1, headerPdfDetail.getDueDate(), style);       
         createCell(row3, 2, "Mobile:", style);    
         createCell(row3, 3,  headerPdfDetail.getContactPersonMobile(), style);
         
