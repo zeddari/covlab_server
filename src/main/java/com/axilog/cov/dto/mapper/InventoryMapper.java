@@ -180,7 +180,9 @@ public class InventoryMapper {
 		if (inventories == null) return PoPdfDetail.builder().build();
 		inventories.forEach(inv -> {
 			if (productsToBeInPo.contains(inv.getProduct())) {
-				inventoryPdfDetails.add(toPdfDetail(inv));
+				InventoryPdfDetail invDetail = toPdfDetail(inv);
+				if (invDetail.getQuantity() > 0)
+					inventoryPdfDetails.add(invDetail);
 			}
 			
 		});

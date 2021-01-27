@@ -392,7 +392,7 @@ public class PurchaseOrderResource {
 			List<Inventory> inventoriesPerOutlet = inventories.stream().filter(inventory -> inventory.getOutlet().equals(outlet)).collect(Collectors.toList());
     		PoPdfDetail detail = inventoryMapper.toPdfListDetail(inventoriesPerOutlet, productsToBeInPo, outlet, currVal);
             if (detail == null || detail.getListDetails() == null || detail.getListDetails().isEmpty()) {
-            	log.info("No Po to be ordered");
+            	log.info("No Po to be ordered for outlet: {}", outlet.getOutletName());
             	message = "No Po to be order";
             }
             else {
