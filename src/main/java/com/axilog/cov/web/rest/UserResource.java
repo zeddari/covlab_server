@@ -4,7 +4,7 @@ import com.axilog.cov.config.Constants;
 import com.axilog.cov.domain.User;
 import com.axilog.cov.repository.UserRepository;
 import com.axilog.cov.security.AuthoritiesConstants;
-import com.axilog.cov.service.MailService;
+import com.axilog.cov.service.OtpMailService;
 import com.axilog.cov.service.UserService;
 import com.axilog.cov.service.dto.UserDTO;
 import com.axilog.cov.web.rest.errors.BadRequestAlertException;
@@ -74,9 +74,9 @@ public class UserResource {
 
     private final UserRepository userRepository;
 
-    private final MailService mailService;
+    private final OtpMailService mailService;
 
-    public UserResource(UserService userService, UserRepository userRepository, MailService mailService) {
+    public UserResource(UserService userService, UserRepository userRepository, OtpMailService mailService) {
         this.userService = userService;
         this.userRepository = userRepository;
         this.mailService = mailService;

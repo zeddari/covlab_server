@@ -36,4 +36,7 @@ public class InventoryDetail {
 	 private Double outletLng;
 	 private String category;
 	 private String temperature;
+	 private Double receivedUserQte; 
+	 private Double consumedUserQte;
+	 
 }

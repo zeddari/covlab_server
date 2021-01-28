@@ -1,21 +1,26 @@
 package com.axilog.cov.domain;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.axilog.cov.domain.converter.JsonToMapConverter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.AllArgsConstructor;
@@ -60,17 +65,39 @@ public class PurchaseOrder implements Serializable {
 
     @Column(name = "created_at")
     private Date createdAt;
+    
+    @Column(name = "data")
+    private byte[] data;
+    
+    @Column(name = "data_xlsx")
+    private byte[] dataXlsx;
+    
+    @Column(name = "approval_time")
+    private Date approvalTime;
+    
+    @Column(name = "approval_owner")
+    private String approvalOwner;
+    
+    @Column(name = "approval_receiving_time")
+    private Date approvalReceivingTime;
 
-    @OneToMany(mappedBy = "purchaseOrder")
+    @OneToMany(fetch = FetchType.EAGER)
     private Set<PoStatus> poStatuses = new HashSet<>();
 
-    @ManyToOne
-    @JsonIgnoreProperties(value = "purchaseOrders", allowSetters = true)
+    @ManyToOne(fetch = FetchType.EAGER)
     private Outlet outlet;
 
-    @OneToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<Product> products;
 
+    @Column(name = "hot_json")
+    private String hotJson;
+
+    
+//    @Column(name = "hot_json", columnDefinition = "json")
+//    @Convert(attributeName = "data", converter = JsonToMapConverter.class)
+//    private Map<String, Object> hotJson = new HashMap<>();
+    
     // jhipster-needle-entity-add-field - JHipster will add fields here
     public Long getId() {
         return id;
@@ -121,6 +148,7 @@ public class PurchaseOrder implements Serializable {
 
 
     public Set<PoStatus> getPoStatuses() {
+    	if (poStatuses == null) poStatuses = new HashSet<>();
         return poStatuses;
     }
 

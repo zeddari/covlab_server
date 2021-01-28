@@ -27,13 +27,13 @@ public class OverallStats implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Column(name = "total_vaccines_received_at_nupco")
-    private Double totalVaccinesReceivedAtNupco;
+    private Long totalVaccinesReceivedAtNupco;
     
     @Column(name = "total_vaccines_received_at_outlets")
-    private Double totalVaccinesReceivedAtOutlets;
+    private Long totalVaccinesReceivedAtOutlets;
     
     @Column(name = "total_vaccines_consumed")
-    private Double totalVaccinesConsumed;
+    private Long totalVaccinesConsumed;
     
     @Column(name = "wastage_vaccines")
     private Double wastageVaccines;
@@ -49,6 +49,9 @@ public class OverallStats implements Serializable {
     
     @Column(name = "overall_outlet_performance_score")
     private Double overallOutletPerformanceScore;
+    
+    @Column(name = "current_balance")
+    private Long currentBalance;
     
     @Column(name = "last_updated_at")
     @Id

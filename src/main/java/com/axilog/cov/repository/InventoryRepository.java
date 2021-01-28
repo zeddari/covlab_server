@@ -1,8 +1,11 @@
 package com.axilog.cov.repository;
 
 import com.axilog.cov.domain.Inventory;
+import com.axilog.cov.domain.Outlet;
+import com.axilog.cov.domain.Product;
 import com.axilog.cov.dto.projection.ServiceDashProjection;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.*;
@@ -16,5 +19,12 @@ import org.springframework.stereotype.Repository;
 public interface InventoryRepository extends JpaRepository<Inventory, Long>, JpaSpecificationExecutor<Inventory> {
 
 	List<Inventory> findByStatusIn(List<String> status);
+	List<Inventory> findByStatusInAndIsLastInstance(List<String> status, Boolean isLastInstance);
+	List<Inventory> findByStatusInAndIsLastInstanceAndOutlet(List<String> status, Boolean isLastInstance, Outlet outlet);
+	List<Inventory> findByStatusInAndIsLastInstanceAndCapacityLessThan(List<String> status, Boolean isLastInstance, Double capapcity);
+	List<Inventory> findByOutletAndProductAndIsLastInstance(Outlet outlet, Product product, Boolean isLastInstance);
+	List<Inventory> findByLastUpdatedAtBetween(Date lastUpdatedAtstart, Date lastUpdatedAtend);
 	
+//	@Query(value = "select * from inventory where ", nativeQuery = true)
+//	List<Inventory> findByLastUpdatedAtBetweenTwoDate(Date lastUpdatedAtstart, Date lastUpdatedAtend);
 }

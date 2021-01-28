@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
 @Builder
 public class KpiTable {
 
-	private Double quantitiesInHand;
-	private Double actualDailyConsumption;
-	private Double temperature;
+	private Long numberOfVaccine;
+	private Long consumedVaccine;
+	private Integer numberOfOutlets;
 
 	
 }

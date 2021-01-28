@@ -8,6 +8,7 @@ import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.concurrent.atomic.AtomicLong;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,6 +39,8 @@ public class DateUtil {
 	public static final String VALIDATION_BIRTH_DATE_PATTERN = "\\d{4}X{4}|\\d{6}X{2}|X{8}|\\d{8}";
 	public static final String VALIDATION_BIRTH_DATE_PATTERN_8D = "(\\d){8}";
 
+	private static final AtomicLong LAST_TIME_MS = new AtomicLong();
+	
 	private DateUtil() {
 	}
 
@@ -260,6 +263,29 @@ public class DateUtil {
 		return calendar.getTime();
 
 	}
+	
+	/**
+	 * @param date
+	 * @param day
+	 * @return
+	 */
+
+	public static Date addMinutes(Date date, int minute) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		calendar.add(Calendar.MINUTE, minute);
+		return calendar.getTime();
+
+	}
+	
+	
+	public static Date addSeconds(Date date, int minute) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(date);
+		calendar.add(Calendar.SECOND, minute);
+		return calendar.getTime();
+
+	}
 
 	/**
 	 * jira IBSTHP-9291 Start
@@ -331,5 +357,17 @@ public class DateUtil {
 	
 	public static Date convertToDateViaUtilDate(LocalDate dateToConvert) {
 	    return java.sql.Date.valueOf(dateToConvert);
+	}
+	
+	
+	public static long uniqueCurrentTimeMS() {
+	    long now = System.currentTimeMillis();
+	    while(true) {
+	        long lastTime = LAST_TIME_MS.get();
+	        if (lastTime >= now)
+	            now = lastTime+1;
+	        if (LAST_TIME_MS.compareAndSet(lastTime, now))
+	            return now;
+	    }
 	}
 }

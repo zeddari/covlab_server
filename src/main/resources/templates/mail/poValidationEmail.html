@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${#locale.language}" lang="en">
+    <head>
+        <title th:text="#{email.activation.title}">Purchase Order creation</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <link rel="icon" th:href="@{|${baseUrl}/favicon.ico|}" />
+    </head>
+    <body>
+       
+            Dear
+        
+        
+            Your Purchase Order has been created and sent to you: 
+        
+        <p>
+			Could you please proceed for validation before sending it for approval.        
+         
+        </p>
+        <p>
+            <span>Regards, Ministry of Health KSA</span>
+            <br/>
+        </p>
+    </body>
+</html>

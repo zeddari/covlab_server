@@ -41,7 +41,8 @@ spring:
     #url: jdbc:mysql://ec2-54-245-50-184.us-west-2.compute.amazonaws.com:3306/mohdb?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true
     username: root
     password: admin
-    #password: Shining123
+    #username: salehiya
+    #password: Salehiya01
     hikari:
       poolName: Hikari
       auto-commit: false
@@ -56,10 +57,28 @@ spring:
     # Remove 'faker' if you do not want the sample data to be loaded automatically
     contexts: dev, faker
   mail:
-    host: smtp.gmail.com
-    port: 587
-    username: 
-    password: 
+    otp:
+      host: outlook.office365.com
+      port: 587
+      username: dev@salehiya.com
+      password: Sa*20200150
+      properties:
+        mail:
+          smtp:
+            auth: true
+            starttls:
+              enable: true
+    po:
+      host: outlook.office365.com
+      port: 587
+      username: dev@salehiya.com
+      password: Sa*20200150
+      properties:
+        mail:
+          smtp:
+            auth: true
+            starttls:
+              enable: true
   messages:
     cache-duration: PT1S # 1 second, see the ISO 8601 standard
   thymeleaf:

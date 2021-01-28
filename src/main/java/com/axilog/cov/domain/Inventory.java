@@ -5,6 +5,7 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -74,11 +75,21 @@ public class Inventory implements Serializable, Cloneable {
     @Column(name = "is_last_instance")
     private Boolean isLastInstance;
     
+    @Column(name = "creation_time")
+    private Date creationTime;
+    
+    @Column(name = "received_user_qte")
+    private Double receivedUserQte;
+    
+    @Column(name = "consumed_user_qte")
+    private Double consumedUserQte;
+    
+    
     @ManyToOne
     @JsonIgnoreProperties(value = "inventories", allowSetters = true)
     private Outlet outlet;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JsonIgnoreProperties(value = "inventories", allowSetters = true)
     private Product product;
 

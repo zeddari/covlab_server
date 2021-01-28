@@ -1,12 +1,21 @@
 package com.axilog.cov.web.rest;
 
-import com.axilog.cov.CovlabServerApp;
-import com.axilog.cov.domain.PoStatus;
-import com.axilog.cov.domain.PurchaseOrder;
-import com.axilog.cov.repository.PoStatusRepository;
-import com.axilog.cov.service.PoStatusService;
-import com.axilog.cov.service.dto.PoStatusCriteria;
-import com.axilog.cov.service.PoStatusQueryService;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasItem;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
+import java.util.List;
+
+import javax.persistence.EntityManager;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,15 +26,14 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import javax.persistence.EntityManager;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasItem;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import com.axilog.cov.CovlabServerApp;
+import com.axilog.cov.domain.PoStatus;
+import com.axilog.cov.domain.PurchaseOrder;
+import com.axilog.cov.repository.PoStatusRepository;
+import com.axilog.cov.service.PoStatusQueryService;
+import com.axilog.cov.service.PoStatusService;
+import com.axilog.cov.util.DateUtil;
 
 /**
  * Integration tests for the {@link PoStatusResource} REST controller.
@@ -38,7 +46,7 @@ public class PoStatusResourceIT {
     private static final String DEFAULT_STATUS = "AAAAAAAAAA";
     private static final String UPDATED_STATUS = "BBBBBBBBBB";
 
-    private static final LocalDate DEFAULT_UPDATED_AT = LocalDate.ofEpochDay(0L);
+    private static final Date DEFAULT_UPDATED_AT = DateUtil.now();
     private static final LocalDate UPDATED_UPDATED_AT = LocalDate.now(ZoneId.systemDefault());
     private static final LocalDate SMALLER_UPDATED_AT = LocalDate.ofEpochDay(-1L);
 
@@ -68,7 +76,7 @@ public class PoStatusResourceIT {
     public static PoStatus createEntity(EntityManager em) {
         PoStatus poStatus = new PoStatus()
             .status(DEFAULT_STATUS)
-            .updatedAt(DEFAULT_UPDATED_AT);
+            ;
         return poStatus;
     }
     /**
@@ -79,8 +87,7 @@ public class PoStatusResourceIT {
      */
     public static PoStatus createUpdatedEntity(EntityManager em) {
         PoStatus poStatus = new PoStatus()
-            .status(UPDATED_STATUS)
-            .updatedAt(UPDATED_UPDATED_AT);
+            .status(UPDATED_STATUS);
         return poStatus;
     }
 
@@ -436,7 +443,7 @@ public class PoStatusResourceIT {
         em.detach(updatedPoStatus);
         updatedPoStatus
             .status(UPDATED_STATUS)
-            .updatedAt(UPDATED_UPDATED_AT);
+            ;
 
         restPoStatusMockMvc.perform(put("/api/po-statuses")
             .contentType(MediaType.APPLICATION_JSON)

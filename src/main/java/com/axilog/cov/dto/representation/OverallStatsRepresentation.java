@@ -21,16 +21,21 @@ public class OverallStatsRepresentation implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    
-    private Double totalVaccinesReceivedAtNupco;
-    private Double totalVaccinesReceivedAtOutlets;
-    private Double totalVaccinesConsumed;
-    private Double wastageVaccines;
+    private Long currentBalance;
     private Double deliveryOnTimeInFull;
-    private Double stockoutRatio;
-    private Double warehouseFillingRate;
-    private Double overallOutletPerformanceScore;
     
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date lastUpdatedAt;
+    
+    private Double overallOutletPerformanceScore;
+    private Double stockoutRatio;
+    private Long totalVaccinesReceivedAtNupco;
+    private Long totalVaccinesReceivedAtOutlets;
+    private Long totalVaccinesConsumed;
+    private Double wastageVaccines; 
+    private Double warehouseFillingRate;
+    
+  
+    
+    
 }

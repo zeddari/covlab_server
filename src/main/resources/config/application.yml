@@ -111,7 +111,8 @@ spring:
   output:
     ansi:
       console-available: true
-
+  servlet:    multipart:      enabled: false
+   
 server:
   servlet:
     session:
@@ -141,7 +142,7 @@ jhipster:
   #     allow-credentials: true
   #     max-age: 1800
   mail:
-    from: covlabServer@localhost
+    from: dev@salehiya.com
   swagger:
     default-include-pattern: /api/.*
     title: covlabServer API
@@ -171,6 +172,28 @@ outlet:
     humidityMax: 1000
     pressureMin: 1000
     pressureMax: 1000
-autoReplenishCron: '*/10 * * * * *'
-      
-      
+# Auoreplenishment Cron
+autoReplenishCron: '1 1 1 1 1 1'
+
+## Purchase Order template details
+poEmailReceiver: 'azeddari@gmail.com'
+poSubjectEmail: 'New Po for you'
+vendor: 'Nupco'
+contactPersonName: 'Mohammed Alqahtani'
+contactPersonEmail: 'm.hmoud.alqahtani@ascend.com.sa'
+contactPersonPhone: '+966 55 086 0179'
+
+## po approval level1 details
+poEmailApprovalLevel1: 'azeddari@gmail.com'
+poEmailApprovalLevel2: 'azeddari@gmail.com'
+baseUrl: http://localhost:4200
+
+# footer & header
+poHeaderImage: 'http://localhost:7001/logo.jpg'
+poFooterImage: 'http://localhost:7001/footer.jpg'
+poThreesholdCapacity: 25
+poDueDateOffset: 5
+
+poSourceEmail: dev@salehiya.com
+otpSourceEmail: dev@salehiya.com
+activationContactEmail: a.mustafa@salehiya.com

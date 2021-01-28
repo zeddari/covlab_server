@@ -1,15 +1,23 @@
 package com.axilog.cov.service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.axilog.cov.domain.Inventory;
+import com.axilog.cov.domain.Outlet;
+import com.axilog.cov.domain.Product;
 
 /**
  * Service Interface for managing {@link Inventory}.
+ */
+/**
+ * @author lenovo
+ *
  */
 public interface InventoryService {
 
@@ -40,6 +48,28 @@ public interface InventoryService {
      * @return
      */
     List<Inventory> findByStatusIn(List<String> status);
+    
+   
+    /**
+     * @param status
+     * @param isLastInstance
+     * @return
+     */
+    List<Inventory> findByStatusInAndIsLastInstance(List<String> status, Boolean isLastInstance);
+    
+    /**
+     * @param status
+     * @param isLastInstance
+     * @return
+     */
+    List<Inventory> findByStatusInAndIsLastInstanceAndOutlet(List<String> status, Boolean isLastInstance, Outlet outlet);
+    
+    /**
+     * @param status
+     * @param isLastInstance
+     * @return
+     */
+    List<Inventory> findByStatusInAndIsLastInstanceAndCapacityLessThan(List<String> status, Boolean isLastInstance, Double capapcity);
 
     /**
      * Get the "id" inventory.
@@ -56,6 +86,15 @@ public interface InventoryService {
      */
     void delete(Long id);
 
+	/**
+	 * @return
+	 */
 	List<String> getOutletWithTemperatureIssue();
+	
+	Optional<Inventory> findByExample(Example<Inventory> inventoryExample);
+
+	List<Inventory> findByOutletAndProductAndIsLastInstance(Outlet outlet, Product product, Boolean isLastInstance);
+
+	List<Inventory> findInventoryHistoryBetweenDate(Date lastUpdatedAtstart, Date lastUpdatedAtend);
  
 }

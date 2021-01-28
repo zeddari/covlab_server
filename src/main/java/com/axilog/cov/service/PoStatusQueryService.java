@@ -89,7 +89,7 @@ public class PoStatusQueryService extends QueryService<PoStatus> {
                 specification = specification.and(buildStringSpecification(criteria.getStatus(), PoStatus_.status));
             }
             if (criteria.getUpdatedAt() != null) {
-                specification = specification.and(buildRangeSpecification(criteria.getUpdatedAt(), PoStatus_.updatedAt));
+       //         specification = specification.and(buildRangeSpecification(criteria.getUpdatedAt(), PoStatus_.updatedAt));
             }
             if (criteria.getPurchaseOrderId() != null) {
                 specification = specification.and(buildSpecification(criteria.getPurchaseOrderId(),

@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -64,5 +65,10 @@ public class OutletServiceImpl implements OutletService {
 	@Override
 	public List<Outlet> findAll() {
 		return outletRepository.findAll();
+	}
+
+	@Override
+	public Optional<Outlet> findByExample(Example<Outlet> outletExample) {
+		return outletRepository.findOne(outletExample);
 	}
 }

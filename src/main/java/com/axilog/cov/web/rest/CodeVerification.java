@@ -1,6 +1,5 @@
 package com.axilog.cov.web.rest;
 
-import lombok.extern.log4j.Log4j;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -9,7 +8,7 @@ public class CodeVerification {
     public static String randomVerificationCode() {
         System.out.println("Generating Password");
 
-        String ALPHA_NUMERIC_STRING = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&?{}*";
+        String ALPHA_NUMERIC_STRING = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!{}*";
         StringBuilder builder = new StringBuilder();
 
         int count = 6;

@@ -123,7 +123,7 @@ public class UserService {
         if (userDTO.getEmail() != null) {
             newUser.setEmail(userDTO.getEmail().toLowerCase());
         }
-        newUser.setCreatedBy(userDTO.getCreatedBy());
+        newUser.setCreatedBy(userDTO.getCreatedBy() != null ? userDTO.getCreatedBy() : "System");
         newUser.setImageUrl(userDTO.getImageUrl());
         newUser.setLangKey(userDTO.getLangKey());
         // new user is not active

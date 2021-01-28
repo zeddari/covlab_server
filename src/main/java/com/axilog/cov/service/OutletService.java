@@ -1,7 +1,9 @@
 package com.axilog.cov.service;
 
+import com.axilog.cov.domain.Inventory;
 import com.axilog.cov.domain.Outlet;
 
+import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -56,4 +58,8 @@ public interface OutletService {
      * @return
      */
     List<Outlet> findAll();
+    
+    
+    Optional<Outlet> findByExample(Example<Outlet> outletExample);
+    
 }

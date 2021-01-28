@@ -4,20 +4,21 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
-import com.axilog.cov.domain.Inventory;
 import com.axilog.cov.dto.mapper.InventoryMapper;
-import com.axilog.cov.dto.representation.InventoryPdfDetail;
+import com.axilog.cov.dto.representation.PoPdfDetail;
 import com.axilog.cov.service.InventoryService;
+import com.axilog.cov.util.XlsxFileUtil;
 import com.lowagie.text.DocumentException;
 
 @Service
@@ -26,6 +27,15 @@ public class PdfService {
     private static final String PDF_RESOURCES = "/";
     private InventoryService inventoryService;
     private SpringTemplateEngine templateEngine;
+   
+    @Value("${baseUrl}")
+    private String baseUrl;
+    
+    @Value("${poFooterImage}")
+    private String poFooterImage;
+    
+    @Value("${poHeaderImage}")
+    private String poHeaderImage;
 
     @Autowired
     private InventoryMapper inventoryMapper;
@@ -36,9 +46,9 @@ public class PdfService {
         this.templateEngine = templateEngine;
     }
 
-    public File generatePdf(List<InventoryPdfDetail> details ) throws IOException, DocumentException {
-        Context context = getContext(details);
-        String html = loadAndFillTemplate(context);
+    public File generatePdf(PoPdfDetail details ) throws IOException, DocumentException {
+        Context context = getContext(details, "poPdfDetail");
+        String html = loadAndFillTemplate(context, "po/pdf_orders");
         return renderPdf(html);
     }
 
@@ -55,16 +65,36 @@ public class PdfService {
         return file;
     }
 
-    private Context getContext(List<InventoryPdfDetail> details) {
+    /**
+     * @param details
+     * @param variableName
+     * @return
+     */
+    public Context getContext(PoPdfDetail details, String variableName) {
         Context context = new Context();
-        
-        context.setVariable("inventories", details);
+        context.setVariable(variableName, details);
+        context.setVariable("baseUrl", baseUrl);
+        context.setVariable("footerImage", poFooterImage);
+        context.setVariable("headerImage", poHeaderImage);
+        return context;
+    }
+    
+    /**
+     * @param objectValue
+     * @param objectName
+     * @return
+     */
+    public Context getContext(Object objectValue, String objectName) {
+        Context context = new Context();
+        context.setVariable(objectName, objectValue);
+        context.setVariable("baseUrl", baseUrl);
+        context.setVariable("footerImage", poFooterImage);
+        context.setVariable("headerImage", poHeaderImage);
         return context;
     }
 
-    private String loadAndFillTemplate(Context context) {
-        return templateEngine.process("po/pdf_orders", context);
+    public String loadAndFillTemplate(Context context, String templateName) {
+        return templateEngine.process(templateName, context);
     }
-
-
+    
 }
