@@ -14,4 +14,5 @@ public interface ApprovalService {
     DynamicApprovalConfig findStartStatus();
     DynamicApprovalConfig findEndStatus();
     DynamicApprovalConfig findbyCurrentStatus(String currentStatus);
+    DynamicApprovalConfig findbyCurrentStatusandOutlet(String currentStatus, String outlet);
 }

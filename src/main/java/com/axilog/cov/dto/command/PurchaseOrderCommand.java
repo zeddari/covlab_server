@@ -12,4 +12,5 @@ public class PurchaseOrderCommand {
 	private String status;
 	private boolean emailToBeSent;
 	private int approvalLevel;
+	private String outlet;
 }

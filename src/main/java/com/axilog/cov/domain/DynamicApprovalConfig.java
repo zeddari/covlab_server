@@ -26,7 +26,10 @@ public class DynamicApprovalConfig implements Serializable {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+	
+	@Column(name = "outlet")
+	private String outlet;
+	 
     @Column(name = "current_step")
     private String currentStep;
 

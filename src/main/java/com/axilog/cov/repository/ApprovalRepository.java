@@ -17,4 +17,5 @@ public interface ApprovalRepository extends JpaRepository<DynamicApprovalConfig,
 	public DynamicApprovalConfig findByStartStatus(Boolean startStatus);
 	public DynamicApprovalConfig findByFinalStatus(Boolean endStatus);
 	public DynamicApprovalConfig findByCurrentStepStatus(String currentStatus);
+	public DynamicApprovalConfig findByCurrentStepStatusAndOutlet(String currentStatus, String outlet);
 }
