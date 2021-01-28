@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,7 +39,7 @@ import com.axilog.cov.web.rest.errors.InvalidPasswordException;
 import com.axilog.cov.web.rest.errors.LoginAlreadyUsedException;
 import com.axilog.cov.web.rest.vm.KeyAndPasswordVM;
 import com.axilog.cov.web.rest.vm.ManagedUserVM;
-
+import com.axilog.cov.web.rest.CodeVerification;
 import io.swagger.annotations.Api;
 
 /**
@@ -133,6 +134,40 @@ public class AccountResource {
             .map(userDto -> addOutletToUser(getOutlets(userDto.getAuthorities()), userDto))
             .orElseThrow(() -> new AccountResourceException("User could not be found"));
     }
+    
+    static String  codeVerirification = "";
+    
+    @GetMapping("/sendcodeverif")
+    public void sendVerificationCode() {
+        String username = SecurityUtils.getCurrentUserLogin()
+            .orElseThrow(() -> new AccountResourceException("Username not found"));
+
+        Optional<User> user = userRepository.findOneByLogin(username);
+        if (!user.isPresent()) {
+            throw new AccountResourceException("User could not be found");
+        }
+        String mail = user.get().getEmail();
+       // codeVerirification= CodeVerification.randomVerificationCode();
+        user.get().setCodeVerifiaction(CodeVerification.randomVerificationCode());
+        userRepository.save(user.get());
+        String content = "Your verification code is: " + codeVerirification;
+        mailService.sendEmail(mail, "Verification Code", content, true, true);
+    }
+    
+    @GetMapping("/checkcodeverif/{code}")
+    public String sendVerificationCode(@PathVariable(name="code", required=true) String code) {
+        String username = SecurityUtils.getCurrentUserLogin()
+                .orElseThrow(() -> new AccountResourceException("Username not found"));
+
+            Optional<User> user = userRepository.findOneByLogin(username);
+            if (!user.isPresent()) {
+                throw new AccountResourceException("User could not be found");
+            }
+    	if(user.get().getCodeVerifiaction().equals(code)) 
+    		return "ok";
+    		return "ko";
+    }
+
 
     /**
      * {@code POST  /account} : update the current user information.

@@ -27,6 +27,9 @@ public class User extends AbstractAuditingEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "code_verifiaction", length = 50)
+    private String codeVerifiaction;
+    
     @NotNull
     @Pattern(regexp = Constants.LOGIN_REGEX)
     @Size(min = 1, max = 50)
@@ -95,7 +98,17 @@ public class User extends AbstractAuditingEntity implements Serializable {
         this.id = id;
     }
 
-    public String getLogin() {
+    
+    
+    public String getCodeVerifiaction() {
+		return codeVerifiaction;
+	}
+
+	public void setCodeVerifiaction(String codeVerifiaction) {
+		this.codeVerifiaction = codeVerifiaction;
+	}
+
+	public String getLogin() {
         return login;
     }
 
