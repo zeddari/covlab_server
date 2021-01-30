@@ -403,7 +403,7 @@ public class PurchaseOrderResource {
         		byte[] fileContentXlsx = FileUtils.readFileToByteArray(poXlsx);
                 List<Product> products = new ArrayList<>();
                 if (inventories != null) {
-                	products = inventories.stream().map(Inventory:: getProduct).collect(Collectors.toList());
+                	products = inventories.stream().filter(inv -> inv.getOutlet().equals(outlet)).map(Inventory:: getProduct).collect(Collectors.toList());
                 }
                 String login = "NA";
                 if (SecurityUtils.getCurrentUserLogin().isPresent()) {
@@ -607,7 +607,7 @@ public class PurchaseOrderResource {
         	throw new BadRequestAlertException("notFound", ENTITY_NAME, "Cannot find an Order whith the input data");
         }
         log.info("get next status from config table for po {}, current status is: {}", purchaseOrderCommand.getOrderNo(), purchaseOrderCommand.getStatus());
-        DynamicApprovalConfig approvalConfig = approvalService.findbyCurrentStatusandOutlet(purchaseOrderCommand.getStatus(), purchaseOrderCommand.getOutlet());
+        DynamicApprovalConfig approvalConfig = approvalService.findbyCurrentStatusandOutlet(purchaseOrderCommand.getStatus(), result.getOutlet().getOutletName());
     	if (!isValidApprovalConfig(approvalConfig)) {
     		throw new BadRequestAlertException("Approval Response", ENTITY_NAME, "Approval Config Data not valid, please check the config table");
     	}
@@ -759,6 +759,14 @@ public class PurchaseOrderResource {
     
     @GetMapping("/purchaseOrders/grnHistory")
     public ResponseEntity<GrnHistoryRepresentation> getAllGrnHistory() {
+        log.debug("REST request to get All GrnHistory");
+        List<GrnHistory> grnHistories = purchaseOrderService.findAllGrn();
+        GrnHistoryRepresentation grnHistoryRepresentation = purchaseOrderMapper.toGrnHistoryRepresentation(grnHistories);
+        return ResponseEntity.ok().body(grnHistoryRepresentation);
+    }
+   
+    @GetMapping("/purchaseOrders/substitute/{productCode}")
+    public ResponseEntity<GrnHistoryRepresentation> getSubstituteByProductCode(@PathVariable("productCode") String productCode) {
         log.debug("REST request to get All GrnHistory");
         List<GrnHistory> grnHistories = purchaseOrderService.findAllGrn();
         GrnHistoryRepresentation grnHistoryRepresentation = purchaseOrderMapper.toGrnHistoryRepresentation(grnHistories);
