@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.axilog.cov.domain.DeviceOverviewStats;
+import com.axilog.cov.domain.Outlet;
 
 /**
  * Service Interface for managing {@link DeviceOverviewStats}.
@@ -33,6 +34,11 @@ public interface DeviceOverviewStatsService {
      * @return
      */
     List<DeviceOverviewStats> findAll();
+    
+    
+    List<DeviceOverviewStats>  findByOutletOutletId(Long outletId);
+    
+    List<DeviceOverviewStats>  findByOutlet(Outlet outlet);
 
     /**
      * Get the "id" deviceOverviewStats.

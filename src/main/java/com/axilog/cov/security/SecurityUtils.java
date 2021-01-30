@@ -49,6 +49,16 @@ public final class SecurityUtils {
         }
         return null;
     }
+    
+    private static UserDetails extractUserfromPrincipal(Authentication authentication) {
+        if (authentication == null) {
+            return null;
+        } else if (authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails springSecurityUser = (UserDetails) authentication.getPrincipal();
+            return springSecurityUser;
+        } 
+        return null;
+    }
 
     /**
      * Get the JWT of the current user.

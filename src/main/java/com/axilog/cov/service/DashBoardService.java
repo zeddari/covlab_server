@@ -6,6 +6,7 @@ import com.axilog.cov.domain.Category;
 import com.axilog.cov.dto.representation.ChartDetail;
 import com.axilog.cov.dto.representation.DashBoardRepresentation;
 import com.axilog.cov.dto.representation.LineChartDetail;
+import com.axilog.cov.dto.representation.LineChartDetailMine;
 import com.axilog.cov.dto.representation.SeriesDetail;
 
 /**
@@ -20,5 +21,6 @@ public interface DashBoardService {
 	public List<ChartDetail> getKpiByOutletCategory(String outlet, String category);
 	public List<ChartDetail> getAvgStockDaysByOutletCategory(String outlet, String category);
 	public LineChartDetail getVaccinationDailyTrend(String outlet);
+	public LineChartDetailMine getVaccinationDailyTrendMine(String outlet);
 
 	}
