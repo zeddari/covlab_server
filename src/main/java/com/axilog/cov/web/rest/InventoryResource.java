@@ -157,6 +157,23 @@ public class InventoryResource {
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
+    @PutMapping("/inventory/updateConsumedQty")
+    public ResponseEntity<Inventory> updateInventoryByConsumedQty(@RequestBody InventoryCommand inventoryCommand) throws URISyntaxException {
+        log.debug("REST request to update Inventory : {}", inventoryCommand);
+        if (inventoryCommand.getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        Optional<Inventory> inventoryOptional = inventoryService.findOne(inventoryCommand.getId());
+        if (!inventoryOptional.isPresent()) {
+        	throw new BadRequestAlertException("Id Does not Exist", ENTITY_NAME, "idnull");
+        }
+        Inventory result = inventoryOptional.get();
+        result.setConsumedQty(inventoryCommand.getConsumeQty());
+        result = inventoryService.save(result);
+        return ResponseEntity.ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
+            .body(result);
+    }
     
     
     @PostMapping(value ="/inventory/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
