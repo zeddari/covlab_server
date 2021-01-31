@@ -63,6 +63,7 @@ import com.axilog.cov.dto.representation.GrnHistoryRepresentation;
 import com.axilog.cov.dto.representation.InventoryPdfDetail;
 import com.axilog.cov.dto.representation.PoApprovalRepresentation;
 import com.axilog.cov.dto.representation.PoPdfDetail;
+import com.axilog.cov.dto.representation.PoReportRepresentation;
 import com.axilog.cov.dto.representation.PurchaseOrderRepresentation;
 import com.axilog.cov.enums.PurchaseStatusEnum;
 import com.axilog.cov.repository.GrnHistSequenceRepository;
@@ -772,5 +773,11 @@ public class PurchaseOrderResource {
         GrnHistoryRepresentation grnHistoryRepresentation = purchaseOrderMapper.toGrnHistoryRepresentation(grnHistories);
         return ResponseEntity.ok().body(grnHistoryRepresentation);
     }
-   
+    @GetMapping("/purchaseOrders/poReport")
+    public ResponseEntity<PoReportRepresentation> getAllPoRepport() {
+        log.debug("REST request to get All PoReport");
+     //   List<GrnHistory> grnHistories = purchaseOrderService.findAllGrn();
+        PoReportRepresentation poReportRepresentation = purchaseOrderMapper.toPoReportRepresentation();
+        return ResponseEntity.ok().body(poReportRepresentation);
+    }
 }

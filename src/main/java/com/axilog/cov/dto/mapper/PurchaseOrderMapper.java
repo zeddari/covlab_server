@@ -11,6 +11,8 @@ import com.axilog.cov.domain.PoStatus;
 import com.axilog.cov.domain.PurchaseOrder;
 import com.axilog.cov.dto.representation.GrnHistoryDetail;
 import com.axilog.cov.dto.representation.GrnHistoryRepresentation;
+import com.axilog.cov.dto.representation.PoReportDetail;
+import com.axilog.cov.dto.representation.PoReportRepresentation;
 import com.axilog.cov.dto.representation.PurchaseOrderDetail;
 import com.axilog.cov.dto.representation.PurchaseOrderRepresentation;
 
@@ -38,6 +40,27 @@ public class PurchaseOrderMapper {
 				//.data(Base64.getEncoder().encodeToString(purchaseOrder.getData() != null ? purchaseOrder.getData() : "".getBytes()))
 				.build();
 	}
+	/**
+	 * @param  PoReport
+	 * @return
+	 */
+	public PoReportDetail toPoReportDetail() {
+		return PoReportDetail.builder()
+					.item("ITEM")
+					.description("DEScription")
+					.uom("Uom")
+					.poOriginalQty(23.234)
+			      	.poReceivedQty(3455.445)
+			      	.poBalanceQty(234455.334)
+			      	.etaOfDelivery(2L)
+			      	.outlet("REX")
+			      	.build();
+	}
+	
+	/**
+	 * @param  GrnHistory
+	 * @return
+	 */
 	public GrnHistoryDetail toGrnHistoryDetail(GrnHistory grnHistory) {
 		return GrnHistoryDetail.builder()
 				.id(grnHistory.getId())
@@ -79,5 +102,16 @@ public class PurchaseOrderMapper {
 		});
 		return grnHistoryRepresentation;
 	}
+	
+	public PoReportRepresentation toPoReportRepresentation() {
+		// if (grnHistories == null) return PoReportRepresentation.builder().build();
+		PoReportRepresentation poReportRepresentation = PoReportRepresentation.builder().build();
+		poReportRepresentation.setPoReportData(new ArrayList<>());
+	//	grnHistories.forEach(grnHistory -> {
+		poReportRepresentation.getPoReportData().add(toPoReportDetail());
+	//	});
+		return poReportRepresentation;
+	}
 }
+
 
