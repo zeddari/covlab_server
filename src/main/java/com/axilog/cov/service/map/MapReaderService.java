@@ -12,8 +12,9 @@ public interface MapReaderService {
 	 * @throws MapDataNotFoundException
 	 * @throws TopologyDataNotFoundException
 	 */
-	public MapRepresentation getMapData() throws MapDataNotFoundException, TopologyDataNotFoundException;
+	public MapRepresentation getMapDataWithParam(String statusOrTemperature) throws MapDataNotFoundException, TopologyDataNotFoundException;
 	
+	public MapRepresentation getMapData() throws MapDataNotFoundException, TopologyDataNotFoundException;
 	
 	
 }

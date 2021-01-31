@@ -13,10 +13,12 @@ import com.axilog.cov.dto.projection.DashInventoryComProjection;
 import com.axilog.cov.dto.projection.DashInventoryDailyTrendProjection;
 import com.axilog.cov.dto.projection.DashInventoryStockAllOutletProjection;
 import com.axilog.cov.dto.projection.DashInventoryStockProjection;
+import com.axilog.cov.dto.representation.AreaDataDet;
 import com.axilog.cov.dto.representation.AreaDataDetail;
 import com.axilog.cov.dto.representation.ChartDetail;
 import com.axilog.cov.dto.representation.DashBoardRepresentation;
 import com.axilog.cov.dto.representation.LineChartDetail;
+import com.axilog.cov.dto.representation.LineChartDetailMine;
 import com.axilog.cov.dto.representation.SeriesDetail;
 import com.axilog.cov.repository.DashBoardRepository;
 import com.axilog.cov.repository.PurchaseOrderRepository;
@@ -146,18 +148,76 @@ public class DashBoardServiceImpl implements DashBoardService {
 	public LineChartDetail getVaccinationDailyTrend(String outlet) {
 		SimpleDateFormat sdf = new SimpleDateFormat(DateUtil.SIMPLE_DATE_PATTERN);
 		List<DashInventoryDailyTrendProjection> dailyTrendData = dashBoardRepository.getKpiDailyTrend(outlet);
-		if (dailyTrendData == null) return LineChartDetail.builder().build();
-		AreaDataDetail areaDataDetail = AreaDataDetail.builder().label("Daily Trend").build();
-		List<Long> datas = new ArrayList<>();
-		List<String> areaChartLabels = new ArrayList<>();
-		dailyTrendData.forEach(trend -> {
-			areaChartLabels.add(sdf.format(trend.getDate()));
-			datas.add(trend.getValue());
-		});
-		areaDataDetail.setData(datas);
+		List<DashInventoryDailyTrendProjection> dailyConsumedData = dashBoardRepository.getKpiDailyConsumed(outlet);
+		
+		AreaDataDetail areaDataDetailTrend = AreaDataDetail.builder().build();
+		AreaDataDetail areaDataDetailConsumed = AreaDataDetail.builder().build();
 		List<AreaDataDetail> areaDataDetails = new ArrayList<>();
-		areaDataDetails.add(areaDataDetail);
-		return LineChartDetail.builder().areaChartLabels(areaChartLabels).areaDataDetail(areaDataDetails).build();
+		
+		List<String> areaChartLabelsTrend = new ArrayList<>();
+		List<String> areaChartLabelsConsumed = new ArrayList<>();
+		
+		if(dailyTrendData != null) {
+			areaDataDetailTrend.setLabel("Daily Trend");
+			List<Long> datasTrend = new ArrayList<>();
+			dailyTrendData.forEach(trend -> {
+				areaChartLabelsTrend.add(sdf.format(trend.getDate()));
+				datasTrend.add(trend.getValue());
+			});
+			areaDataDetailTrend.setData(datasTrend);
+		}
+		areaDataDetails.add(areaDataDetailTrend);
+	
+		if(dailyConsumedData != null) {
+			areaDataDetailConsumed.setLabel("Daily Consumed");
+			List<Long> datasConsumed = new ArrayList<>();
+			dailyConsumedData.forEach(consumed -> {
+				areaChartLabelsConsumed.add(sdf.format(consumed.getDate()));
+				datasConsumed.add(consumed.getValue());
+			});
+			areaDataDetailConsumed.setData(datasConsumed);	
+		}
+		areaDataDetails.add(areaDataDetailConsumed);
+	
+		if(dailyTrendData != null)
+			return LineChartDetail.builder().areaChartLabels(areaChartLabelsConsumed).areaDataDetail(areaDataDetails).build();
+
+		if(dailyTrendData != null)
+			return LineChartDetail.builder().areaChartLabels(areaChartLabelsConsumed).areaDataDetail(areaDataDetails).build();
+
+		//if (dailyTrendData == null && dailyConsumedData == null) 
+			return LineChartDetail.builder().build();
 	}
+	
+	
+	@Override
+	public LineChartDetailMine getVaccinationDailyTrendMine(String outlet) {
+		SimpleDateFormat sdf = new SimpleDateFormat(DateUtil.SIMPLE_DATE_PATTERN);
+		List<DashInventoryDailyTrendProjection> dailyTrendData = dashBoardRepository.getKpiDailyTrend(outlet);
+		List<DashInventoryDailyTrendProjection> dailyConsumedData = dashBoardRepository.getKpiDailyConsumed(outlet);
+		
+		List<AreaDataDet> areaDataDetailsTrend = new ArrayList<AreaDataDet>();
+		List<AreaDataDet> areaDataDetailsConsum = new ArrayList<AreaDataDet>();
+		
+		LineChartDetailMine chartData = LineChartDetailMine.builder().build();
+		
+		if(dailyTrendData != null) {
+			dailyTrendData.forEach(trend -> {
+				areaDataDetailsTrend.add(AreaDataDet.builder().label(sdf.format(trend.getDate())).y(trend.getValue()).build());
+			});
+			
+			chartData.setTrend(areaDataDetailsTrend);
+		}
+
+		if(dailyConsumedData != null) {
+			dailyConsumedData.forEach(consumed -> {
+				areaDataDetailsConsum.add(AreaDataDet.builder().label(sdf.format(consumed.getDate())).y(consumed.getValue()).build());
+			});
+			
+			chartData.setConsumed(areaDataDetailsConsum);
+		}
+	
+		return chartData;
+}
 
 }

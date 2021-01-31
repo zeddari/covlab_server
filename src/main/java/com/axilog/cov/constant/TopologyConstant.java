@@ -59,5 +59,5 @@ public class TopologyConstant {
 	public static final String OUTLET_NORMAL_HEALTH = "green";
 	public static final String OUTLET_DEGRADED_HEALTH = "orange";
 	public static final String OUTLET_CRITICAL_HEALTH = "red";
-	public static final String OUTLET_NA_HEALTH = "green";
+	public static final String OUTLET_NA_HEALTH = "blue";
 }

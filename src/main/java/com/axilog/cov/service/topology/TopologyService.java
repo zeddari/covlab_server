@@ -10,5 +10,7 @@ public interface TopologyService {
 
 	public TopologyRepresentation buildTopologyData() throws TopologyDataNotFoundException;
 
+	public TopologyRepresentation buildTopologyDataWithParam(String statusOrTemperature) throws TopologyDataNotFoundException;
+
 	public List<NodeIdListRepresentation> getDistinctNodeId(); 
 }
