@@ -607,7 +607,7 @@ public class PurchaseOrderResource {
         	throw new BadRequestAlertException("notFound", ENTITY_NAME, "Cannot find an Order whith the input data");
         }
         log.info("get next status from config table for po {}, current status is: {}", purchaseOrderCommand.getOrderNo(), purchaseOrderCommand.getStatus());
-        DynamicApprovalConfig approvalConfig = approvalService.findbyCurrentStatus(purchaseOrderCommand.getStatus());
+        DynamicApprovalConfig approvalConfig = approvalService.findbyCurrentStatusandOutlet(purchaseOrderCommand.getStatus(), result.getOutlet().getOutletName());
     	if (!isValidApprovalConfig(approvalConfig)) {
     		throw new BadRequestAlertException("Approval Response", ENTITY_NAME, "Approval Config Data not valid, please check the config table");
     	}
@@ -732,7 +732,8 @@ public class PurchaseOrderResource {
     			 approvalConfig.getCurrentStepEmail() == null || approvalConfig.getCurrentStepEmail().isEmpty() ||
     			 approvalConfig.getCurrentStepStatus() == null || approvalConfig.getCurrentStepStatus().isEmpty() ||
     			 approvalConfig.getNextStep() == null || approvalConfig.getNextStep().isEmpty() ||
-    			 approvalConfig.getNextStepStatus() == null || approvalConfig.getNextStepStatus().isEmpty()
+    			 approvalConfig.getNextStepStatus() == null || approvalConfig.getNextStepStatus().isEmpty() ||
+    			 approvalConfig.getOutlet() == null || approvalConfig.getOutlet().isEmpty()
     			 )
          return false;   
          return true;        
