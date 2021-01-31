@@ -24,9 +24,16 @@ public class MapReaderServiceImpl implements MapReaderService {
 	 * @throws TopologyDataNotFoundException 
 	 *
 	 */
+	
 	@Override
 	public MapRepresentation getMapData() throws MapDataNotFoundException, TopologyDataNotFoundException {
 		return gMapMapper.toMap(topologyReaderService.buildTopologyData());
+	}
+
+	
+	@Override
+	public MapRepresentation getMapDataWithParam(String statusOrTemperature) throws MapDataNotFoundException, TopologyDataNotFoundException {
+		return gMapMapper.toMap(topologyReaderService.buildTopologyDataWithParam(statusOrTemperature));
 	}
 
 	

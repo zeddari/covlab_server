@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -40,6 +41,21 @@ public class TopologyController {
 		return topologyReaderService.buildTopologyData();
 	}
 	
+	/**
+	 * @return
+	 * @throws TopologyDataNotFoundException 
+	 */
+	/*
+	@GetMapping(value = "/data/all/{statusOrTemperature}", produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiOperation(value = "Find all mwlinks", notes = "returns a a list of mw links")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successfully retrieved list"),
+			@ApiResponse(code = 401, message = "You are not authorized to view the resource"),
+			@ApiResponse(code = 403, message = "Accessing the resource you were trying to reach is forbidden"),
+			@ApiResponse(code = 404, message = "The resource you were trying to reach is not found")})
+	public TopologyRepresentation getTopologyDataFroMap(@PathVariable(name="statusOrTemperature", required=true) String statusOrTemperature) throws TopologyDataNotFoundException {
+		return topologyReaderService.buildTopologyDataWithParam(statusOrTemperature);
+	}
+	*/
 	
 	@GetMapping(value = "/nodes/id/list", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Find all nodes id", notes = "returns a a list of distinc tnode id")
