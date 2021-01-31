@@ -378,6 +378,7 @@ public class TopologyServiceImpl implements TopologyService {
 	}
 
 	private String getOutletColorFromTemperatures(List<Double> temperatures) {
+		if(temperatures.isEmpty()) return TopologyConstant.OUTLET_NA_HEALTH;
 		for (Double temperature : temperatures) {
 			if (temperature < outletKpiTemperatureMin || temperature > outletKpiTemperatureMax)
 				return TopologyConstant.OUTLET_CRITICAL_HEALTH;
