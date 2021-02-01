@@ -63,6 +63,7 @@ import com.axilog.cov.dto.representation.GrnHistoryRepresentation;
 import com.axilog.cov.dto.representation.InventoryPdfDetail;
 import com.axilog.cov.dto.representation.PoApprovalRepresentation;
 import com.axilog.cov.dto.representation.PoPdfDetail;
+import com.axilog.cov.dto.representation.PoReportRepresentation;
 import com.axilog.cov.dto.representation.PurchaseOrderRepresentation;
 import com.axilog.cov.enums.PurchaseStatusEnum;
 import com.axilog.cov.repository.GrnHistSequenceRepository;
@@ -403,7 +404,7 @@ public class PurchaseOrderResource {
         		byte[] fileContentXlsx = FileUtils.readFileToByteArray(poXlsx);
                 List<Product> products = new ArrayList<>();
                 if (inventories != null) {
-                	products = inventories.stream().map(Inventory:: getProduct).collect(Collectors.toList());
+                	products = inventories.stream().filter(inv -> inv.getOutlet().equals(outlet)).map(Inventory:: getProduct).collect(Collectors.toList());
                 }
                 String login = "NA";
                 if (SecurityUtils.getCurrentUserLogin().isPresent()) {
@@ -765,4 +766,18 @@ public class PurchaseOrderResource {
         return ResponseEntity.ok().body(grnHistoryRepresentation);
     }
    
+    @GetMapping("/purchaseOrders/substitute/{productCode}")
+    public ResponseEntity<GrnHistoryRepresentation> getSubstituteByProductCode(@PathVariable("productCode") String productCode) {
+        log.debug("REST request to get All GrnHistory");
+        List<GrnHistory> grnHistories = purchaseOrderService.findAllGrn();
+        GrnHistoryRepresentation grnHistoryRepresentation = purchaseOrderMapper.toGrnHistoryRepresentation(grnHistories);
+        return ResponseEntity.ok().body(grnHistoryRepresentation);
+    }
+    @GetMapping("/purchaseOrders/poReport")
+    public ResponseEntity<PoReportRepresentation> getAllPoRepport() {
+        log.debug("REST request to get All PoReport");
+     //   List<GrnHistory> grnHistories = purchaseOrderService.findAllGrn();
+        PoReportRepresentation poReportRepresentation = purchaseOrderMapper.toPoReportRepresentation();
+        return ResponseEntity.ok().body(poReportRepresentation);
+    }
 }
