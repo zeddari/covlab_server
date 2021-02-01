@@ -3,15 +3,16 @@ package com.axilog.cov.service.impl.topology;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Example;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import com.axilog.cov.constant.TopologyConstant;
@@ -24,7 +25,9 @@ import com.axilog.cov.dto.mapper.InventoryMapper;
 import com.axilog.cov.dto.mapper.TopologyMapper;
 import com.axilog.cov.dto.projection.OutletOverviewProjection;
 import com.axilog.cov.dto.topology.MapDataBuilder;
+import com.axilog.cov.dto.topology.representation.ColoredRegionRepresentation;
 import com.axilog.cov.dto.topology.representation.EdgeRepresentation;
+import com.axilog.cov.dto.topology.representation.Font;
 import com.axilog.cov.dto.topology.representation.KpiTable;
 import com.axilog.cov.dto.topology.representation.NodeIdListRepresentation;
 import com.axilog.cov.dto.topology.representation.NodeRepresentation;
@@ -38,10 +41,7 @@ import com.axilog.cov.service.DeviceOverviewStatsService;
 import com.axilog.cov.service.OutletService;
 import com.axilog.cov.service.topology.TopologyService;
 
-import lombok.extern.slf4j.Slf4j;
-
 @Service
-@Slf4j
 public class TopologyServiceImpl implements TopologyService {
 
 	@Autowired
@@ -87,26 +87,41 @@ public class TopologyServiceImpl implements TopologyService {
 
 	@Override
 	public TopologyRepresentation buildTopologyData() throws TopologyDataNotFoundException {
+		DecimalFormat formatter = (DecimalFormat)NumberFormat.getNumberInstance(Locale.US);
+		formatter.applyPattern("##.#");
 		/** get all network elements */
 		List<Outlet> outlets = outletService.findAll();
 		List<DeviceOverviewStats> deviceOverviewStats = deviceOverviewStatsService.findAll();
 		List<NodeRepresentation> nodes = new ArrayList<NodeRepresentation>();
 		List<EdgeRepresentation> edges = new ArrayList<>();
 		List<OutletOverviewProjection> overallStatsOutlet = overallStatsRepository.getKpiOutletCustomQuery("all");
+		
+		List<ColoredRegionRepresentation> regionsColorRep = new ArrayList<ColoredRegionRepresentation>();
+		
 		int geoDataExist = 0;
 		geoData = MapDataBuilder.headerGeo();
 		for (Outlet outlet : outlets) {
 
 			/** get a list of devices */
 			List<DeviceOverviewStats> deviceOverviewStatsFiltered = deviceOverviewStats.stream()
-					.filter(device -> device.getOutlet().getOutletName().equals(outlets)).collect(Collectors.toList());
+					.filter(device -> device.getOutlet().equals(outlet)).collect(Collectors.toList());
 
+			
+			List<DeviceOverviewStats> deviceOverviewStatsByOutlet = deviceOverviewStatsService.findByOutlet(outlet);
+			List<Double> temperatures = deviceOverviewStatsByOutlet.stream().map(DeviceOverviewStats::getTemperature).collect(Collectors.toList());
+		    String temperaturesToSend = deviceOverviewStatsByOutlet.stream().map(DeviceOverviewStats::getTemperature)
+						.map(temp -> formatter.format(temp)).collect(Collectors.joining(" °C, "));
+		    if(temperaturesToSend.isEmpty()) temperaturesToSend = "NA";
+		    else temperaturesToSend = temperaturesToSend + " °C";
+
+		    String color = "blue";	    
+		    
 			/** calculate the health */
 			String outletHealth = getOutletHealth(deviceOverviewStatsFiltered);
 			NodeRepresentation node = TopologyMapper.toNodeRepresentation(outlet, outletHealth);
 			String status = "";
 			double balance = 0;
-			Double consumedQty = 0d;
+			double consumedQty = 0;
 			String temperature = "";
 			/** get details of outlet inventory */
 			Inventory inventory = Inventory.builder().isLastInstance(true).outlet(outlet).product(
@@ -117,38 +132,34 @@ public class TopologyServiceImpl implements TopologyService {
 			// inventoryRepository.findOne(exampleInventory);
 			Optional<Inventory> optInventory = inventoryRepository.findByOutletOutletId(outlet.getOutletId()).stream()
 					.findFirst();
-			if (optInventory.isPresent()) {
-				try {
-					node.setInventoryDetail(inventoryMapper.toInventoryDetail(optInventory.get()));
-				}
-				catch (Exception e) {
-					log.info("Exception for building inventory data in topology: {}", e);
-					node.setInventoryDetail(null);
-				}
-			}
-				
+			if (optInventory.isPresent())
+				node.setInventoryDetail(inventoryMapper.toInventoryDetail(optInventory.get()));
 
 			if (node.getInventoryDetail() != null) {
 				status = node.getInventoryDetail().getStatus();
-				node.setImage(getOutletIconFromStatus(node.getNodeType(), status));
 				balance = node.getInventoryDetail().getCurrentBalance();
 				consumedQty = node.getInventoryDetail().getConsumedQty();
 				temperature = node.getInventoryDetail().getTemperature();
-				nodes.add(node);
+				node.setImage(getOutletIconFromStatus(node.getNodeType(), status));
 			}
-
 			
+			node.setTemperaturesOfAllDevices(temperaturesToSend);		
+			color = getOutletColorFromStatus(status);
+			node.setFont(Font.builder().color(color).build());
+			
+			nodes.add(node);
 			edges.add(TopologyMapper.toEdgeRepresentation(outlet, 70006));
-			String color = getOutletColorFromStatus(status);
-			// System.out.println("color of node: "+ color);
-			geoData += MapDataBuilder.nodeData(color, node.getLabel(), node.getLabel(),
-					getOutletIconFromStatus(node.getNodeType(), status), "image", temperature, balance, consumedQty, "",
-					node.getLat(), node.getLng(), node.getNodeType(), node.getGroup(), false);
-			geoDataExist++;
-		}
-		nodes.add(buildMinisteryode());
-		String geo = "";
 
+			geoData += MapDataBuilder.nodeData(color, node.getLabel(), node.getLabel(),	getOutletIconFromStatus(node.getNodeType(), status), "image", temperature, balance, consumedQty, "", node.getLat(), node.getLng(), node.getNodeType(), node.getGroup(), false);
+			geoDataExist++;
+			
+			
+			regionsColorRep.add(ColoredRegionRepresentation.builder().parentRegion(outlet.getOutletParentRegion())
+																					.color(color).build());
+		}
+		
+		nodes.add(buildMinisteryNode());
+		String geo = "";
 		if (geoDataExist > 0) // data exists
 			geo = geoData.substring(0, geoData.length() - 1);
 		else
@@ -161,7 +172,8 @@ public class TopologyServiceImpl implements TopologyService {
 			kpiTable.setNumberOfOutlets(outlets.size());
 		}
 
-		return TopologyRepresentation.builder().kpiTable(kpiTable).nodes(nodes).edges(edges).geoData(geo).build();
+		return TopologyRepresentation.builder().kpiTable(kpiTable).nodes(nodes).edges(edges)
+												.regionsColor(getRegionsWithColor(regionsColorRep)).geoData(geo).build();
 	}
 
 	// ######################################" Map by Status or by Temperature
@@ -170,7 +182,6 @@ public class TopologyServiceImpl implements TopologyService {
 	@Override
 	public TopologyRepresentation buildTopologyDataWithParam(String statusOrTemperature)
 			throws TopologyDataNotFoundException {
-		geoData = "";
 		/** get all network elements */
 		DecimalFormat formatter = (DecimalFormat)NumberFormat.getNumberInstance(Locale.US);
 		formatter.applyPattern("##.#");
@@ -179,6 +190,9 @@ public class TopologyServiceImpl implements TopologyService {
 		List<NodeRepresentation> nodes = new ArrayList<NodeRepresentation>();
 		List<EdgeRepresentation> edges = new ArrayList<>();
 		List<OutletOverviewProjection> overallStatsOutlet = overallStatsRepository.getKpiOutletCustomQuery("all");
+		
+		List<ColoredRegionRepresentation> regionsColorRep = new ArrayList<ColoredRegionRepresentation>();
+		
 		int geoDataExist = 0;
 		geoData = MapDataBuilder.headerGeo();
 		for (Outlet outlet : outlets) {
@@ -195,6 +209,15 @@ public class TopologyServiceImpl implements TopologyService {
 			String status = "";
 			String temperature = "";
 
+			List<DeviceOverviewStats> deviceOverviewStatsByOutlet = deviceOverviewStatsService.findByOutlet(outlet);
+			List<Double> temperatures = deviceOverviewStatsByOutlet.stream().map(DeviceOverviewStats::getTemperature).collect(Collectors.toList());
+		    String temperaturesToSend = deviceOverviewStatsByOutlet.stream().map(DeviceOverviewStats::getTemperature)
+						.map(temp -> formatter.format(temp)).collect(Collectors.joining(" °C, "));
+		    if(temperaturesToSend.isEmpty()) temperaturesToSend = "NA";
+		    else temperaturesToSend = temperaturesToSend + " °C";
+
+		    String color = "blue";
+			
 			Example<Category> exampleCategory = Example.of(Category.builder().categoryCode("COVID VACCINE").build());
 			Optional<Category> optionalCategory = categoryRepository.findOne(exampleCategory);
 			if (optionalCategory.isPresent()) {
@@ -207,8 +230,7 @@ public class TopologyServiceImpl implements TopologyService {
 					Example<Inventory> exampleInventory = Example.of(inventory);
 
 					Optional<Inventory> optInventory = inventoryRepository.findOne(exampleInventory);
-					// Optional<Inventory> optInventory =
-					// inventoryRepository.findByOutletOutletId(outlet.getOutletId()).stream().findFirst();
+					// Optional<Inventory> optInventory = inventoryRepository.findByOutletOutletId(outlet.getOutletId()).stream().findFirst();
 					if (optInventory.isPresent())
 						node.setInventoryDetail(inventoryMapper.toInventoryDetail(optInventory.get()));
 
@@ -220,45 +242,44 @@ public class TopologyServiceImpl implements TopologyService {
 							balance = node.getInventoryDetail().getCurrentBalance();
 							consumedQty = node.getInventoryDetail().getConsumedQty();
 							status = node.getInventoryDetail().getStatus();
+							color = getOutletColorFromStatus(status);
 							node.setImage(getOutletIconFromStatus(node.getNodeType(), status));
 						}
-						String color = getOutletColorFromStatus(status);
-						geoData += MapDataBuilder.nodeData(color, node.getLabel(), node.getLabel(),
-								getOutletIconFromStatus(node.getNodeType(), status), "image", "", balance, consumedQty,
-								"", node.getLat(), node.getLng(), node.getNodeType(), node.getGroup(), false);
+
+						node.setTemperaturesOfAllDevices(temperaturesToSend);
+						node.setFont(Font.builder().color(color).build());
+						
+						geoData += MapDataBuilder.nodeData(color, node.getLabel(), node.getLabel(), getOutletIconFromStatus(node.getNodeType(), status), "image", "", balance, consumedQty, "", node.getLat(), node.getLng(), node.getNodeType(), node.getGroup(), false);
 						geoDataExist++;
+						
+						regionsColorRep.add(ColoredRegionRepresentation.builder().parentRegion(outlet.getOutletParentRegion())
+																			.color(color).build());
 					}
 
 					// ################## Map By Temperature ##############################"
 					if (statusOrTemperature.equals("temperature")) {
 						//*
-						 String color = "blue";
-					//	 List<DeviceOverviewStats> deviceOverviewStatsByOutlet = deviceOverviewStatsService.findByOutletOutletId(outlet.getOutletId());
-						 List<DeviceOverviewStats> deviceOverviewStatsByOutlet = deviceOverviewStatsService.findByOutlet(outlet);
-
-					//	 List<Double> temperatures = new ArrayList<Double>() ;
-					//	 deviceOverviewStatsByOutlet.forEach(device -> temperatures.add(device.getTemperature())); 
-						 List<Double> temperatures = deviceOverviewStatsByOutlet.stream().map(DeviceOverviewStats::getTemperature).collect(Collectors.toList());
-						 color = getOutletColorFromTemperatures(temperatures); 
-
-					     String temperaturesToSend = deviceOverviewStatsByOutlet.stream().map(DeviceOverviewStats::getTemperature)
-					    		 											.map(temp -> formatter.format(temp)).collect(Collectors.joining(","));
 						 
-					     if(temperaturesToSend.isEmpty()) temperaturesToSend = "NA";
+						 color = getOutletColorFromTemperatures(temperatures); 
+						 node.setImage(getOutletIconFromTemperatures(node.getNodeType(), temperatures));
+						 node.setTemperaturesOfAllDevices(temperaturesToSend);
+						 node.setFont(Font.builder().color(color).build());
 					     // */
 						/*
 						String color = "blue";
 						if (node.getInventoryDetail() != null) {
 							temperature = node.getInventoryDetail().getTemperature();
-							node.setImage(
-									getOutletIconFromTemperature(node.getNodeType(), Double.parseDouble(temperature)));
+							node.setImage(getOutletIconFromTemperature(node.getNodeType(), Double.parseDouble(temperature)));
 							color = getOutletColorFromTemperature(Double.parseDouble(temperature));
 
 						}
 						//*/
-						geoData += MapDataBuilder.nodeData(color, node.getLabel(), node.getLabel(),	getOutletIconFromStatus(node.getNodeType(), status), "image", temperaturesToSend, null, null,
+						geoData += MapDataBuilder.nodeData(color, node.getLabel(), node.getLabel(),	getOutletIconFromTemperatures(node.getNodeType(), temperatures), "image", temperaturesToSend, null, null,
 								"", node.getLat(), node.getLng(), node.getNodeType(), node.getGroup(), false);
 						geoDataExist++;
+						
+						regionsColorRep.add(ColoredRegionRepresentation.builder().parentRegion(outlet.getOutletParentRegion())
+																				.color(color).build());
 					}
 
 					nodes.add(node);
@@ -266,7 +287,7 @@ public class TopologyServiceImpl implements TopologyService {
 				}
 			}
 		}
-		nodes.add(buildMinisteryode());
+		nodes.add(buildMinisteryNode());
 		String geo = "";
 
 		if (geoDataExist > 0) // data exists
@@ -282,11 +303,22 @@ public class TopologyServiceImpl implements TopologyService {
 			kpiTable.setNumberOfOutlets(outlets.size());
 		}
 
-		return TopologyRepresentation.builder().kpiTable(kpiTable).nodes(nodes).edges(edges).geoData(geo).build();
+		return TopologyRepresentation.builder().kpiTable(kpiTable).nodes(nodes).edges(edges)
+												.regionsColor(getRegionsWithColor(regionsColorRep)).geoData(geo).build();
 	}
 
-	// ################################" STATUS
-	// ######################################""""
+	// ################################" STATUS ######################################""""
+	
+	private String getOutletColorFromStatus(String status) {
+		if (status.equals("in"))
+			return TopologyConstant.OUTLET_NORMAL_HEALTH;
+		else if (status.equals("noos"))
+			return TopologyConstant.OUTLET_DEGRADED_HEALTH;
+		else if (status.equals("oos"))
+			return TopologyConstant.OUTLET_CRITICAL_HEALTH;
+		return TopologyConstant.OUTLET_NA_HEALTH;
+	}
+	
 	private String getOutletIconFromStatus(String nodeType, String status) {
 		if (status.equals("in")) {
 			if (nodeType.equalsIgnoreCase("phc"))
@@ -336,19 +368,88 @@ public class TopologyServiceImpl implements TopologyService {
 
 	}
 
-	private String getOutletColorFromStatus(String status) {
-		if (status.equals("in"))
-			return TopologyConstant.OUTLET_NORMAL_HEALTH;
-		else if (status.equals("noos"))
-			return TopologyConstant.OUTLET_DEGRADED_HEALTH;
-		else if (status.equals("oos"))
-			return TopologyConstant.OUTLET_CRITICAL_HEALTH;
-		return TopologyConstant.OUTLET_NA_HEALTH;
+
+
+	// ########################### TEMPERATURE #######################################"""
+
+	private String getOutletColorFromTemperatures(List<Double> temperatures) {
+		if(temperatures.isEmpty()) return TopologyConstant.OUTLET_NA_HEALTH;
+		for (Double temperature : temperatures) {
+			if (temperature < outletKpiTemperatureMin || temperature > outletKpiTemperatureMax)
+				return TopologyConstant.OUTLET_CRITICAL_HEALTH;
+		}
+		return TopologyConstant.OUTLET_NORMAL_HEALTH;
 	}
 
-	// ########################### TEMPERATURE
-	// #######################################"""
+	
+	private String getOutletIconFromTemperatures(String nodeType, List<Double> temperatures) {
+		if (temperatures.isEmpty()) {
+			if (nodeType.equalsIgnoreCase("phc"))
+				return TopologyConstant.PHC_ICON;
+			else if (nodeType.equalsIgnoreCase("Hospital"))
+				return TopologyConstant.HO_ICON;
+			else if (nodeType.equalsIgnoreCase("DrivethroughCenter"))
+				return TopologyConstant.DT_ICON;
+			else if (nodeType.equalsIgnoreCase("WalkthroughCenter"))
+				return TopologyConstant.WT_ICON;
+			return TopologyConstant.HO_ICON;
+		}
+		for (Double temperature : temperatures) {
+			if (temperature < outletKpiTemperatureMin || temperature > outletKpiTemperatureMax) {
+				if (nodeType.equalsIgnoreCase("phc"))
+					return TopologyConstant.PHC_RED_ICON;
+				else if (nodeType.equalsIgnoreCase("Hospital"))
+					return TopologyConstant.HO_RED_ICON;
+				else if (nodeType.equalsIgnoreCase("dt"))
+					return TopologyConstant.DT_RED_ICON;
+				else if (nodeType.equalsIgnoreCase("WalkthroughCenter"))
+					return TopologyConstant.WT_RED_ICON;
+				return TopologyConstant.HO_RED_ICON;
+			} 
+		}
+			if (nodeType.equalsIgnoreCase("phc"))
+				return TopologyConstant.PHC_GREEN_ICON;
+			else if (nodeType.equalsIgnoreCase("Hospital"))
+				return TopologyConstant.HO_GREEN_ICON;
+			else if (nodeType.equalsIgnoreCase("DrivethroughCenter"))
+				return TopologyConstant.DT_GREEN_ICON;
+			else if (nodeType.equalsIgnoreCase("WalkthroughCenter"))
+				return TopologyConstant.WT_GREEN_ICON;
+			return TopologyConstant.HO_GREEN_ICON;
+	}
 
+	
+	//##########################" get RegionsColor
+	
+	private List<ColoredRegionRepresentation> getRegionsWithColor(List<ColoredRegionRepresentation> regionsColor) {
+		Set<String> regions = new HashSet<>();
+		List<ColoredRegionRepresentation> regionsWithColor = new ArrayList<ColoredRegionRepresentation>();
+		regionsColor.forEach(region -> regions.add(region.getParentRegion()));
+		
+		for(String region: regions) {
+			List<String> regionColors = regionsColor.stream().filter(reg -> reg.getParentRegion().equals(region))
+												.map(ColoredRegionRepresentation::getColor).collect(Collectors.toList());
+			if(regionColors.contains("red")) 
+				regionsWithColor.add(ColoredRegionRepresentation.builder().parentRegion(region).color("red").build());
+			else if(regionColors.contains("orange"))
+				regionsWithColor.add(ColoredRegionRepresentation.builder().parentRegion(region).color("orange").build());
+			else if(regionColors.contains("green"))
+				regionsWithColor.add(ColoredRegionRepresentation.builder().parentRegion(region).color("green").build());
+			else
+				regionsWithColor.add(ColoredRegionRepresentation.builder().parentRegion(region).color("blue").build());
+		}
+		
+		return regionsWithColor;
+	}
+
+	
+	// ########################"""""
+	private String getOutletColorFromTemperature(Double temperature) {
+		if (temperature < outletKpiTemperatureMin || temperature > outletKpiTemperatureMax)
+			return TopologyConstant.OUTLET_CRITICAL_HEALTH;
+		return TopologyConstant.OUTLET_NORMAL_HEALTH;
+	}
+	
 	private String getOutletIconFromTemperature(String nodeType, Double temperature) {
 		if (temperature == null) {
 			if (nodeType.equalsIgnoreCase("phc"))
@@ -382,21 +483,6 @@ public class TopologyServiceImpl implements TopologyService {
 				return TopologyConstant.WT_GREEN_ICON;
 			return TopologyConstant.HO_GREEN_ICON;
 		}
-	}
-
-	private String getOutletColorFromTemperature(Double temperature) {
-		if (temperature < outletKpiTemperatureMin || temperature > outletKpiTemperatureMax)
-			return TopologyConstant.OUTLET_CRITICAL_HEALTH;
-		return TopologyConstant.OUTLET_NORMAL_HEALTH;
-	}
-
-	private String getOutletColorFromTemperatures(List<Double> temperatures) {
-		if(temperatures.isEmpty()) return TopologyConstant.OUTLET_NA_HEALTH;
-		for (Double temperature : temperatures) {
-			if (temperature < outletKpiTemperatureMin || temperature > outletKpiTemperatureMax)
-				return TopologyConstant.OUTLET_CRITICAL_HEALTH;
-		}
-		return TopologyConstant.OUTLET_NORMAL_HEALTH;
 	}
 
 	// #########################################################""
@@ -473,7 +559,7 @@ public class TopologyServiceImpl implements TopologyService {
 		return false;
 	}
 
-	private NodeRepresentation buildMinisteryode() {
+	private NodeRepresentation buildMinisteryNode() {
 		return NodeRepresentation.builder().id(70006).label("MOH").shape("image").image(TopologyConstant.MIN_ICON)
 				.nodeType("MIN").region("all").parentRegion("all").group("MIN").build();
 	}

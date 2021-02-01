@@ -13,9 +13,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.axilog.cov.domain.GrnHistory;
+import com.axilog.cov.domain.PoReport;
 import com.axilog.cov.domain.PurchaseOrder;
 import com.axilog.cov.dto.representation.PoUpdateRepresentation;
 import com.axilog.cov.repository.GrnHistoryRepository;
+import com.axilog.cov.repository.PoReportRepository;
 import com.axilog.cov.repository.PurchaseOrderRepository;
 import com.axilog.cov.service.PurchaseOrderService;
 
@@ -32,6 +34,9 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
     
     @Autowired
     private GrnHistoryRepository grnHistoryRepository;
+    
+    @Autowired
+    private PoReportRepository poReportRepository;
 
     public PurchaseOrderServiceImpl(PurchaseOrderRepository purchaseOrderRepository) {
         this.purchaseOrderRepository = purchaseOrderRepository;
@@ -96,6 +101,11 @@ public class PurchaseOrderServiceImpl implements PurchaseOrderService {
 	@Override
 	public List<GrnHistory> findAllGrn() {
 		return grnHistoryRepository.findAll();
+	}
+	
+	@Override
+	public List<PoReport> findAllPoReport() {
+		return poReportRepository.findAll();
 	}
 
 	@Override

@@ -52,6 +52,8 @@ public class UserDTO {
     private Set<String> authorities;
     
     private Set<String> outlets;
+    
+    private Set<String> regions;
 
     public UserDTO() {
         // Empty constructor needed for Jackson.

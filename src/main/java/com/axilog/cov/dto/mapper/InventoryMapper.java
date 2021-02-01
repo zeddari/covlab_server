@@ -23,6 +23,8 @@ import com.axilog.cov.dto.representation.HeaderPdfDetail;
 import com.axilog.cov.dto.representation.InventoryDetail;
 import com.axilog.cov.dto.representation.InventoryPdfDetail;
 import com.axilog.cov.dto.representation.InventoryRepresentation;
+import com.axilog.cov.dto.representation.OutletDetail;
+import com.axilog.cov.dto.representation.OutletRepresentation;
 import com.axilog.cov.dto.representation.OverallStatsRepresentation;
 import com.axilog.cov.dto.representation.PoPdfDetail;
 import com.axilog.cov.service.InventoryService;
@@ -201,5 +203,28 @@ public class InventoryMapper {
 				.build();
 		return PoPdfDetail.builder().listDetails(inventoryPdfDetails).headerPdfDetail(headerPdfDetail).outlet(outlet.getOutletName()).build();
 	}
+	
+	public OutletDetail toOutletDetail(Outlet outlet) {
+		return OutletDetail.builder()
+				.outletId(outlet.getId())
+			    .outletName(outlet.getOutletName())
+			    .outletRegion(outlet.getOutletRegion())
+			    .outletParentRegion(outlet.getOutletParentRegion())
+			    .outletAdress(outlet.getOutletAdress())
+			    .outletLat(outlet.getOutletLat())
+			    .outletLng(outlet.getOutletLng())
+				.build();
+	}
+	
+	public OutletRepresentation toOutletRepresentation(List<Outlet> outlets) {
+		if (outlets == null) return OutletRepresentation.builder().build();
+		OutletRepresentation outletRepresentation = OutletRepresentation.builder().build();
+		outletRepresentation.setOutletData(new ArrayList<>());
+		outlets.forEach(outlet -> {
+			outletRepresentation.getOutletData().add(toOutletDetail(outlet));
+		});
+		return outletRepresentation;
+	}
+	
 	
 }

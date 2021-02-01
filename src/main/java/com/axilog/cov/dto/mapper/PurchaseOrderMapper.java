@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import com.axilog.cov.domain.GrnHistory;
+import com.axilog.cov.domain.PoReport;
 import com.axilog.cov.domain.PoStatus;
 import com.axilog.cov.domain.PurchaseOrder;
 import com.axilog.cov.dto.representation.GrnHistoryDetail;
@@ -44,16 +45,16 @@ public class PurchaseOrderMapper {
 	 * @param  PoReport
 	 * @return
 	 */
-	public PoReportDetail toPoReportDetail() {
+	public PoReportDetail toPoReportDetail(PoReport poReport) {
 		return PoReportDetail.builder()
-					.item("ITEM")
-					.description("DEScription")
-					.uom("Uom")
-					.poOriginalQty(23.234)
-			      	.poReceivedQty(3455.445)
-			      	.poBalanceQty(234455.334)
-			      	.etaOfDelivery(2L)
-			      	.outlet("REX")
+					.item(poReport.getItem())
+					.description(poReport.getDescription())
+					.uom(poReport.getUom())
+					.poOriginalQty(poReport.getPoOriginalQty())
+			      	.poReceivedQty(poReport.getPoReceivedQty())
+			      	.poBalanceQty(poReport.getPoBalanceQty())
+			      	.etaOfDelivery(poReport.getEtaOfDelivery())
+			      	.outlet(poReport.getOutlet())
 			      	.build();
 	}
 	
@@ -103,13 +104,13 @@ public class PurchaseOrderMapper {
 		return grnHistoryRepresentation;
 	}
 	
-	public PoReportRepresentation toPoReportRepresentation() {
-		// if (grnHistories == null) return PoReportRepresentation.builder().build();
+	public PoReportRepresentation toPoReportRepresentation(List <PoReport> poReports) {
+		if (poReports == null) return PoReportRepresentation.builder().build();
 		PoReportRepresentation poReportRepresentation = PoReportRepresentation.builder().build();
 		poReportRepresentation.setPoReportData(new ArrayList<>());
-	//	grnHistories.forEach(grnHistory -> {
-		poReportRepresentation.getPoReportData().add(toPoReportDetail());
-	//	});
+		poReports.forEach(poReport -> {
+		poReportRepresentation.getPoReportData().add(toPoReportDetail(poReport));
+		});
 		return poReportRepresentation;
 	}
 }

@@ -51,6 +51,7 @@ import com.axilog.cov.domain.GrnHistSequence;
 import com.axilog.cov.domain.GrnHistory;
 import com.axilog.cov.domain.Inventory;
 import com.axilog.cov.domain.Outlet;
+import com.axilog.cov.domain.PoReport;
 import com.axilog.cov.domain.PoStatus;
 import com.axilog.cov.domain.Product;
 import com.axilog.cov.domain.PurchaseOrder;
@@ -789,8 +790,8 @@ public class PurchaseOrderResource {
     @GetMapping("/purchaseOrders/poReport")
     public ResponseEntity<PoReportRepresentation> getAllPoRepport() {
         log.debug("REST request to get All PoReport");
-     //   List<GrnHistory> grnHistories = purchaseOrderService.findAllGrn();
-        PoReportRepresentation poReportRepresentation = purchaseOrderMapper.toPoReportRepresentation();
+        List<PoReport> poReports = purchaseOrderService.findAllPoReport();
+        PoReportRepresentation poReportRepresentation = purchaseOrderMapper.toPoReportRepresentation(poReports);
         return ResponseEntity.ok().body(poReportRepresentation);
     }
 }
