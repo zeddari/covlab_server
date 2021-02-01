@@ -124,17 +124,23 @@ public class TopologyServiceImpl implements TopologyService {
 			double consumedQty = 0;
 			String temperature = "";
 			/** get details of outlet inventory */
-			Inventory inventory = Inventory.builder().isLastInstance(true).outlet(outlet).product(
-					Product.builder().category(Category.builder().categoryCode("COVID VACCINE").build()).build())
-					.build();
-			Example<Inventory> exampleInventory = Example.of(inventory);
-			// Optional<Inventory> optInventory =
-			// inventoryRepository.findOne(exampleInventory);
-			Optional<Inventory> optInventory = inventoryRepository.findByOutletOutletId(outlet.getOutletId()).stream()
-					.findFirst();
-			if (optInventory.isPresent())
-				node.setInventoryDetail(inventoryMapper.toInventoryDetail(optInventory.get()));
+			Example<Category> exampleCategory = Example.of(Category.builder().categoryCode("COVID VACCINE").build());
+			Optional<Category> optionalCategory = categoryRepository.findOne(exampleCategory);
+			if (optionalCategory.isPresent()) {
+				Example<Product> exampleProduct = Example
+						.of(Product.builder().category(optionalCategory.get()).build());
+				Optional<Product> optionalProduct = productRepository.findOne(exampleProduct);
+				if (optionalProduct.isPresent()) {
+					Inventory inventory = Inventory.builder().isLastInstance(Boolean.TRUE).outlet(outlet)
+							.product(optionalProduct.get()).build();
+					Example<Inventory> exampleInventory = Example.of(inventory);
 
+					Optional<Inventory> optInventory = inventoryRepository.findOne(exampleInventory);
+					// Optional<Inventory> optInventory = inventoryRepository.findByOutletOutletId(outlet.getOutletId()).stream().findFirst();
+					if (optInventory.isPresent())
+						node.setInventoryDetail(inventoryMapper.toInventoryDetail(optInventory.get()));
+				}
+			}
 			if (node.getInventoryDetail() != null) {
 				status = node.getInventoryDetail().getStatus();
 				balance = node.getInventoryDetail().getCurrentBalance();
@@ -205,7 +211,7 @@ public class TopologyServiceImpl implements TopologyService {
 			/** calculate the health */
 			String outletHealth = getOutletHealth(deviceOverviewStatsFiltered);
 
-			NodeRepresentation node = TopologyMapper.toNodeRepresentation(outlet, outletHealth);
+			NodeRepresentation node = TopologyMapper.toNodeRepresentation(outlet, "blue");
 			String status = "";
 			String temperature = "";
 
@@ -225,14 +231,14 @@ public class TopologyServiceImpl implements TopologyService {
 						.of(Product.builder().category(optionalCategory.get()).build());
 				Optional<Product> optionalProduct = productRepository.findOne(exampleProduct);
 				if (optionalProduct.isPresent()) {
-					Inventory inventory = Inventory.builder().isLastInstance(Boolean.TRUE).outlet(outlet)
+					Inventory inventory = Inventory.builder().outlet(outlet)
 							.product(optionalProduct.get()).build();
 					Example<Inventory> exampleInventory = Example.of(inventory);
 
-					Optional<Inventory> optInventory = inventoryRepository.findOne(exampleInventory);
+					List<Inventory> inventories = inventoryRepository.findByOutletAndProductAndIsLastInstance(outlet, optionalProduct.get(), Boolean.TRUE);
 					// Optional<Inventory> optInventory = inventoryRepository.findByOutletOutletId(outlet.getOutletId()).stream().findFirst();
-					if (optInventory.isPresent())
-						node.setInventoryDetail(inventoryMapper.toInventoryDetail(optInventory.get()));
+					if (inventories != null && inventories.size() > 0)
+						node.setInventoryDetail(inventoryMapper.toInventoryDetail(inventories.stream().filter(inv -> inv.getIsLastInstance().equals(Boolean.TRUE)).findFirst().orElse(Inventory.builder().build())));
 
 					// ################## Map By Status ##############################"
 					if (statusOrTemperature.equals("status")) {
@@ -310,6 +316,7 @@ public class TopologyServiceImpl implements TopologyService {
 	// ################################" STATUS ######################################""""
 	
 	private String getOutletColorFromStatus(String status) {
+		if (status == null)  return TopologyConstant.OUTLET_NA_HEALTH;
 		if (status.equals("in"))
 			return TopologyConstant.OUTLET_NORMAL_HEALTH;
 		else if (status.equals("noos"))
@@ -320,6 +327,7 @@ public class TopologyServiceImpl implements TopologyService {
 	}
 	
 	private String getOutletIconFromStatus(String nodeType, String status) {
+		if (nodeType == null || status == null) return TopologyConstant.OUTLET_NA_HEALTH;
 		if (status.equals("in")) {
 			if (nodeType.equalsIgnoreCase("phc"))
 				return TopologyConstant.PHC_GREEN_ICON;
@@ -427,7 +435,7 @@ public class TopologyServiceImpl implements TopologyService {
 		regionsColor.forEach(region -> regions.add(region.getParentRegion()));
 		
 		for(String region: regions) {
-			List<String> regionColors = regionsColor.stream().filter(reg -> reg.getParentRegion().equals(region))
+			List<String> regionColors = regionsColor.stream().filter(reg -> reg.getParentRegion() != null).filter(reg -> reg.getParentRegion().equals(region))
 												.map(ColoredRegionRepresentation::getColor).collect(Collectors.toList());
 			if(regionColors.contains("red")) 
 				regionsWithColor.add(ColoredRegionRepresentation.builder().parentRegion(region).color("red").build());

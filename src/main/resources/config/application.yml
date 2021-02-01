@@ -191,7 +191,7 @@ baseUrl: http://localhost:4200
 # footer & header
 poHeaderImage: 'http://localhost:7001/logo.jpg'
 poFooterImage: 'http://localhost:7001/footer.jpg'
-poThreesholdCapacity: 25
+poThreesholdCapacity: 10
 poDueDateOffset: 5
 
 poSourceEmail: dev@salehiya.com

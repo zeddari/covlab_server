@@ -734,6 +734,7 @@ public class PurchaseOrderResource {
     
     private List<Inventory> getProductToBeOrdered() {
     	 List<String> status = new ArrayList<String>();
+    	 status.add("in");
          status.add("oos");
          status.add("noos");
          return inventoryService.findByStatusInAndIsLastInstanceAndCapacityLessThan(status, Boolean.TRUE, poThreesholdCapacity);
