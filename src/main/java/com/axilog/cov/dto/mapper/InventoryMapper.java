@@ -62,7 +62,7 @@ public class InventoryMapper {
 				.inventoryId(inventory.getId())
 				.itemCode(inventory.getProduct().getProductCode())
 				.description(inventory.getProduct().getDescription())
-				.currentBalance(inventory.getCurrent_balance())
+				.currentBalance(inventory.getCurrent_balance() != null ? inventory.getCurrent_balance() : 0)
 				.receivedQuantity(inventory.getReceivedQty())
 				.quantitiesInTransit(inventory.getQuantitiesInTransit())
 				.uom(inventory.getUom())

@@ -38,7 +38,10 @@ import com.axilog.cov.service.DeviceOverviewStatsService;
 import com.axilog.cov.service.OutletService;
 import com.axilog.cov.service.topology.TopologyService;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class TopologyServiceImpl implements TopologyService {
 
 	@Autowired
@@ -103,7 +106,7 @@ public class TopologyServiceImpl implements TopologyService {
 			NodeRepresentation node = TopologyMapper.toNodeRepresentation(outlet, outletHealth);
 			String status = "";
 			double balance = 0;
-			double consumedQty = 0;
+			Double consumedQty = 0d;
 			String temperature = "";
 			/** get details of outlet inventory */
 			Inventory inventory = Inventory.builder().isLastInstance(true).outlet(outlet).product(
@@ -114,8 +117,16 @@ public class TopologyServiceImpl implements TopologyService {
 			// inventoryRepository.findOne(exampleInventory);
 			Optional<Inventory> optInventory = inventoryRepository.findByOutletOutletId(outlet.getOutletId()).stream()
 					.findFirst();
-			if (optInventory.isPresent())
-				node.setInventoryDetail(inventoryMapper.toInventoryDetail(optInventory.get()));
+			if (optInventory.isPresent()) {
+				try {
+					node.setInventoryDetail(inventoryMapper.toInventoryDetail(optInventory.get()));
+				}
+				catch (Exception e) {
+					log.info("Exception for building inventory data in topology: {}", e);
+					node.setInventoryDetail(null);
+				}
+			}
+				
 
 			if (node.getInventoryDetail() != null) {
 				status = node.getInventoryDetail().getStatus();
@@ -123,9 +134,10 @@ public class TopologyServiceImpl implements TopologyService {
 				balance = node.getInventoryDetail().getCurrentBalance();
 				consumedQty = node.getInventoryDetail().getConsumedQty();
 				temperature = node.getInventoryDetail().getTemperature();
+				nodes.add(node);
 			}
 
-			nodes.add(node);
+			
 			edges.add(TopologyMapper.toEdgeRepresentation(outlet, 70006));
 			String color = getOutletColorFromStatus(status);
 			// System.out.println("color of node: "+ color);
@@ -158,6 +170,7 @@ public class TopologyServiceImpl implements TopologyService {
 	@Override
 	public TopologyRepresentation buildTopologyDataWithParam(String statusOrTemperature)
 			throws TopologyDataNotFoundException {
+		geoData = "";
 		/** get all network elements */
 		DecimalFormat formatter = (DecimalFormat)NumberFormat.getNumberInstance(Locale.US);
 		formatter.applyPattern("##.#");

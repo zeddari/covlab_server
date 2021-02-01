@@ -263,10 +263,10 @@ public class PurchaseOrderResource {
      * @param pageable
      * @return
      */
-    @GetMapping("/approval/config/{currentStatus}")
-    public ResponseEntity<DynamicApprovalConfig> getNextStatus(@PathVariable("currentStatus") String currentStatus) {
-        log.debug("REST request to get PurchaseOrders by currentStatus: {}", currentStatus);
-        DynamicApprovalConfig approvalConfig = approvalService.findbyCurrentStatus(currentStatus);
+    @GetMapping("/approval/config/{currentStatus}/{outlet}")
+    public ResponseEntity<DynamicApprovalConfig> getNextStatus(@PathVariable("currentStatus") String currentStatus, @PathVariable("outlet") String outlet) {
+        log.debug("REST request to get PurchaseOrders by currentStatus: {} and outlet: {}", currentStatus, outlet);
+        DynamicApprovalConfig approvalConfig = approvalService.findbyCurrentStatusandOutlet(currentStatus, outlet);
         if (approvalConfig == null) {
         	throw new BadRequestAlertException("notFound", ENTITY_NAME, "Approval Config Data not valid, please check the config table");
         }
@@ -370,6 +370,7 @@ public class PurchaseOrderResource {
         
         
         outlets.forEach(outlet -> {
+        	log.info("Processing outlet {} for replenish now action", outlet.getOutletName());
 		try {
 			List<Product> productsHavePo = new ArrayList<>();
 	        if (orders != null) {
@@ -444,9 +445,15 @@ public class PurchaseOrderResource {
         				.build();
         		Context context = pdfService.getContext(poMailDetail, "mailDetail");
         		String html = pdfService.loadAndFillTemplate(context, "mail/poValidationEmail");
-        		String[] recipients = approvalConfig.getCurrentStepEmail().split(",");
-        		String[] cc = approvalConfig.getCurrentStepEmailcc().split(",");
-        		poMail.sendEmailWithAttachmentAndMultiple(recipients, cc, poSubjectEmail, html, true, true, poPdf, poXlsx);
+        		String[] recipients = new String[0];
+        		if (approvalConfig.getCurrentStepEmail() != null) {
+        			recipients = approvalConfig.getCurrentStepEmail().split(",");
+        		}
+        		String[] cc = new String[0];
+        		if (approvalConfig.getCurrentStepEmailcc() != null) {
+        			cc = approvalConfig.getCurrentStepEmailcc().split(",");
+        		}
+        		poMail.sendEmailWithAttachmentAndMultiple(recipients, cc, poSubjectEmail + " ==> "+ outlet.getOutletName(), html, true, true, poPdf, poXlsx);
         		message = "generated PO with the following details: number: "+currVal;
             }
 			
@@ -683,9 +690,15 @@ public class PurchaseOrderResource {
     			xlsfos.close();
     		}
     		
-    		String[] recipients = approvalConfig.getCurrentStepEmail().split(",");
-    		String[] cc = approvalConfig.getCurrentStepEmailcc().split(",");
-    		poMail.sendEmailWithAttachmentAndMultiple(recipients, cc, poSubjectEmail, html, true, true, tempFile, tempXlsFile);	
+    		String[] recipients = new String[0];
+    		if (approvalConfig.getCurrentStepEmail() != null) {
+    			recipients = approvalConfig.getCurrentStepEmail().split(",");
+    		}
+    		String[] cc = new String[0];
+    		if (approvalConfig.getCurrentStepEmailcc() != null) {
+    			cc = approvalConfig.getCurrentStepEmailcc().split(",");
+    		}
+    		poMail.sendEmailWithAttachmentAndMultiple(recipients, cc, poSubjectEmail + " ==> "+approvalConfig.getCurrentStepStatus(), html, true, true, tempFile, tempXlsFile);	
     		return ResponseEntity.ok(PoApprovalRepresentation.builder().message("Success Po Generation").build());
         }
     	return ResponseEntity.ok(PoApprovalRepresentation.builder().message("No Action Has been done").build());

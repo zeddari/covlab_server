@@ -177,7 +177,7 @@ autoReplenishCron: '1 1 1 1 1 1'
 
 ## Purchase Order template details
 poEmailReceiver: 'azeddari@gmail.com'
-poSubjectEmail: 'New Po for you'
+poSubjectEmail: 'IMS - Order received for your approval'
 vendor: 'Nupco'
 contactPersonName: 'Mohammed Alqahtani'
 contactPersonEmail: 'm.hmoud.alqahtani@ascend.com.sa'
