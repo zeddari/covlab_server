@@ -24,5 +24,6 @@ public class EdgeRepresentation {
 	private String htmlLinkModal;
 	private String textLinkModal;
 	private String type;
+	private String parentRegion;
 	Font font;
 }

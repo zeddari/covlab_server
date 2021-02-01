@@ -20,4 +20,5 @@ public class TopologyRepresentation {
 	private String geoData;
 	private String geoDataService;
 	private String geoDataOther;
+	private List<ColoredRegionRepresentation> regionsColor;
 }

@@ -60,10 +60,13 @@ public class TopologyMapper {
 				.type("Min-Outlet")
 				.to(outlet.getId().intValue())
 				.from(ministeryId)
+				.parentRegion(outlet.getOutletParentRegion())
 				.build();
 	}
 	
 	private static String chooseIconMedByType(String type, String severity) {
+		String icon = TopologyConstant.NODE_BLUE_ICON_NA;
+		/*
 		String icon = "";
 		if (type == null) return TopologyConstant.NODE_BLUE_ICON_NA;
 		type = type.replace("", "");
@@ -126,6 +129,7 @@ public class TopologyMapper {
 			}
 			
 		 }
+		*/
 		return icon;
 	}
 	

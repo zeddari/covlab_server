@@ -34,6 +34,7 @@ public class NodeRepresentation {
 	private Font font;
 	private String region;
 	private String parentRegion;
+	private String temperaturesOfAllDevices;
 	private InventoryDetail inventoryDetail;
 
 }
