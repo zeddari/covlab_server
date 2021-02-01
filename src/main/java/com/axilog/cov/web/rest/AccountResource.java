@@ -1,6 +1,8 @@
 package com.axilog.cov.web.rest;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -138,6 +140,7 @@ public class AccountResource {
 	public UserDTO getAccount() {
 		return userService.getUserWithAuthorities().map(UserDTO::new)
 				.map(userDto -> addOutletToUser(getOutlets(userDto.getAuthorities()), userDto))
+				.map(userDto -> addRegionToUser(getRegions(userDto.getAuthorities()), userDto))
 				.orElseThrow(() -> new AccountResourceException("User could not be found"));
 	}
 
@@ -281,9 +284,33 @@ public class AccountResource {
 		});
 		return allOutlets;
 	}
+	
+	private Set<String> getRegions(Set<String> authorities) {
+//		List<Outlet> outlets = new ArrayList<Outlet>();
+		Set<String> allregions = new HashSet<>();
+		authorities.forEach(auth -> {
+			if (auth.equals(ADMIN)) {
+				List<Outlet> outlets = outletService.findAll();
+				outlets.forEach(outlet -> {
+					allregions.add(outlet.getOutletParentRegion());
+        		});
+				
+			} else {
+				List<Outlet> outlets = outletService.findByOutletRegion(UserUtil.getRegionFromAuth(auth));
+				outlets.forEach(outlet -> {
+					allregions.add(outlet.getOutletParentRegion());
+        		});
+			}
+		});
+		return allregions;
+	}
 
 	private UserDTO addOutletToUser(Set<String> outlets, UserDTO userDTO) {
 		userDTO.setOutlets(outlets);
+		return userDTO;
+	}
+	private UserDTO addRegionToUser(Set<String> regions, UserDTO userDTO) {
+		userDTO.setRegions(regions);
 		return userDTO;
 	}
 }

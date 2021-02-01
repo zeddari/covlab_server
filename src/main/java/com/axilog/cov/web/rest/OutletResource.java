@@ -5,8 +5,11 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
 
+import javax.validation.Valid;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +25,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.axilog.cov.domain.Inventory;
 import com.axilog.cov.domain.Outlet;
+import com.axilog.cov.dto.command.InventoryHistoryCommand;
+import com.axilog.cov.dto.command.SelectCommand;
+import com.axilog.cov.dto.mapper.InventoryMapper;
+import com.axilog.cov.dto.representation.InventoryRepresentation;
+import com.axilog.cov.dto.representation.OutletRepresentation;
 import com.axilog.cov.service.OutletQueryService;
 import com.axilog.cov.service.OutletService;
 import com.axilog.cov.service.dto.OutletCriteria;
@@ -48,10 +57,15 @@ public class OutletResource {
 
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
-
-    private final OutletService outletService;
-
-    private final OutletQueryService outletQueryService;
+   
+    @Autowired
+    private  OutletService outletService;
+   
+    @Autowired
+    private  OutletQueryService outletQueryService;
+    
+    @Autowired
+    private InventoryMapper inventoryMapper;
 
     public OutletResource(OutletService outletService, OutletQueryService outletQueryService) {
         this.outletService = outletService;
@@ -148,5 +162,14 @@ public class OutletResource {
         log.debug("REST request to delete Outlet : {}", id);
         outletService.delete(id);
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
+    }
+    
+    @PostMapping("/outlets/region")
+    public ResponseEntity<OutletRepresentation> getOutletRegion(@RequestBody @Valid SelectCommand selectCommand) {
+        log.debug("REST request to get Inventories by FindOutletByRegion: {}");
+        
+        List<Outlet> outlets = outletService.findOutletParentRegion(selectCommand.getParentRegion());
+        OutletRepresentation outletRepresentation = inventoryMapper.toOutletRepresentation(outlets);
+        return ResponseEntity.ok().body(outletRepresentation);
     }
 }

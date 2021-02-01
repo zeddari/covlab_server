@@ -62,4 +62,10 @@ public interface OutletService {
     
     Optional<Outlet> findByExample(Example<Outlet> outletExample);
     
+    /**
+     * @param outlet bby ParentRegion
+     * @return
+     */
+    List<Outlet> findOutletParentRegion(String outletParentRegion);
+    
 }

@@ -16,4 +16,5 @@ import com.axilog.cov.domain.Outlet;
 public interface OutletRepository extends JpaRepository<Outlet, Long>, JpaSpecificationExecutor<Outlet> {
 
 	List<Outlet> findByOutletRegion(String outletRegion);
+	List<Outlet> findByOutletParentRegion(String outletParentRegion);
 }

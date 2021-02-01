@@ -40,6 +40,7 @@ public class TokenProvider {
 
     private static final String AUTHORITIES_KEY = "auth";
     private static final String OUTLET_KEY = "outlet";
+    private static final String REGION_KEY = "region";
     private static final String ADMIN = "ROLE_ADMIN";
 
     private Key key;
@@ -80,16 +81,25 @@ public class TokenProvider {
     public String createToken(Authentication authentication, boolean rememberMe) {
         String authorities = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(","));
         List<Outlet> outlets = new ArrayList<Outlet>();
+        List <String> regions = new ArrayList<String>();
         authentication.getAuthorities().forEach(auth -> {
         	if (auth.getAuthority().equals(ADMIN)) {
         		outlets.addAll(outletService.findAll());
+        		outlets.forEach(outlet -> {
+        			regions.add(outlet.getOutletParentRegion());
+        		});
+        		
         	}
         	else {
         		outlets.addAll(outletService.findByOutletRegion(UserUtil.getRegionFromAuth(auth.getAuthority())));
+        		outlets.forEach(outlet -> {
+        			regions.add(outlet.getOutletParentRegion());
+        		});
         	}
         	
         });
         String allOutlet = outlets.stream().map(Outlet::getOutletName).collect(Collectors.joining(","));
+        String allRegions = regions.stream().collect(Collectors.joining(","));
         long now = (new Date()).getTime();
         Date validity;
         if (rememberMe) {
@@ -103,6 +113,7 @@ public class TokenProvider {
             .setSubject(authentication.getName())
             .claim(AUTHORITIES_KEY, authorities)
             .claim(OUTLET_KEY, allOutlet)
+            .claim(REGION_KEY, allRegions)
             .signWith(key, SignatureAlgorithm.HS512)
             .setExpiration(validity)
             .compact();
