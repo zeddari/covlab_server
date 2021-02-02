@@ -6,6 +6,8 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.axilog.cov.domain.Inventory;
@@ -27,6 +29,11 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long>, Jpa
 	List<Inventory> findByLastUpdatedAtBetween(Date lastUpdatedAtstart, Date lastUpdatedAtend);
 	
 	List<Inventory> findByOutletOutletId(Long outletId);
+	
+	@Query(value = "SELECT current_balance FROM vct.inventory where product_id =:productCode and outlet_id =:outlet and is_last_instance = 0 and last_updated_at = (select max(last_updated_at) from inventory where product_id =:productCode and outlet_id =:outlet and is_last_instance = 0)", nativeQuery = true)
+	Double  getInventoryOutletAndProduct(@Param ( "productCode" ) String productCode , @Param ( "outlet" ) String outlet);
+	
+	
 	
 //	@Query(value = "select * from inventory where ", nativeQuery = true)
 //	List<Inventory> findByLastUpdatedAtBetweenTwoDate(Date lastUpdatedAtstart, Date lastUpdatedAtend);

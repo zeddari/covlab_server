@@ -60,6 +60,7 @@ import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
 import io.swagger.annotations.Api;
+import liquibase.pro.packaged.iN;
 
 /**
  * REST controller for managing {@link com.axilog.cov.domain.Inventory}.
@@ -302,14 +303,17 @@ public class InventoryResource {
         result = inventoryService.save(result);
         
         //create new entry with new date
-        result.setReceivedQty(result.getReceivedQty() + inventoryCommand.getCurrentBalance());
+        result.setReceivedQty(result.getReceivedQty() + inventoryCommand.getCurrentBalance() );
         
         result.setCurrent_balance(result.getCurrent_balance() + inventoryCommand.getCurrentBalance());
-        result.setCurrent_balance(result.getCurrent_balance() - inventoryCommand.getConsumeQty());
+        Double consumedQtyAdd = inventoryCommand.getConsumeQty() + inventoryCommand.getDamage() + inventoryCommand.getSample() + inventoryCommand.getWastage();
+        result.setCurrent_balance(result.getCurrent_balance() - consumedQtyAdd);
+        result.setConsumedQty(result.getConsumedQty() + consumedQtyAdd);
+        result.setDamage(result.getDamage() + inventoryCommand.getDamage());
+        result.setSample(result.getSample() + inventoryCommand.getSample());
+        result.setWastage(result.getWastage() + inventoryCommand.getWastage());
         result.setReceivedUserQte(inventoryCommand.getCurrentBalance());
         result.setConsumedUserQte(inventoryCommand.getConsumeQty());
-        result.setConsumedQty(result.getConsumedQty() + inventoryCommand.getConsumeQty());
-        
         result.setLastUpdatedAt(DateUtil.now());
         result.setId(null);
         result.setIsLastInstance(Boolean.TRUE);

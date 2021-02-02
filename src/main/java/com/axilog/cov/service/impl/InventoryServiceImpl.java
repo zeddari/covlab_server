@@ -108,5 +108,11 @@ public class InventoryServiceImpl implements InventoryService {
 	public List<Inventory> findByStatusInAndIsLastInstanceAndOutlet(List<String> status, Boolean isLastInstance, Outlet outlet) {
 		return inventoryRepository.findByStatusInAndIsLastInstanceAndOutlet(status, isLastInstance, outlet);
 	}
+
+	@Override
+	public Double getPreviousCurrentBallence(String productCode, String outlet) {
+		double previousCurrentBallence = inventoryRepository.getInventoryOutletAndProduct(productCode, outlet);
+		return previousCurrentBallence;
+	}
 	
 }

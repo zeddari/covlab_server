@@ -86,6 +86,9 @@ public class InventoryMapper {
 				.nupcoCode(inventory.getProduct().getProductCode())
 				.consumedUserQte(inventory.getConsumedUserQte())
 				.receivedUserQte(inventory.getReceivedUserQte())
+				.wastage(inventory.getWastage())
+				.damage(inventory.getDamage())
+				.sample(inventory.getSample())
 				.build();
 	}
 	
@@ -161,7 +164,16 @@ public class InventoryMapper {
 	 */
 	@Transactional
 	public InventoryPdfDetail toPdfDetail(Inventory inventory) {
-		Double desiredQty = (poThreesholdCapacity * inventory.getActualAvgConsumption()) - (inventory.getCurrent_balance() + inventory.getQuantitiesInTransit());
+		
+		String productCode = inventory.getProduct().getProductCode();
+		String outlet = inventory.getOutlet().getOutletName();
+		Double previousBalance = inventoryService.getPreviousCurrentBallence(productCode, outlet);
+		Double nextBalance = previousBalance - inventory.getCurrent_balance();
+		Double desiredQty = 0d;
+		if (nextBalance != 0) {
+			desiredQty = (poThreesholdCapacity * inventory.getActualAvgConsumption()) - (nextBalance + inventory.getQuantitiesInTransit());
+		}
+		
 		//inventory.setQuantitiesInTransit(desiredQty);
 		//inventoryService.save(inventory);
 		return InventoryPdfDetail.builder()

@@ -2,6 +2,8 @@ package com.axilog.cov.dto.representation;
 
 import java.util.Date;
 
+import javax.persistence.Column;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.Builder;
@@ -38,5 +40,9 @@ public class InventoryDetail {
 	 private String temperature;
 	 private Double receivedUserQte; 
 	 private Double consumedUserQte;
+	 private Double wastage;
+	 private Double damage;
+	 private Double sample;
+	    
 	 
 }
