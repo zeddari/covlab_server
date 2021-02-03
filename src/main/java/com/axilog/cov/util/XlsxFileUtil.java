@@ -86,11 +86,11 @@ public class XlsxFileUtil {
         createCell(row4, 2, "Email:", style);    
         createCell(row4, 3,  headerPdfDetail.getContactPersonEmail(), style);
         
-        createCell(row5, 0, "Code Product", styleheader);      
-        createCell(row5, 1, "Description Prodcut:", styleheader);       
-        createCell(row5, 2, "Category:", styleheader);    
-        createCell(row5, 3,  "Quantity:", styleheader);
-        createCell(row5, 4,  "UOM:", styleheader);       
+        createCell(row5, 0, "Product Code", styleheader);      
+        createCell(row5, 1, "Product Description", styleheader);       
+        createCell(row5, 2, "Category", styleheader);    
+        createCell(row5, 3,  "Quantity", styleheader);
+        createCell(row5, 4,  "UOM", styleheader);       
 
       }
  

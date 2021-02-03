@@ -5,11 +5,13 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 import com.axilog.cov.domain.PoReport;
 import com.axilog.cov.repository.PoReportRepository;
 import com.axilog.cov.service.PoReportService;
 
+@Service
 public class PoReportServiceImpl implements PoReportService {
 
 	@Autowired

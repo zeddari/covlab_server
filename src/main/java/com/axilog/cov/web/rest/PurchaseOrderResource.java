@@ -75,6 +75,7 @@ import com.axilog.cov.service.ApprovalService;
 import com.axilog.cov.service.InventoryService;
 import com.axilog.cov.service.OutletService;
 import com.axilog.cov.service.PoMailService;
+import com.axilog.cov.service.PoReportService;
 import com.axilog.cov.service.ProductService;
 import com.axilog.cov.service.PurchaseOrderQueryService;
 import com.axilog.cov.service.PurchaseOrderService;
@@ -144,6 +145,9 @@ public class PurchaseOrderResource {
     
     @Autowired
     private OutletService outletService;
+    
+    @Autowired
+    private PoReportService poReportService;
     
     @Value("${poEmailReceiver}")
     private String[] poEmailReceiver;
@@ -504,6 +508,8 @@ public class PurchaseOrderResource {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
         PurchaseOrder persistedPo = purchaseOrderService.findByOrderNo(detail.getHeaderPdfDetail().getOrderNumber());
+        PoPdfDetail originalPdfDetail = JsonUtils.toJsonObject(persistedPo.getHotJson());
+         
         // update po
         persistedPo.setData(fileContent);
         persistedPo.setHotJson(JsonUtils.toJsonString(detail));
@@ -567,6 +573,28 @@ public class PurchaseOrderResource {
 		           	    			.outletName(outlet.getOutletName())
 		           	    			.build();
 		           			purchaseOrderService.saveGrn(grnHistory);
+		           			
+		           			inventory.setIsLastInstance(Boolean.FALSE);
+		            		inventory = inventoryService.save(inventory);
+		            		
+		            		inventory.setReceivedUserQte(invOpt.get().getReceivedQuantity());
+		           			inventory.setIsLastInstance(Boolean.TRUE);
+		           			inventory.setId(null);
+		            		final Inventory inventorySaved = inventoryService.save(inventory);
+		            		
+		           			// save new instance for poReport
+		           			Double originalQty = originalPdfDetail.getListDetails().stream().filter(dt -> dt.getCode().equals(inventorySaved.getProduct().getProductCode())).map(dt -> dt.getQuantity()).findFirst().orElse(0d);
+		           			PoReport poReport = PoReport.builder()
+		           					.description(inventory.getProduct().getDescription())
+		           					.etaOfDelivery(100L)
+		           					.item(inventory.getProduct().getProductCode())
+		           					.outlet(outlet.getOutletName())
+		           					.poBalanceQty(invOpt.get().getQuantity())
+		           					.poOriginalQty(originalQty)
+		           					.poReceivedQty(invOpt.get().getReceivedQuantity())
+		           					.uom(inventory.getUom())
+		           					.build();
+		           			poReportService.save(poReport);
 		           		}
 						} catch (JsonProcessingException e) {
 							e.printStackTrace();
