@@ -14,4 +14,7 @@ public class InventoryCommand {
 	private Double currentBalance;
 	private Double quantitiesInTransit;
 	private Double consumeQty;
+	private Double wastage;
+	private Double damage;
+	private Double sample;
 }

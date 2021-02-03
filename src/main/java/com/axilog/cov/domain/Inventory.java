@@ -84,6 +84,20 @@ public class Inventory implements Serializable, Cloneable {
     @Column(name = "consumed_user_qte")
     private Double consumedUserQte;
     
+    @Column(name = "wastage")
+    private Double wastage;
+    
+    @Column(name = "damage")
+    private Double damage;
+    
+    @Column(name = "sample")
+    private Double sample;
+    
+   
+    
+    
+    
+    
     
     @ManyToOne
     @JsonIgnoreProperties(value = "inventories", allowSetters = true)

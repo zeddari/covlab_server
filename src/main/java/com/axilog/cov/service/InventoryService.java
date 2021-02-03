@@ -96,5 +96,7 @@ public interface InventoryService {
 	List<Inventory> findByOutletAndProductAndIsLastInstance(Outlet outlet, Product product, Boolean isLastInstance);
 
 	List<Inventory> findInventoryHistoryBetweenDate(Date lastUpdatedAtstart, Date lastUpdatedAtend);
+	
+	Double getPreviousCurrentBallence(String productCode, String outlet);
  
 }

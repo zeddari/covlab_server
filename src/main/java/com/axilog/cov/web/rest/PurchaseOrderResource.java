@@ -381,10 +381,11 @@ public class PurchaseOrderResource {
 	        if (orders != null) {
 	        	orders.forEach(order -> {
 	        		if (!order.getPoStatuses().contains(PoStatus.builder().status("CLOSED").build()) && order.getOutlet()!=null && order.getOutlet().equals(outlet)) {
-	        			//productsHavePo.addAll(order.getProducts());
+	        			productsHavePo.addAll(order.getProducts());
 	        		}
 	        		
 	        	});
+	        	
 	        }
 			 Sequence currSeq = sequenceRepository.curVal();
              Long currVal = currSeq.getCurrentNumber();
@@ -393,9 +394,13 @@ public class PurchaseOrderResource {
              sequenceRepository.save(currSeq);
              
 			List<Product> productsToBeInPo = new ArrayList<>();
+			List<Product> productsToBeInPoWithDiffBalance = new ArrayList<>();
+			
 			if (inventories != null) {
 	        	productsToBeInPo = inventories.stream().map(Inventory ::  getProduct).filter(product -> !productsHavePo.contains(product)).collect(Collectors.toList());
-	        }
+	        	productsToBeInPoWithDiffBalance = inventories.stream().filter(inv -> productsHavePo.contains(inv.getProduct())).filter(inv -> inv.getCurrent_balance() < getLastPreviousBalance(inv.getProduct().getProductCode(), outlet.getOutletName())).map(Inventory ::  getProduct).collect(Collectors.toList());
+	        	productsToBeInPo.addAll(productsToBeInPoWithDiffBalance);
+			}
 			List<Inventory> inventoriesPerOutlet = inventories.stream().filter(inventory -> inventory.getOutlet().equals(outlet)).collect(Collectors.toList());
     		PoPdfDetail detail = inventoryMapper.toPdfListDetail(inventoriesPerOutlet, productsToBeInPo, outlet, currVal);
             if (detail == null || detail.getListDetails() == null || detail.getListDetails().isEmpty()) {
@@ -822,5 +827,9 @@ public class PurchaseOrderResource {
         List<PoReport> poReports = purchaseOrderService.findAllPoReport();
         PoReportRepresentation poReportRepresentation = purchaseOrderMapper.toPoReportRepresentation(poReports);
         return ResponseEntity.ok().body(poReportRepresentation);
+    }
+    
+    private Double getLastPreviousBalance(String productCode, String outlet) {
+    	return inventoryService.getPreviousCurrentBallence(productCode, outlet);
     }
 }
