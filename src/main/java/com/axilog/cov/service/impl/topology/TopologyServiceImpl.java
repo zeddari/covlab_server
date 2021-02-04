@@ -84,6 +84,7 @@ public class TopologyServiceImpl implements TopologyService {
 	private String geoData;
 	private int geoDataExist = 0;
 	private String temperaturesToSend = "";
+	private String data = "<ul>";
 
 	@Autowired
 	private OverallStatsRepository overallStatsRepository;
@@ -193,7 +194,7 @@ public class TopologyServiceImpl implements TopologyService {
 		geoDataExist = 0;
 		geoData = MapDataBuilder.headerGeo();
 		for (Outlet outlet : outlets) {
-
+			data = "<ul>";
 			/** get a list of devices */
 			List<DeviceOverviewStats> deviceOverviewStatsFiltered = deviceOverviewStats.stream()
 					.filter(device -> device.getOutlet().getOutletName().equals(outlet.getOutletName()))
@@ -236,7 +237,6 @@ public class TopologyServiceImpl implements TopologyService {
 						if (statusOrTemperature.equals("status")) {
 							double balance = 0;
 							double consumedQty = 0;
-							String data = "<ul>";
 							if (node.getInventoryDetails() != null) {
 								for(InventoryDetail invDt : node.getInventoryDetails()) {
 									balance = invDt.getCurrentBalance();
@@ -245,7 +245,7 @@ public class TopologyServiceImpl implements TopologyService {
 									data = data + MapDataBuilder.addElement("Consumed", Double.toString(consumedQty));
 								}
 								data = data + "</ul>";
-								List<String> colors = node.getInventoryDetails().stream().map(InventoryDetail::getStatus).map(this::getOutletColorFromStatus).collect(Collectors.toList());
+								List<String> colors = node.getInventoryDetails().stream().map(InventoryDetail::getStatus).map(invSatus -> getOutletColorFromStatus(invSatus)).collect(Collectors.toList());
 								if (colors.contains("red")) {
 									node.setImage(getOutletIconFromStatus(node.getNodeType(), "red"));	
 									node.setFont(Font.builder().color("red").build());
@@ -254,9 +254,13 @@ public class TopologyServiceImpl implements TopologyService {
 									node.setImage(getOutletIconFromStatus(node.getNodeType(), "orange"));	
 									node.setFont(Font.builder().color("orange").build());
 								}
-								else {
+								else if (colors.contains("green")) {
 									node.setImage(getOutletIconFromStatus(node.getNodeType(), "green"));
 									node.setFont(Font.builder().color("green").build());
+								}
+								else {
+									node.setImage(getOutletIconFromStatus(node.getNodeType(), "blue"));
+									node.setFont(Font.builder().color("blue").build());
 								}
 								
 							}
@@ -264,11 +268,8 @@ public class TopologyServiceImpl implements TopologyService {
 							node.setTemperaturesOfAllDevices(temperaturesToSend);
 							
 							
-							geoData += MapDataBuilder.nodeData(node.getFont().getColor(), node.getLabel(), node.getLabel(), getOutletIconFromStatus(node.getNodeType(), status), "image", "", data, "", node.getLat(), node.getLng(), node.getNodeType(), node.getGroup(), false);
-							geoDataExist++;
-							
-							regionsColorRep.add(ColoredRegionRepresentation.builder().parentRegion(outlet.getOutletParentRegion())
-																				.color(node.getFont().getColor()).build());
+				
+																				
 						}
 
 						// ################## Map By Temperature ##############################"
@@ -287,18 +288,30 @@ public class TopologyServiceImpl implements TopologyService {
 
 							}
 							//*/
-							geoData += MapDataBuilder.nodeData(color, node.getLabel(), node.getLabel(),	getOutletIconFromTemperatures(node.getNodeType(), temperatures), "image", temperaturesToSend, null,
-									"", node.getLat(), node.getLng(), node.getNodeType(), node.getGroup(), false);
-							geoDataExist++;
 							
-							regionsColorRep.add(ColoredRegionRepresentation.builder().parentRegion(outlet.getOutletParentRegion())
-																					.color(color).build());
 						}
 
-						nodes.add(node);
-						edges.add(TopologyMapper.toEdgeRepresentation(outlet, 70006));
+						
 					});
 					
+					if (statusOrTemperature.equals("status")) {
+						geoData += MapDataBuilder.nodeData(node.getFont().getColor(), node.getLabel(), node.getLabel(), getOutletIconFromStatus(node.getNodeType(), status), "image", "", data, "", node.getLat(), node.getLng(), node.getNodeType(), node.getGroup(), false);
+						geoDataExist++;
+						
+						regionsColorRep.add(ColoredRegionRepresentation.builder().parentRegion(outlet.getOutletParentRegion())
+																			.color(node.getFont().getColor()).build());
+					}
+					else if (statusOrTemperature.equals("temperature")) {
+						geoData += MapDataBuilder.nodeData(node.getFont().getColor(), node.getLabel(), node.getLabel(),	getOutletIconFromTemperatures(node.getNodeType(), temperatures), "image", temperaturesToSend, null,
+								"", node.getLat(), node.getLng(), node.getNodeType(), node.getGroup(), false);
+						geoDataExist++;
+						
+						regionsColorRep.add(ColoredRegionRepresentation.builder().parentRegion(outlet.getOutletParentRegion())
+																				.color(node.getFont().getColor()).build());
+					}
+					
+					nodes.add(node);
+					edges.add(TopologyMapper.toEdgeRepresentation(outlet, 70006));
 				}
 			}
 		}

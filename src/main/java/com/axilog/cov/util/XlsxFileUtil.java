@@ -41,7 +41,7 @@ public class XlsxFileUtil {
     }
     
     public void writeHeaderLine(PoPdfDetail poPdfDetail) {
-        sheet = workbook.createSheet("pocreate");
+        sheet = workbook.createSheet("po_create");
         HeaderPdfDetail headerPdfDetail =  poPdfDetail.getHeaderPdfDetail();   
         String outlet = poPdfDetail.getOutlet();
        

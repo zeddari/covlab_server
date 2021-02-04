@@ -112,6 +112,7 @@ public class InventoryResource {
         if (inventory.getId() != null) {
             throw new BadRequestAlertException("A new inventory cannot already have an ID", ENTITY_NAME, "idexists");
         }
+        if (inventory.getLastUpdatedAt() == null) inventory.setLastUpdatedAt(DateUtil.now());
         Inventory result = inventoryService.save(inventory);
         return ResponseEntity.created(new URI("/api/inventories/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))

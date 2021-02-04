@@ -1,6 +1,6 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>New Purchase Order</title>
+    <title>New Order</title>
     <bookmarks> <bookmark name="Products" href="#poPdfDetail.listDetails"></bookmark>
 </bookmarks>
     
@@ -126,7 +126,7 @@
                    <table>
                         <tr>
                             <td  width="35%">
-                   Purchase Order #: <b><span th:text="${poPdfDetail.headerPdfDetail.orderNumber}"></span></b><br/>
+                   Order #: <b><span th:text="${poPdfDetail.headerPdfDetail.orderNumber}"></span></b><br/>
                    Created: <b><span th:text="${poPdfDetail.headerPdfDetail.creationDate}"></span></b><br/>
                    Due Date: <b><span th:text="${poPdfDetail.headerPdfDetail.DueDate}"></span></b><br/>
                    Destination: <b><span th:text="${poPdfDetail.headerPdfDetail.destination}"></span></b><br/>
