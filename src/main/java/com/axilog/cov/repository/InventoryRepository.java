@@ -30,6 +30,9 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long>, Jpa
 	
 	List<Inventory> findByOutletOutletId(Long outletId);
 	
+	
+	
+	
 	@Query(value = "SELECT current_balance FROM vct.inventory where product_id =:productCode and outlet_id =:outlet and is_last_instance = 0 and last_updated_at = (select max(last_updated_at) from inventory where product_id =:productCode and outlet_id =:outlet and is_last_instance = 0)", nativeQuery = true)
 	Double  getInventoryOutletAndProduct(@Param ( "productCode" ) String productCode , @Param ( "outlet" ) String outlet);
 	

@@ -109,13 +109,20 @@ public class InventoryResource {
     @PostMapping("/inventories")
     public ResponseEntity<Inventory> createInventory(@RequestBody Inventory inventory) throws URISyntaxException {
         log.debug("REST request to save Inventory : {}", inventory);
-        if (inventory.getId() != null) {
-            throw new BadRequestAlertException("A new inventory cannot already have an ID", ENTITY_NAME, "idexists");
+        
+        Optional<Outlet> outletOpt = outletService.findByExample(Example.of(Outlet.builder().outletId(inventory.getId()).build()));
+		Optional<Product> productOpt = productService.findOne(Example.of(Product.builder().productId(inventory.getId()).build()));
+		List<Inventory> inventories = inventoryService.findByOutletAndProductAndIsLastInstance(outletOpt.get(), productOpt.get(), Boolean.TRUE);
+        
+        if (inventory.getId() != null || inventories !=null) {
+            throw new BadRequestAlertException("A new inventory cannot already ", ENTITY_NAME, "exists");
         }
+        else {
         Inventory result = inventoryService.save(inventory);
         return ResponseEntity.created(new URI("/api/inventories/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
             .body(result);
+        }
     }
 
     /**
@@ -130,6 +137,7 @@ public class InventoryResource {
     @PutMapping("/inventories")
     public ResponseEntity<Inventory> updateInventory(@RequestBody Inventory inventory) throws URISyntaxException {
         log.debug("REST request to update Inventory : {}", inventory);
+        
         if (inventory.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }

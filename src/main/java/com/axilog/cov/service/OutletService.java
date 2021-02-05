@@ -68,4 +68,6 @@ public interface OutletService {
      */
     List<Outlet> findOutletParentRegion(String outletParentRegion);
     
+    List<Outlet> findByOuletName(String outletName);
+    
 }

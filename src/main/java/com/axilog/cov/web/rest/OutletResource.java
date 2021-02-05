@@ -27,6 +27,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.axilog.cov.domain.Inventory;
 import com.axilog.cov.domain.Outlet;
+import com.axilog.cov.domain.Product;
 import com.axilog.cov.dto.command.InventoryHistoryCommand;
 import com.axilog.cov.dto.command.SelectCommand;
 import com.axilog.cov.dto.mapper.InventoryMapper;
@@ -82,13 +83,18 @@ public class OutletResource {
     @PostMapping("/outlets")
     public ResponseEntity<Outlet> createOutlet(@RequestBody Outlet outlet) throws URISyntaxException {
         log.debug("REST request to save Outlet : {}", outlet);
-        if (outlet.getId() != null) {
-            throw new BadRequestAlertException("A new outlet cannot already have an ID", ENTITY_NAME, "idexists");
-        }
-        Outlet result = outletService.save(outlet);
+        List <Outlet> listoutlet = outletService.findByOuletName(outlet.getOutletName());
+        
+        	 if (outlet.getId() != null || listoutlet != null) {
+                 throw new BadRequestAlertException("A new outlet cannot already ", ENTITY_NAME, "exists");
+             }  else {
+        	 Outlet result = outletService.save(outlet);
+		            
         return ResponseEntity.created(new URI("/api/outlets/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
             .body(result);
+             
+            }
     }
 
     /**
