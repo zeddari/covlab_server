@@ -26,11 +26,11 @@ public class XlsService {
     	XlsxFileUtil excelExporter = new XlsxFileUtil(poPdfDetail);
     	excelExporter.writeHeaderLine(poPdfDetail);
     	excelExporter.writeDataLines(poPdfDetail);
-        FileOutputStream outputStream = new FileOutputStream("order.xlsx");
+        FileOutputStream outputStream = new FileOutputStream("order"+poPdfDetail.getHeaderPdfDetail().getDestination()+".xlsx");
         excelExporter.workbook.write(outputStream);
         excelExporter.workbook.close();
         outputStream.close();
-        return new File("order.xlsx") ;
+        return new File("order"+poPdfDetail.getHeaderPdfDetail().getDestination()+".xlsx") ;
     	}
 
 

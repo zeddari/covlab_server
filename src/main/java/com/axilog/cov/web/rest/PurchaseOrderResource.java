@@ -75,6 +75,7 @@ import com.axilog.cov.service.ApprovalService;
 import com.axilog.cov.service.InventoryService;
 import com.axilog.cov.service.OutletService;
 import com.axilog.cov.service.PoMailService;
+import com.axilog.cov.service.PoReportService;
 import com.axilog.cov.service.ProductService;
 import com.axilog.cov.service.PurchaseOrderQueryService;
 import com.axilog.cov.service.PurchaseOrderService;
@@ -144,6 +145,9 @@ public class PurchaseOrderResource {
     
     @Autowired
     private OutletService outletService;
+    
+    @Autowired
+    private PoReportService poReportService;
     
     @Value("${poEmailReceiver}")
     private String[] poEmailReceiver;
@@ -264,10 +268,10 @@ public class PurchaseOrderResource {
      * @param pageable
      * @return
      */
-    @GetMapping("/approval/config/{currentStatus}")
-    public ResponseEntity<DynamicApprovalConfig> getNextStatus(@PathVariable("currentStatus") String currentStatus) {
-        log.debug("REST request to get PurchaseOrders by currentStatus: {}", currentStatus);
-        DynamicApprovalConfig approvalConfig = approvalService.findbyCurrentStatus(currentStatus);
+    @GetMapping("/approval/config/{currentStatus}/{outlet}")
+    public ResponseEntity<DynamicApprovalConfig> getNextStatus(@PathVariable("currentStatus") String currentStatus, @PathVariable("outlet") String outlet) {
+        log.debug("REST request to get PurchaseOrders by currentStatus: {} and outlet: {}", currentStatus, outlet);
+        DynamicApprovalConfig approvalConfig = approvalService.findbyCurrentStatusandOutlet(currentStatus, outlet);
         if (approvalConfig == null) {
         	throw new BadRequestAlertException("notFound", ENTITY_NAME, "Approval Config Data not valid, please check the config table");
         }
@@ -371,6 +375,7 @@ public class PurchaseOrderResource {
         
         
         outlets.forEach(outlet -> {
+        	log.info("Processing outlet {} for replenish now action", outlet.getOutletName());
 		try {
 			List<Product> productsHavePo = new ArrayList<>();
 	        if (orders != null) {
@@ -450,9 +455,15 @@ public class PurchaseOrderResource {
         				.build();
         		Context context = pdfService.getContext(poMailDetail, "mailDetail");
         		String html = pdfService.loadAndFillTemplate(context, "mail/poValidationEmail");
-        		String[] recipients = approvalConfig.getCurrentStepEmail().split(",");
-        		String[] cc = approvalConfig.getCurrentStepEmailcc().split(",");
-        		poMail.sendEmailWithAttachmentAndMultiple(recipients, cc, poSubjectEmail, html, true, true, poPdf, poXlsx);
+        		String[] recipients = new String[0];
+        		if (approvalConfig.getCurrentStepEmail() != null) {
+        			recipients = approvalConfig.getCurrentStepEmail().split(",");
+        		}
+        		String[] cc = new String[0];
+        		if (approvalConfig.getCurrentStepEmailcc() != null) {
+        			cc = approvalConfig.getCurrentStepEmailcc().split(",");
+        		}
+        		poMail.sendEmailWithAttachmentAndMultiple(recipients, cc, poSubjectEmail + " ==> "+ outlet.getOutletName(), html, true, true, poPdf, poXlsx);
         		message = "generated PO with the following details: number: "+currVal;
             }
 			
@@ -502,6 +513,8 @@ public class PurchaseOrderResource {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
         PurchaseOrder persistedPo = purchaseOrderService.findByOrderNo(detail.getHeaderPdfDetail().getOrderNumber());
+        PoPdfDetail originalPdfDetail = JsonUtils.toJsonObject(persistedPo.getHotJson());
+         
         // update po
         persistedPo.setData(fileContent);
         persistedPo.setHotJson(JsonUtils.toJsonString(detail));
@@ -565,6 +578,28 @@ public class PurchaseOrderResource {
 		           	    			.outletName(outlet.getOutletName())
 		           	    			.build();
 		           			purchaseOrderService.saveGrn(grnHistory);
+		           			
+		           			inventory.setIsLastInstance(Boolean.FALSE);
+		            		inventory = inventoryService.save(inventory);
+		            		
+		            		inventory.setReceivedUserQte(invOpt.get().getReceivedQuantity());
+		           			inventory.setIsLastInstance(Boolean.TRUE);
+		           			inventory.setId(null);
+		            		final Inventory inventorySaved = inventoryService.save(inventory);
+		            		
+		           			// save new instance for poReport
+		           			Double originalQty = originalPdfDetail.getListDetails().stream().filter(dt -> dt.getCode().equals(inventorySaved.getProduct().getProductCode())).map(dt -> dt.getQuantity()).findFirst().orElse(0d);
+		           			PoReport poReport = PoReport.builder()
+		           					.description(inventory.getProduct().getDescription())
+		           					.etaOfDelivery(100L)
+		           					.item(inventory.getProduct().getProductCode())
+		           					.outlet(outlet.getOutletName())
+		           					.poBalanceQty(invOpt.get().getQuantity())
+		           					.poOriginalQty(originalQty)
+		           					.poReceivedQty(invOpt.get().getReceivedQuantity())
+		           					.uom(inventory.getUom())
+		           					.build();
+		           			poReportService.save(poReport);
 		           		}
 						} catch (JsonProcessingException e) {
 							e.printStackTrace();
@@ -689,9 +724,15 @@ public class PurchaseOrderResource {
     			xlsfos.close();
     		}
     		
-    		String[] recipients = approvalConfig.getCurrentStepEmail().split(",");
-    		String[] cc = approvalConfig.getCurrentStepEmailcc().split(",");
-    		poMail.sendEmailWithAttachmentAndMultiple(recipients, cc, poSubjectEmail, html, true, true, tempFile, tempXlsFile);	
+    		String[] recipients = new String[0];
+    		if (approvalConfig.getCurrentStepEmail() != null) {
+    			recipients = approvalConfig.getCurrentStepEmail().split(",");
+    		}
+    		String[] cc = new String[0];
+    		if (approvalConfig.getCurrentStepEmailcc() != null) {
+    			cc = approvalConfig.getCurrentStepEmailcc().split(",");
+    		}
+    		poMail.sendEmailWithAttachmentAndMultiple(recipients, cc, poSubjectEmail + " ==> "+approvalConfig.getCurrentStepStatus(), html, true, true, tempFile, tempXlsFile);	
     		return ResponseEntity.ok(PoApprovalRepresentation.builder().message("Success Po Generation").build());
         }
     	return ResponseEntity.ok(PoApprovalRepresentation.builder().message("No Action Has been done").build());
@@ -726,6 +767,7 @@ public class PurchaseOrderResource {
     
     private List<Inventory> getProductToBeOrdered() {
     	 List<String> status = new ArrayList<String>();
+    	 status.add("in");
          status.add("oos");
          status.add("noos");
          return inventoryService.findByStatusInAndIsLastInstanceAndCapacityLessThan(status, Boolean.TRUE, poThreesholdCapacity);

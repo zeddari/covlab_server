@@ -1,5 +1,7 @@
 package com.axilog.cov.dto.topology.representation;
 
+import java.util.List;
+
 import com.axilog.cov.dto.representation.InventoryDetail;
 
 import lombok.AllArgsConstructor;
@@ -35,6 +37,8 @@ public class NodeRepresentation {
 	private String region;
 	private String parentRegion;
 	private String temperaturesOfAllDevices;
-	private InventoryDetail inventoryDetail;
+	private List<InventoryDetail> inventoryDetails;
+	
+	
 
 }

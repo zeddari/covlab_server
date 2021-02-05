@@ -49,12 +49,12 @@ public class PdfService {
     public File generatePdf(PoPdfDetail details ) throws IOException, DocumentException {
         Context context = getContext(details, "poPdfDetail");
         String html = loadAndFillTemplate(context, "po/pdf_orders");
-        return renderPdf(html);
+        return renderPdf(html, details.getHeaderPdfDetail().getDestination());
     }
 
 
-    private File renderPdf(String html) throws IOException, DocumentException {
-        File file = new File("orders.pdf");
+    private File renderPdf(String html, String outlet) throws IOException, DocumentException {
+        File file = new File("orders_"+outlet+".pdf");
         OutputStream outputStream = new FileOutputStream(file);
         ITextRenderer renderer = new ITextRenderer(20f * 4f / 3f, 20);
         renderer.setDocumentFromString(html, new ClassPathResource(PDF_RESOURCES).getURL().toExternalForm());

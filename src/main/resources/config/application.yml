@@ -177,7 +177,7 @@ autoReplenishCron: '1 1 1 1 1 1'
 
 ## Purchase Order template details
 poEmailReceiver: 'azeddari@gmail.com'
-poSubjectEmail: 'New Po for you'
+poSubjectEmail: 'IMS - Order received for your approval'
 vendor: 'Nupco'
 contactPersonName: 'Mohammed Alqahtani'
 contactPersonEmail: 'm.hmoud.alqahtani@ascend.com.sa'
@@ -191,7 +191,7 @@ baseUrl: http://localhost:4200
 # footer & header
 poHeaderImage: 'http://localhost:7001/logo.jpg'
 poFooterImage: 'http://localhost:7001/footer.jpg'
-poThreesholdCapacity: 25
+poThreesholdCapacity: 10
 poDueDateOffset: 5
 
 poSourceEmail: dev@salehiya.com

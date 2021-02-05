@@ -158,7 +158,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 		List<String> areaChartLabelsConsumed = new ArrayList<>();
 		
 		if(dailyTrendData != null) {
-			areaDataDetailTrend.setLabel("Daily Trend");
+			areaDataDetailTrend.setLabel("Daily Vax Consumed");
 			List<Long> datasTrend = new ArrayList<>();
 			dailyTrendData.forEach(trend -> {
 				areaChartLabelsTrend.add(sdf.format(trend.getDate()));
@@ -169,7 +169,7 @@ public class DashBoardServiceImpl implements DashBoardService {
 		areaDataDetails.add(areaDataDetailTrend);
 	
 		if(dailyConsumedData != null) {
-			areaDataDetailConsumed.setLabel("Daily Consumed");
+			areaDataDetailConsumed.setLabel("Daily Vax Balance");
 			List<Long> datasConsumed = new ArrayList<>();
 			dailyConsumedData.forEach(consumed -> {
 				areaChartLabelsConsumed.add(sdf.format(consumed.getDate()));
