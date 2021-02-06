@@ -61,13 +61,23 @@ public class ProductResource {
     @PostMapping("/products")
     public ResponseEntity<Product> createProduct(@RequestBody Product product) throws URISyntaxException {
         log.debug("REST request to save Product : {}", product);
-        if (product.getId() != null) {
-            throw new BadRequestAlertException("A new product cannot already have an ID", ENTITY_NAME, "idexists");
-        }
-        Product result = productService.save(product);
-        return ResponseEntity.created(new URI("/api/products/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
-            .body(result);
+   
+        
+        List <Product> productexist = productService.findByProductCode(product.getProductCode());
+        
+        	  if (product.getId() != null || productexist != null) {
+             	 throw new BadRequestAlertException("A new product cannot already", ENTITY_NAME, "exists");
+                     }
+             else {
+            	 Product result = productService.save(product);
+             		return ResponseEntity.created(new URI("/api/products/" + result.getId()))
+                            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
+                            .body(result);
+             	
+             	}
+		
+	
+      
     }
 
     /**

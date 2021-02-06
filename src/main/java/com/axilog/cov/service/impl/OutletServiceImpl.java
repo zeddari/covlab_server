@@ -76,4 +76,10 @@ public class OutletServiceImpl implements OutletService {
 	public List<Outlet> findOutletParentRegion(String outletParentRegion) {
 		return outletRepository.findByOutletParentRegion(outletParentRegion);
 	}
+
+	@Override
+	public List<Outlet> findByOuletName(String outletName) {
+		
+		return outletRepository.findByOutletName(outletName);
+	}
 }
