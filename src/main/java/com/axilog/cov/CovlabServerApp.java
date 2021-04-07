@@ -1,13 +1,14 @@
 package com.axilog.cov;
 
-import com.axilog.cov.config.ApplicationProperties;
-import io.github.jhipster.config.DefaultProfileUtil;
-import io.github.jhipster.config.JHipsterConstants;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
+import java.util.TimeZone;
+
 import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.core.env.Environment;
+
+import com.axilog.cov.config.ApplicationProperties;
+
+import io.github.jhipster.config.DefaultProfileUtil;
+import io.github.jhipster.config.JHipsterConstants;
 
 @SpringBootApplication
 @EnableConfigurationProperties({ LiquibaseProperties.class, ApplicationProperties.class })
@@ -69,6 +75,21 @@ public class CovlabServerApp {
     }
 
     private static void logApplicationStartup(Environment env) {
+    	
+    	// setting timezones
+    	try {
+    		String timeZone = env.getProperty("time_zone");
+        	TimeZone.setDefault(TimeZone.getTimeZone(timeZone));   // It will set UTC timezone
+        	System.out.println("Spring boot application running in "+timeZone+", timezone :"+new Date());   // It will print UTC timezone
+    	}
+    	catch (Exception e) {
+    		log.warn("Not timezone has been set in the config file, we will use the UTC");
+        	TimeZone.setDefault(TimeZone.getTimeZone("UTC"));   // It will set UTC timezone
+        	System.out.println("Spring boot application running in UTC timezone :"+new Date());   // It will print UTC timezone
+    	}
+    	
+        
+        
         String protocol = "http";
         if (env.getProperty("server.ssl.key-store") != null) {
             protocol = "https";

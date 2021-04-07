@@ -4,12 +4,18 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.cloudfoundry.com.fasterxml.jackson.core.JsonProcessingException;
+import org.springframework.cloud.cloudfoundry.com.fasterxml.jackson.databind.JsonMappingException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +24,8 @@ import com.axilog.cov.domain.Outlet;
 import com.axilog.cov.domain.OverallStats;
 import com.axilog.cov.domain.OverallStatsOutlet;
 import com.axilog.cov.domain.Product;
+import com.axilog.cov.domain.PurchaseOrder;
+import com.axilog.cov.domain.Substitute;
 import com.axilog.cov.dto.projection.OutletOverviewProjection;
 import com.axilog.cov.dto.representation.HeaderPdfDetail;
 import com.axilog.cov.dto.representation.InventoryDetail;
@@ -28,9 +36,15 @@ import com.axilog.cov.dto.representation.OutletRepresentation;
 import com.axilog.cov.dto.representation.OverallStatsRepresentation;
 import com.axilog.cov.dto.representation.PoPdfDetail;
 import com.axilog.cov.service.InventoryService;
+import com.axilog.cov.service.PurchaseOrderHistoryService;
+import com.axilog.cov.service.PurchaseOrderService;
 import com.axilog.cov.util.DateUtil;
+import com.axilog.cov.util.JsonUtils;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Component
+@Slf4j
 public class InventoryMapper {
 	
 	@Value("${vendor}")
@@ -53,6 +67,12 @@ public class InventoryMapper {
 	
 	@Autowired
 	private InventoryService inventoryService;
+	
+	@Autowired
+	private PurchaseOrderHistoryService purchaseOrderHistoryService;
+	
+	@Autowired
+	private PurchaseOrderService purchaseOrderService;
 	/**
 	 * @param inventory
 	 * @return
@@ -161,18 +181,64 @@ public class InventoryMapper {
 	/**
 	 * @param inventory
 	 * @return
+	 * @throws JsonProcessingException 
+	 * @throws JsonMappingException 
 	 */
 	@Transactional
-	public InventoryPdfDetail toPdfDetail(Inventory inventory) {
-		
+	public InventoryPdfDetail toPdfDetail(Inventory inventory, List<Product> productsHavePo, Long poNumber, List<PurchaseOrder> purchaseOrders) throws JsonMappingException, JsonProcessingException {
 		String productCode = inventory.getProduct().getProductCode();
-		String outlet = inventory.getOutlet().getOutletName();
-		Double previousBalance = inventoryService.getPreviousCurrentBallence(productCode, outlet);
-		Double nextBalance = previousBalance - inventory.getCurrent_balance();
+		Inventory previousInventoryData = inventoryService.getPreviousCurrentBallenceData(Long.toString(inventory.getProduct().getId()), inventory.getOutlet().getId());
+//		PurchaseOrderHistory purchaseOrderHistory = purchaseOrderHistoryService.findByOrderNo(Long.toString(poNumber));
+//		PurchaseOrder purchaseOrder = purchaseOrderService.findByOrderNo(Long.toString(poNumber));
+		Double nextBalance = inventory.getCurrent_balance();
+		Double previousBalance = 0d;
+		boolean hasHistory = false;
 		Double desiredQty = 0d;
-		if (nextBalance != 0) {
+		if (productsHavePo.contains(inventory.getProduct())) {
+			List<PurchaseOrder> ordersThisProduct = new ArrayList<>();
+			for (PurchaseOrder  po : purchaseOrders) {
+				if (po.getProducts() != null && po.getProducts().contains(inventory.getProduct())) {
+					ordersThisProduct.add(po);
+				}
+			}
+//			Optional<Date> maxPoCreatedAtOpt = ordersThisProduct.stream().map(PurchaseOrder :: getCreatedAt).max(Date::compareTo);
+			PurchaseOrder maxPoOpt = Collections.max(ordersThisProduct, Comparator.comparing(PurchaseOrder :: getCreatedAt));
+			if (maxPoOpt != null) {
+				if (Optional.ofNullable(previousInventoryData).isPresent()) {
+					if (maxPoOpt.getCreatedAt().compareTo(previousInventoryData.getLastUpdatedAt()) < 0) {
+						hasHistory = true;
+						previousBalance = previousInventoryData.getCurrent_balance();
+						nextBalance = previousBalance - nextBalance;
+						PoPdfDetail pdfDetailNew = JsonUtils.toJsonObject(maxPoOpt.getHotJson());
+						Double oldItemQty = 0D;
+						if (pdfDetailNew != null) {
+							List<InventoryPdfDetail> details = pdfDetailNew.getListDetails().stream().filter(dt -> dt.getCode().equals(productCode)).collect(Collectors.toList());
+							if (details != null && !details.isEmpty()) {
+								oldItemQty = details.get(0).getQuantity();
+							}
+						}
+						desiredQty = (poThreesholdCapacity * inventory.getActualAvgConsumption()) - (nextBalance + oldItemQty);
+					}
+					else {
+						log.info("This item {}, in this outlet {} will not be included because no change has been done on its balance.", productCode, inventory.getOutlet().getOutletName());
+					}
+					
+				}
+			}
+			else {
+				desiredQty = (poThreesholdCapacity * inventory.getActualAvgConsumption()) - (nextBalance + inventory.getQuantitiesInTransit());
+			}
+			
+		}
+		else {
 			desiredQty = (poThreesholdCapacity * inventory.getActualAvgConsumption()) - (nextBalance + inventory.getQuantitiesInTransit());
 		}
+		
+		
+		
+//		if ((hasHistory && nextBalance != 0) || (!hasHistory && !productsHavePo.contains(inventory.getProduct()) )) {
+//			desiredQty = (poThreesholdCapacity * inventory.getActualAvgConsumption()) - (nextBalance + inventory.getQuantitiesInTransit());
+//		}
 		
 		//inventory.setQuantitiesInTransit(desiredQty);
 		//inventoryService.save(inventory);
@@ -182,6 +248,11 @@ public class InventoryMapper {
 				.category(inventory.getProduct().getCategory() != null ? inventory.getProduct().getCategory().getCategoryDescription() : "")
 				.uom(inventory.getUom())
 				.quantity(desiredQty)
+				.subsCodesCol("")
+				.subsCodes(inventory.getProduct().getSubstitutes().stream().map(Substitute::getSubstituteCode).collect(Collectors.toList()))
+				.subsMapCategories(inventory.getProduct().getSubstitutes().stream().collect(Collectors.toMap(Substitute::getSubstituteCode, Substitute::getSubstituteCategory)))
+				.subsMapDescriptions(inventory.getProduct().getSubstitutes().stream().collect(Collectors.toMap(Substitute::getSubstituteCode, Substitute::getSubstituteDescription)))
+				.balance(inventory.getCurrent_balance())
 				.build();
 	}
 	
@@ -189,14 +260,21 @@ public class InventoryMapper {
 	 * @param inventories
 	 * @return
 	 */
-	public PoPdfDetail toPdfListDetail(List<Inventory> inventories, List<Product> productsToBeInPo, Outlet outlet, Long poNumber) {
+	public PoPdfDetail toPdfListDetail(List<Inventory> inventories, List<Product> productsToBeInPo, Outlet outlet, Long poNumber, List<Product> productsHavePo, List<PurchaseOrder> purchaseOrders) {
 		List<InventoryPdfDetail> inventoryPdfDetails = new ArrayList<>();
 		if (inventories == null) return PoPdfDetail.builder().build();
 		inventories.forEach(inv -> {
 			if (productsToBeInPo.contains(inv.getProduct())) {
-				InventoryPdfDetail invDetail = toPdfDetail(inv);
-				if (invDetail.getQuantity() > 0)
-					inventoryPdfDetails.add(invDetail);
+				InventoryPdfDetail invDetail;
+				try {
+					invDetail = toPdfDetail(inv, productsHavePo, poNumber, purchaseOrders);
+					if (invDetail.getQuantity() > 0)
+						inventoryPdfDetails.add(invDetail);
+				} catch (JsonMappingException e) {
+					e.printStackTrace();
+				} catch (JsonProcessingException e) {
+					e.printStackTrace();
+				}
 			}
 			
 		});

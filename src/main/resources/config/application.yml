@@ -197,3 +197,6 @@ poDueDateOffset: 5
 poSourceEmail: dev@salehiya.com
 otpSourceEmail: dev@salehiya.com
 activationContactEmail: a.mustafa@salehiya.com
+outlet.temp.freezer.offset: -80
+
+time_zone: Asia/Riyadh

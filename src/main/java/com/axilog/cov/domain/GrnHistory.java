@@ -50,6 +50,15 @@ public class GrnHistory implements Serializable, Cloneable {
 	@Column(name = "product_code")
     private String productCode;
 	
+	@Column(name = "subs_code")
+    private String subsCode;
+	
+	@Column(name = "subs_description")
+    private String subsDescription;
+	
+	@Column(name = "subs_category")
+    private String subsCategory;
+	
 	@Column(name = "description")
     private String description;
 	

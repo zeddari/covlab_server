@@ -92,11 +92,15 @@ public interface InventoryService {
 	List<String> getOutletWithTemperatureIssue();
 	
 	Optional<Inventory> findByExample(Example<Inventory> inventoryExample);
+	
+	List<Inventory> findAllByExample(Example<Inventory> inventoryExample);
 
 	List<Inventory> findByOutletAndProductAndIsLastInstance(Outlet outlet, Product product, Boolean isLastInstance);
 
 	List<Inventory> findInventoryHistoryBetweenDate(Date lastUpdatedAtstart, Date lastUpdatedAtend);
 	
 	Double getPreviousCurrentBallence(String productCode, String outlet);
+
+	Inventory getPreviousCurrentBallenceData(String productCode, Long outlet);
  
 }

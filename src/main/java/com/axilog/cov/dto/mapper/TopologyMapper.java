@@ -34,7 +34,7 @@ public class TopologyMapper {
 	public static NodeRepresentation toNodeRepresentation(Outlet outlet, String color) {
 		return NodeRepresentation.builder()
 		.id(outlet.getId().intValue())
-		.font(Font.builder().align("bottom").color(color).size(TopologyConstant.NODE_TITLE_SIZE).build())
+		.font(Font.builder().align("bottom").color("blue").size(TopologyConstant.NODE_TITLE_SIZE).build())
 		.image(chooseIconMedByType(outlet.getOutletType(), color))
 		.label(outlet.getOutletName())
 		.label2(outlet.getOutletAdress())
@@ -64,9 +64,7 @@ public class TopologyMapper {
 				.build();
 	}
 	
-	private static String chooseIconMedByType(String type, String severity) {
-		String icon = TopologyConstant.NODE_BLUE_ICON_NA;
-		/*
+	public static String chooseIconMedByType(String type, String severity) {
 		String icon = "";
 		if (type == null) return TopologyConstant.NODE_BLUE_ICON_NA;
 		type = type.replace("", "");
@@ -129,7 +127,52 @@ public class TopologyMapper {
 			}
 			
 		 }
-		*/
+		else if (type.equalsIgnoreCase("medicalcenter")) {
+			if (severity.equals("red")) {
+				icon = TopologyConstant.PHC_RED_ICON;
+			}
+			else if (severity.equals("orange")) {
+				icon = TopologyConstant.PHC_ORANGE_ICON;
+			}
+			else if (severity.equals("green")) {
+				icon = TopologyConstant.PHC_GREEN_ICON;
+			}
+			else {
+				icon = TopologyConstant.PHC_BLUE_ICON;
+			}
+			
+		 }
+		else if (type.equalsIgnoreCase("virtualwarehouse")) {
+			if (severity.equals("red")) {
+				icon = TopologyConstant.WT_RED_ICON;
+			}
+			else if (severity.equals("orange")) {
+				icon = TopologyConstant.WT_ORANGE_ICON;
+			}
+			else if (severity.equals("green")) {
+				icon = TopologyConstant.WT_GREEN_ICON;
+			}
+			else {
+				icon = TopologyConstant.WT_BLUE_ICON;
+			}
+			
+		 }
+		else if (type.equalsIgnoreCase("regionalhq")) {
+			if (severity.equals("red")) {
+				icon = TopologyConstant.HO_RED_ICON;
+			}
+			else if (severity.equals("orange")) {
+				icon = TopologyConstant.HO_ORANGE_ICON;
+			}
+			else if (severity.equals("green")) {
+				icon = TopologyConstant.HO_GREEN_ICON;
+			}
+			else {
+				icon = TopologyConstant.HO_BLUE_ICON;
+			}
+			
+		 }
+		
 		return icon;
 	}
 	

@@ -17,6 +17,7 @@ public interface OutletRepository extends JpaRepository<Outlet, Long>, JpaSpecif
 
 	List<Outlet> findByOutletRegion(String outletRegion);
 	List<Outlet> findByOutletParentRegion(String outletParentRegion);
-	List <Outlet>  findByOutletName(String outletName);
+	List<Outlet> findByOutletName(String outletName);
+	List<Outlet> findAllByOrderByOutletNameAsc();
 	
 }

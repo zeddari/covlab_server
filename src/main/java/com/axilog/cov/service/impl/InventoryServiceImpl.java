@@ -111,8 +111,18 @@ public class InventoryServiceImpl implements InventoryService {
 
 	@Override
 	public Double getPreviousCurrentBallence(String productCode, String outlet) {
-		Double previousCurrentBallence = inventoryRepository.getInventoryOutletAndProduct(productCode, outlet);
+		Double previousCurrentBallence = inventoryRepository.getPreviousBalance(productCode, outlet);
 		return previousCurrentBallence != null ? previousCurrentBallence : new Double(0);
+	}
+	
+	@Override
+	public Inventory getPreviousCurrentBallenceData(String productCode, Long outlet) {
+		return inventoryRepository.getPreviousBalanceData(productCode, outlet);
+	}
+
+	@Override
+	public List<Inventory> findAllByExample(Example<Inventory> inventoryExample) {
+		return inventoryRepository.findAll(inventoryExample);
 	}
 	
 }

@@ -5,11 +5,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
@@ -39,7 +37,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.axilog.cov.domain.ImportHistory;
 import com.axilog.cov.domain.Inventory;
 import com.axilog.cov.domain.Outlet;
-import com.axilog.cov.domain.PoStatus;
 import com.axilog.cov.domain.Product;
 import com.axilog.cov.dto.command.InventoryCommand;
 import com.axilog.cov.dto.command.InventoryHistoryCommand;
@@ -60,7 +57,6 @@ import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
 import io.swagger.annotations.Api;
-import liquibase.pro.packaged.iN;
 
 /**
  * REST controller for managing {@link com.axilog.cov.domain.Inventory}.
@@ -110,12 +106,15 @@ public class InventoryResource {
     public ResponseEntity<Inventory> createInventory(@RequestBody Inventory inventory) throws URISyntaxException {
         log.debug("REST request to save Inventory : {}", inventory);
         
-        Optional<Outlet> outletOpt = outletService.findByExample(Example.of(Outlet.builder().outletId(inventory.getId()).build()));
-		Optional<Product> productOpt = productService.findOne(Example.of(Product.builder().productId(inventory.getId()).build()));
+        Optional<Outlet> outletOpt = outletService.findOne(inventory.getOutlet().getId());
+		Optional<Product> productOpt = productService.findOne(inventory.getProduct().getId());
 		List<Inventory> inventories = inventoryService.findByOutletAndProductAndIsLastInstance(outletOpt.get(), productOpt.get(), Boolean.TRUE);
        
         if (inventory.getId() != null) {
-            throw new BadRequestAlertException("A new inventory cannot already have an ID", ENTITY_NAME, "idexists");
+            throw new BadRequestAlertException("idexists", ENTITY_NAME, "A new inventory cannot already have an ID");
+        }
+        if (inventories !=null && !inventories.isEmpty()) {
+            throw new BadRequestAlertException("Item exists ", ENTITY_NAME, "This inventory item exist already");
         }
         else {
         	if (inventory.getLastUpdatedAt() == null) inventory.setLastUpdatedAt(DateUtil.now());
@@ -312,6 +311,7 @@ public class InventoryResource {
         }
         Inventory result = inventoryOptional.get();
         result.setIsLastInstance(Boolean.FALSE);
+        result.setLastUpdatedAt(DateUtil.now());
         result = inventoryService.save(result);
         
         //create new entry with new date
@@ -326,7 +326,7 @@ public class InventoryResource {
         result.setWastage(result.getWastage() + inventoryCommand.getWastage());
         result.setReceivedUserQte(inventoryCommand.getCurrentBalance());
         result.setConsumedUserQte(inventoryCommand.getConsumeQty());
-        result.setLastUpdatedAt(DateUtil.now());
+        result.setLastUpdatedAt(DateUtil.addMinutes(DateUtil.now(), 1));
         result.setId(null);
         result.setIsLastInstance(Boolean.TRUE);
         result = inventoryService.save(result);

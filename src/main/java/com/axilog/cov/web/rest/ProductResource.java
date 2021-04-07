@@ -1,31 +1,37 @@
 package com.axilog.cov.web.rest;
 
-import com.axilog.cov.domain.Product;
-import com.axilog.cov.service.ProductService;
-import com.axilog.cov.web.rest.errors.BadRequestAlertException;
-import com.axilog.cov.service.dto.ProductCriteria;
-import com.axilog.cov.service.ProductQueryService;
-
-import io.github.jhipster.web.util.HeaderUtil;
-import io.github.jhipster.web.util.PaginationUtil;
-import io.github.jhipster.web.util.ResponseUtil;
-import io.swagger.annotations.Api;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Example;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.axilog.cov.domain.Inventory;
+import com.axilog.cov.domain.Product;
+import com.axilog.cov.service.InventoryService;
+import com.axilog.cov.service.ProductQueryService;
+import com.axilog.cov.service.ProductService;
+import com.axilog.cov.service.dto.ProductCriteria;
+import com.axilog.cov.web.rest.errors.BadRequestAlertException;
+
+import io.github.jhipster.web.util.HeaderUtil;
+import io.github.jhipster.web.util.ResponseUtil;
+import io.swagger.annotations.Api;
 
 /**
  * REST controller for managing {@link com.axilog.cov.domain.Product}.
@@ -45,6 +51,9 @@ public class ProductResource {
     private final ProductService productService;
 
     private final ProductQueryService productQueryService;
+    
+    @Autowired
+    private InventoryService inventoryService;
 
     public ProductResource(ProductService productService, ProductQueryService productQueryService) {
         this.productService = productService;
@@ -65,8 +74,8 @@ public class ProductResource {
         
         List <Product> productexist = productService.findByProductCode(product.getProductCode());
         
-        	  if (product.getId() != null || productexist != null) {
-             	 throw new BadRequestAlertException("A new product cannot already", ENTITY_NAME, "exists");
+        	  if (productexist != null && !productexist.isEmpty()) {
+             	 throw new BadRequestAlertException("Item exists", ENTITY_NAME, "This product exist already");
                      }
              else {
             	 Product result = productService.save(product);
@@ -112,6 +121,14 @@ public class ProductResource {
     public ResponseEntity<List<Product>> getAllProducts() {
         log.debug("REST request to get Products by findAll");
         List<Product> products = productService.findAll();
+        return ResponseEntity.ok().body(products);
+    }
+    
+    @GetMapping("/products/inventory")
+    public ResponseEntity<List<Product>> getAllProductsInInventory() {
+        log.debug("REST request to get Products by findAll that are existing in inventory");
+        List<Inventory> inventories = inventoryService.findAllByExample(Example.of(Inventory.builder().isLastInstance(Boolean.TRUE).build()));
+        List<Product> products = inventories.stream().map(Inventory:: getProduct).collect(Collectors.toList());
         return ResponseEntity.ok().body(products);
     }
 

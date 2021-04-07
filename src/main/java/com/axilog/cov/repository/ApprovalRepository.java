@@ -1,5 +1,7 @@
 package com.axilog.cov.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
@@ -16,6 +18,6 @@ public interface ApprovalRepository extends JpaRepository<DynamicApprovalConfig,
 
 	public DynamicApprovalConfig findByStartStatus(Boolean startStatus);
 	public DynamicApprovalConfig findByFinalStatus(Boolean endStatus);
-	public DynamicApprovalConfig findByCurrentStepStatus(String currentStatus);
+	public List<DynamicApprovalConfig> findByCurrentStepStatus(String currentStatus);
 	public DynamicApprovalConfig findByCurrentStepStatusAndOutlet(String currentStatus, String outlet);
 }

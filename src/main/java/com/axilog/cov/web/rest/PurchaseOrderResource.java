@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.cloudfoundry.com.fasterxml.jackson.core.JsonProcessingException;
+import org.springframework.cloud.cloudfoundry.com.fasterxml.jackson.databind.JsonMappingException;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -56,6 +57,7 @@ import com.axilog.cov.domain.PoStatus;
 import com.axilog.cov.domain.Product;
 import com.axilog.cov.domain.PurchaseOrder;
 import com.axilog.cov.domain.Sequence;
+import com.axilog.cov.domain.Substitute;
 import com.axilog.cov.dto.command.POMailDetail;
 import com.axilog.cov.dto.command.PurchaseOrderCommand;
 import com.axilog.cov.dto.mapper.InventoryMapper;
@@ -70,6 +72,7 @@ import com.axilog.cov.enums.PurchaseStatusEnum;
 import com.axilog.cov.repository.GrnHistSequenceRepository;
 import com.axilog.cov.repository.PoStatusRepository;
 import com.axilog.cov.repository.SequenceRepository;
+import com.axilog.cov.repository.SubstituteRepository;
 import com.axilog.cov.security.SecurityUtils;
 import com.axilog.cov.service.ApprovalService;
 import com.axilog.cov.service.InventoryService;
@@ -77,6 +80,7 @@ import com.axilog.cov.service.OutletService;
 import com.axilog.cov.service.PoMailService;
 import com.axilog.cov.service.PoReportService;
 import com.axilog.cov.service.ProductService;
+import com.axilog.cov.service.PurchaseOrderHistoryService;
 import com.axilog.cov.service.PurchaseOrderQueryService;
 import com.axilog.cov.service.PurchaseOrderService;
 import com.axilog.cov.service.dto.PurchaseOrderCriteria;
@@ -111,6 +115,9 @@ public class PurchaseOrderResource {
 
     private final PurchaseOrderService purchaseOrderService;
 
+    @Autowired
+    private PurchaseOrderHistoryService purchaseOrderHistoryService;
+    
     private final PurchaseOrderQueryService purchaseOrderQueryService;
 
     @Autowired
@@ -148,6 +155,9 @@ public class PurchaseOrderResource {
     
     @Autowired
     private PoReportService poReportService;
+    
+    @Autowired
+    private SubstituteRepository substituteRepository;
     
     @Value("${poEmailReceiver}")
     private String[] poEmailReceiver;
@@ -379,8 +389,10 @@ public class PurchaseOrderResource {
 		try {
 			List<Product> productsHavePo = new ArrayList<>();
 	        if (orders != null) {
+	        	productsHavePo.clear();
 	        	orders.forEach(order -> {
-	        		if (!order.getPoStatuses().contains(PoStatus.builder().status("CLOSED").build()) && order.getOutlet()!=null && order.getOutlet().equals(outlet)) {
+	        		List<PoStatus> foundStatus = order.getPoStatuses().stream().filter(poStatus -> poStatus.getStatus().equals("IN_VALIDATION")).collect(Collectors.toList());
+	        		if (foundStatus != null && !foundStatus.isEmpty() && order.getOutlet()!=null && order.getOutlet().equals(outlet)) {
 	        			productsHavePo.addAll(order.getProducts());
 	        		}
 	        		
@@ -397,12 +409,12 @@ public class PurchaseOrderResource {
 			List<Product> productsToBeInPoWithDiffBalance = new ArrayList<>();
 			
 			if (inventories != null) {
-	        	productsToBeInPo = inventories.stream().map(Inventory ::  getProduct).filter(product -> !productsHavePo.contains(product)).collect(Collectors.toList());
+	        	productsToBeInPo = inventories.stream().map(Inventory ::  getProduct).collect(Collectors.toList());
 	        	productsToBeInPoWithDiffBalance = inventories.stream().filter(inv -> productsHavePo.contains(inv.getProduct())).filter(inv -> inv.getCurrent_balance() < getLastPreviousBalance(inv.getProduct().getProductCode(), outlet.getOutletName())).map(Inventory ::  getProduct).collect(Collectors.toList());
 	        	productsToBeInPo.addAll(productsToBeInPoWithDiffBalance);
 			}
 			List<Inventory> inventoriesPerOutlet = inventories.stream().filter(inventory -> inventory.getOutlet().equals(outlet)).collect(Collectors.toList());
-    		PoPdfDetail detail = inventoryMapper.toPdfListDetail(inventoriesPerOutlet, productsToBeInPo, outlet, currVal);
+    		PoPdfDetail detail = inventoryMapper.toPdfListDetail(inventoriesPerOutlet, productsToBeInPo, outlet, currVal, productsHavePo, orders);
             if (detail == null || detail.getListDetails() == null || detail.getListDetails().isEmpty()) {
             	log.info("No Po to be ordered for outlet: {}", outlet.getOutletName());
             	message = "No Po to be order";
@@ -512,12 +524,22 @@ public class PurchaseOrderResource {
         if (detail == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
+        PurchaseOrder oldPo = purchaseOrderService.findByOrderNo(detail.getHeaderPdfDetail().getOrderNumber());
         PurchaseOrder persistedPo = purchaseOrderService.findByOrderNo(detail.getHeaderPdfDetail().getOrderNumber());
+        
         PoPdfDetail originalPdfDetail = JsonUtils.toJsonObject(persistedPo.getHotJson());
          
         // update po
         persistedPo.setData(fileContent);
         persistedPo.setHotJson(JsonUtils.toJsonString(detail));
+        // check if we have updated one product with its substitute
+        
+        List<String> newAcquiredItems = detail.getListChangedDetails().stream().map(dt -> dt.getCode()).collect(Collectors.toList());
+        List<String> existingAcquiredItems = persistedPo.getProducts().stream().map(product -> product.getProductCode()).collect(Collectors.toList());
+        
+        List<Product> remainingProductInPo = persistedPo.getProducts().stream().filter(product -> newAcquiredItems.contains(product.getProductCode())).collect(Collectors.toList());
+        List<InventoryPdfDetail> addedProductInPo = detail.getListChangedDetails().stream().filter(dt -> !existingAcquiredItems.contains(dt.getCode())).collect(Collectors.toList());
+        
         List<PoStatus> poStatusExisting = persistedPo.getPoStatuses().stream().filter(poSt -> poSt.getStatus().equals("GRN_PARTIAL")).collect(Collectors.toList());
         String grnStatus = "";
         if (poStatusExisting.isEmpty()) {
@@ -532,7 +554,11 @@ public class PurchaseOrderResource {
         		PoStatus poStatus = PoStatus.builder().status("GRN_COMPLETED").updatedAt(DateUtil.now()).build();
             	poStatus = poStatusRepository.save(poStatus);
         		persistedPo.getPoStatuses().add(poStatus);
-        		grnStatus = "GRN_COMPLETED";
+        		
+        		PoStatus poStatusClosed = PoStatus.builder().status("CLOSED").updatedAt(DateUtil.addMinutes(DateUtil.now(), 2)).build();
+            	poStatus = poStatusRepository.save(poStatusClosed);
+        		persistedPo.getPoStatuses().add(poStatus);
+        		grnStatus = "CLOSED";
         	}
         	else {
         		grnStatus = "GRN_PARTIAL";
@@ -550,63 +576,64 @@ public class PurchaseOrderResource {
 		 currentSeq.setCurrentNumber(nextVal);
 		 grnHistSequenceRepository.save(currentSeq);
 			
-	     result.getProducts().forEach(product -> {
+		 // product processing
+		 remainingProductInPo.forEach(product -> {
 	     		String login = "NA";
 	           if (SecurityUtils.getCurrentUserLogin().isPresent()) {
 	           	login = SecurityUtils.getCurrentUserLogin().get();
 	           }
-	   		List<Inventory> inventories = inventoryService.findByOutletAndProductAndIsLastInstance(outlet, product, Boolean.TRUE);
-	       	if (inventories != null && !inventories.isEmpty()) {
-	       		Inventory inventory = inventories.get(0);
-	       		PoPdfDetail pdfDetail;
-					try {
-						pdfDetail = JsonUtils.toJsonObject(json);
-						Optional<InventoryPdfDetail> invOpt = pdfDetail.getListChangedDetails().stream().filter(detailPo -> detailPo.getCode().equals(product.getProductCode())).findFirst();
-		           		if (invOpt.isPresent()) {
-		           			GrnHistory grnHistory = GrnHistory.builder()
-		           					.grnNumber(Long.toString(nextVal))
-		           	    			.createdAt(DateUtil.now())
-		           	    			.createdBy(login)
-		           	    			.productCode(inventory.getProduct().getProductCode())
-		           	    			.category(invOpt.get().getCategory())
-		           	    			.description(invOpt.get().getDescription())
-		           	    			.poQuantity(invOpt.get().getQuantity())
-		           	    			.received(invOpt.get().getReceivedQuantity())
-		           	    			.uom(invOpt.get().getUom())
-		           	    			.status(grnLastStatus)
-		           	    			.orderNo(pdfDetail.getHeaderPdfDetail().getOrderNumber())
-		           	    			.outletName(outlet.getOutletName())
-		           	    			.build();
-		           			purchaseOrderService.saveGrn(grnHistory);
-		           			
-		           			inventory.setIsLastInstance(Boolean.FALSE);
-		            		inventory = inventoryService.save(inventory);
-		            		
-		            		inventory.setReceivedUserQte(invOpt.get().getReceivedQuantity());
-		           			inventory.setIsLastInstance(Boolean.TRUE);
-		           			inventory.setId(null);
-		            		final Inventory inventorySaved = inventoryService.save(inventory);
-		            		
-		           			// save new instance for poReport
-		           			Double originalQty = originalPdfDetail.getListDetails().stream().filter(dt -> dt.getCode().equals(inventorySaved.getProduct().getProductCode())).map(dt -> dt.getQuantity()).findFirst().orElse(0d);
-		           			PoReport poReport = PoReport.builder()
-		           					.description(inventory.getProduct().getDescription())
-		           					.etaOfDelivery(100L)
-		           					.item(inventory.getProduct().getProductCode())
-		           					.outlet(outlet.getOutletName())
-		           					.poBalanceQty(invOpt.get().getQuantity())
-		           					.poOriginalQty(originalQty)
-		           					.poReceivedQty(invOpt.get().getReceivedQuantity())
-		           					.uom(inventory.getUom())
-		           					.build();
-		           			poReportService.save(poReport);
-		           		}
-						} catch (JsonProcessingException e) {
-							e.printStackTrace();
-						}
-	       		
-	       		
-	       	}
+	     PoPdfDetail pdfDetailNew;
+		try {
+			pdfDetailNew = JsonUtils.toJsonObject(json);
+			Optional<InventoryPdfDetail> invOpt = pdfDetailNew.getListChangedDetails().stream().filter(detailPo -> detailPo.getCode().equals(product.getProductCode())).findFirst();
+		   	if (invOpt.isPresent()) {
+		   		if (invOpt.get().getSubsCodesCol() != null && !invOpt.get().getSubsCodesCol().isEmpty()) {
+		   			Substitute substituteData = substituteRepository.findBySubstituteCode(invOpt.get().getSubsCodesCol());
+		        	if (substituteData !=  null) {
+		        		Double impactFactor = substituteData.getImpactFactor();
+			   			createNewGrn(product, invOpt.get().getSubsCodesCol(), outlet, json, originalPdfDetail, grnLastStatus, login, nextVal, impactFactor, true, oldPo);
+		        	}
+		   		}
+		   		else {
+		   			createNewGrn(product, product.getProductCode(), outlet, json, originalPdfDetail, grnLastStatus, login, nextVal, 1D, false, oldPo);
+		   		}
+		   	}
+			
+		   	 
+		   	 
+		   	 
+		   	 
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+	     
+	   	});
+		 
+		 // substitute processing
+		 
+		 addedProductInPo.forEach(newProduct -> {
+	     		String login = "NA";
+	           if (SecurityUtils.getCurrentUserLogin().isPresent()) {
+	           	login = SecurityUtils.getCurrentUserLogin().get();
+	           }
+	           
+	           if (newProduct.getSubsCodesCol() != null && !newProduct.getSubsCodesCol().isEmpty()) {
+	        	   Substitute substituteData = substituteRepository.findBySubstituteCode(newProduct.getSubsCodesCol());
+	        	   Double impactFactor = substituteData.getImpactFactor();
+	        	   Product product = substituteData.getProduct();
+	        	   createNewGrn(product, newProduct.getSubsCodesCol(), outlet, json, originalPdfDetail, grnLastStatus, login, nextVal, impactFactor, true, oldPo);
+	           }
+	           else {
+	        	 
+	        	   List<Product> products = productService.findByProductCode(newProduct.getCode());
+	        	   if (products != null && products.size() > 0) {
+	        		   createNewGrn(products.get(0), newProduct.getCode(), outlet, json, originalPdfDetail, grnLastStatus, login, nextVal, 1D, false, oldPo);
+	        	   }
+	        	   
+	           }
+	   		
 	   	});
         // check received qte
         detail.getListDetails().forEach(rowDetail -> {
@@ -636,6 +663,79 @@ public class PurchaseOrderResource {
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, Long.toString(result.getOrderNo())))
             .body(result);
+    }
+    
+    private void createNewGrn(Product product, String code, Outlet outlet, String json, PoPdfDetail originalPdfDetail, String grnLastStatus, String login, Long grnNumber, Double impactFactor, boolean isSubstitute, PurchaseOrder oldPo) {
+    	if (product != null) {
+ 		   List<Inventory> inventories = inventoryService.findByOutletAndProductAndIsLastInstance(outlet, product, Boolean.TRUE);
+   	       	if (inventories != null && !inventories.isEmpty()) {
+   	       		Inventory inventory = inventories.get(0);
+   	       		PoPdfDetail pdfDetail;
+   					try {
+   						pdfDetail = JsonUtils.toJsonObject(json);
+   						Optional<InventoryPdfDetail> invOpt = Optional.empty();
+   						if (isSubstitute) {
+   							invOpt = pdfDetail.getListChangedDetails().stream().filter(detailPo -> detailPo.getSubsCodesCol().equals(code)).findFirst();
+   						}
+   						else {
+   							invOpt = pdfDetail.getListChangedDetails().stream().filter(detailPo -> detailPo.getCode().equals(code)).findFirst();
+   						}
+   						
+   		           		if (invOpt.isPresent()) {
+   		           			//check if it substitute or not
+   		           			Double receivedQty = Math.floor(invOpt.get().getReceivedQuantity());
+   		           			GrnHistory grnHistory = GrnHistory.builder()
+   		           					.grnNumber(Long.toString(grnNumber))
+   		           	    			.createdAt(DateUtil.now())
+   		           	    			.createdBy(login)
+   		           	    			.productCode(inventory.getProduct().getProductCode())
+   		           	    			.category(invOpt.get().getCategory())
+   		           	    			.description(invOpt.get().getDescription())
+   		           	    			.poQuantity(invOpt.get().getQuantity())
+   		           	    			.received(receivedQty)
+   		           	    			.uom(invOpt.get().getUom())
+   		           	    			.status(grnLastStatus)
+   		           	    			.orderNo(pdfDetail.getHeaderPdfDetail().getOrderNumber())
+   		           	    			.outletName(outlet.getOutletName())
+	   		           	    		.subsCode(invOpt.get().getSubsCodesCol())
+		           	    			.subsCategory(invOpt.get().getSubsCategory())
+		           	    			.subsDescription(invOpt.get().getSubsDescription())
+   		           	    			.build();
+   		           			purchaseOrderService.saveGrn(grnHistory);
+   		           			
+   		           			inventory.setIsLastInstance(Boolean.FALSE);
+   		            		inventory = inventoryService.save(inventory);
+   		            		
+   		            		inventory.setReceivedUserQte(receivedQty);
+   		           			inventory.setIsLastInstance(Boolean.TRUE);
+   		           			inventory.setId(null);
+   		           			inventory.setLastUpdatedAt(DateUtil.now());
+   		            		final Inventory inventorySaved = inventoryService.save(inventory);
+   		            		
+   		           			// save new instance for poReport
+   		           			Double originalQty = originalPdfDetail.getListDetails().stream().filter(dt -> dt.getCode().equals(inventorySaved.getProduct().getProductCode())).map(dt -> dt.getQuantity()).findFirst().orElse(0d);
+   		           			PoReport poReport = PoReport.builder()
+   		           					.description(inventory.getProduct().getDescription())
+   		           					.etaOfDelivery(100L)
+   		           					.item(inventory.getProduct().getProductCode())
+   		           					.outlet(outlet.getOutletName())
+   		           					.poBalanceQty(invOpt.get().getQuantity())
+   		           					.poOriginalQty(originalQty)
+   		           					.poReceivedQty(receivedQty)
+   		           					.uom(inventory.getUom())
+   		           					.build();
+   		           			poReportService.save(poReport);
+   		           			
+   		           		 // save a new history
+   		                 purchaseOrderHistoryService.save(purchaseOrderMapper.toHistory(oldPo));
+   		           		}
+   						} catch (JsonProcessingException e) {
+   							e.printStackTrace();
+   						}
+   	       		
+   	       		
+   	       	}
+    	}
     }
     @PostMapping("/purchaseOrders/approval")
     @Transactional
@@ -814,12 +914,11 @@ public class PurchaseOrderResource {
         return ResponseEntity.ok().body(grnHistoryRepresentation);
     }
    
-    @GetMapping("/purchaseOrders/substitute/{productCode}")
-    public ResponseEntity<GrnHistoryRepresentation> getSubstituteByProductCode(@PathVariable("productCode") String productCode) {
-        log.debug("REST request to get All GrnHistory");
-        List<GrnHistory> grnHistories = purchaseOrderService.findAllGrn();
-        GrnHistoryRepresentation grnHistoryRepresentation = purchaseOrderMapper.toGrnHistoryRepresentation(grnHistories);
-        return ResponseEntity.ok().body(grnHistoryRepresentation);
+    @GetMapping("/purchaseOrders/substitute/all")
+    public ResponseEntity<List<Substitute>> getAllSubstitutes() {
+        log.debug("REST request to get All Substitute");
+        List<Substitute> substitutes = substituteRepository.findAll();
+        return ResponseEntity.ok().body(substitutes);
     }
     @GetMapping("/purchaseOrders/poReport")
     public ResponseEntity<PoReportRepresentation> getAllPoRepport() {

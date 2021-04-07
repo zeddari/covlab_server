@@ -31,7 +31,7 @@ public class ApprovalServiceImpl implements ApprovalService {
 	}
 
 	@Override
-	public DynamicApprovalConfig findbyCurrentStatus(String currentStatus) {
+	public List<DynamicApprovalConfig> findbyCurrentStatus(String currentStatus) {
 		return approvalRepository.findByCurrentStepStatus(currentStatus);
 	}
 

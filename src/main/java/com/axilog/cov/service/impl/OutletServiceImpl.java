@@ -82,4 +82,9 @@ public class OutletServiceImpl implements OutletService {
 		
 		return outletRepository.findByOutletName(outletName);
 	}
+
+	@Override
+	public List<Outlet> findAllOrderByOutletNameAsc() {
+		return outletRepository.findAllByOrderByOutletNameAsc();
+	}
 }

@@ -30,6 +30,12 @@ public class GrnHistoryDetail {
    private String description;
 	
    private String category;
+   
+   private String substituteCode;
+	
+   private String substituteDescription;
+	
+   private String substituteCategory;
 		
    private String uom;
   

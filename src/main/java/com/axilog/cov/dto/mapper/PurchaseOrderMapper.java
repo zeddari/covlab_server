@@ -1,6 +1,5 @@
 package com.axilog.cov.dto.mapper;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Comparator;
 import java.util.List;
 
@@ -10,6 +9,7 @@ import com.axilog.cov.domain.GrnHistory;
 import com.axilog.cov.domain.PoReport;
 import com.axilog.cov.domain.PoStatus;
 import com.axilog.cov.domain.PurchaseOrder;
+import com.axilog.cov.domain.PurchaseOrderHistory;
 import com.axilog.cov.dto.representation.GrnHistoryDetail;
 import com.axilog.cov.dto.representation.GrnHistoryRepresentation;
 import com.axilog.cov.dto.representation.PoReportDetail;
@@ -77,6 +77,9 @@ public class PurchaseOrderMapper {
 				.received(grnHistory.getReceived())
 				.outletName(grnHistory.getOutletName())
 				.orderNo(grnHistory.getOrderNo())
+				.substituteCode(grnHistory.getSubsCode())
+				.substituteCategory(grnHistory.getSubsCategory())
+				.substituteDescription(grnHistory.getSubsDescription())
 				.build();
 	}
 	/**
@@ -112,6 +115,26 @@ public class PurchaseOrderMapper {
 		poReportRepresentation.getPoReportData().add(toPoReportDetail(poReport));
 		});
 		return poReportRepresentation;
+	}
+	
+	public PurchaseOrderHistory toHistory(PurchaseOrder purchaseOrder) {
+		return PurchaseOrderHistory.builder()
+				.approvalOwner(purchaseOrder.getApprovalOwner())
+				.approvalReceivingTime(purchaseOrder.getApprovalReceivingTime())
+				.approvalTime(purchaseOrder.getApprovalTime())
+				.createdAt(purchaseOrder.getCreatedAt())
+				.createdBy(purchaseOrder.getCreatedBy())
+				.createdOn(purchaseOrder.getCreatedOn())
+				.data(purchaseOrder.getData())
+				.dataXlsx(purchaseOrder.getDataXlsx())
+				.deliveredDate(purchaseOrder.getDeliveredDate())
+				.hotJson(purchaseOrder.getHotJson())
+				.orderNo(purchaseOrder.getOrderNo())
+				.outlet(purchaseOrder.getOutlet())
+				.poStatuses(purchaseOrder.getPoStatuses())
+				.quantity(purchaseOrder.getQuantity())
+				.updatedAt(purchaseOrder.getUpdatedAt())
+				.build();
 	}
 }
 

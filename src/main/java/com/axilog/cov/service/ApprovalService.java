@@ -13,6 +13,6 @@ public interface ApprovalService {
     List<DynamicApprovalConfig> findAll();
     DynamicApprovalConfig findStartStatus();
     DynamicApprovalConfig findEndStatus();
-    DynamicApprovalConfig findbyCurrentStatus(String currentStatus);
+    List<DynamicApprovalConfig> findbyCurrentStatus(String currentStatus);
     DynamicApprovalConfig findbyCurrentStatusandOutlet(String currentStatus, String outlet);
 }

@@ -6,6 +6,7 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -49,7 +50,7 @@ public class Product implements Serializable {
     @OneToMany(mappedBy = "product")
     private Set<Inventory> inventories = new HashSet<>();
 
-    @OneToMany
+    @OneToMany(fetch=FetchType.EAGER)
     private Set<PurchaseOrder> purchaseOrders = new HashSet<>();
 
     @OneToMany(mappedBy = "product")
@@ -58,6 +59,9 @@ public class Product implements Serializable {
     @ManyToOne
     @JsonIgnoreProperties(value = "products", allowSetters = true)
     private Category category;
+    
+    @OneToMany(fetch = FetchType.EAGER)
+    private Set<Substitute> substitutes = new HashSet<>();
 
     @ManyToOne
     @JsonIgnoreProperties(value = "products", allowSetters = true)
