@@ -61,6 +61,7 @@ public class TopologyMapper {
 				.to(outlet.getId().intValue())
 				.from(ministeryId)
 				.parentRegion(outlet.getOutletParentRegion())
+				.length(300)
 				.build();
 	}
 	

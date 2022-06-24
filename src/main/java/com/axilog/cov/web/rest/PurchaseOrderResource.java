@@ -727,7 +727,7 @@ public class PurchaseOrderResource {
    		           			poReportService.save(poReport);
    		           			
    		           		 // save a new history
-   		                 purchaseOrderHistoryService.save(purchaseOrderMapper.toHistory(oldPo));
+   		                // purchaseOrderHistoryService.save(purchaseOrderMapper.toHistory(oldPo));
    		           		}
    						} catch (JsonProcessingException e) {
    							e.printStackTrace();

@@ -624,7 +624,7 @@ public class TopologyServiceImpl implements TopologyService {
 	}
 
 	private NodeRepresentation buildMinisteryNode() {
-		return NodeRepresentation.builder().id(70006).label("MOH").shape("image").image(TopologyConstant.MIN_ICON)
+		return NodeRepresentation.builder().id(70006).label("KSA").shape("image").image(TopologyConstant.MIN_ICON)
 				.nodeType("MIN").region("all").parentRegion("all").group("MIN").build();
 	}
 }

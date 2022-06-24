@@ -14,7 +14,7 @@ import lombok.Data;
 public class InventoryDetail {
 	 private float inventoryId;
 	 private String itemCode;
-	 private String nupcoCode;
+	 private String sederCode;
 	 private String description;
 	 private Double currentBalance;
 	 private Double receivedQuantity;
@@ -25,6 +25,8 @@ public class InventoryDetail {
 	 private String reorderLevel;
 	 private Double suggestedQuantity;
 	 private Double expectedCoveringDay;
+	 private Date lastWorkOrderDate;
+	 private Date nextPlannedWorkOrder;
 	 
 	 @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
 	 private Date lastUpdatedAt;

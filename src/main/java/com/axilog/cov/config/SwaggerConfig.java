@@ -17,11 +17,10 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 public class SwaggerConfig {
 
-  public static final Contact DEFAULT_CONTACT = new Contact(
-      "Ericsson Developer", "http://www.ericsson.com", "contact_nims@ericsson.com");
+
   
   public static final ApiInfo DEFAULT_API_INFO = new ApiInfo(
-      "Vax Control Tower API", "VCT API related to the Covid19 vaxination system", "1.0",
+      "Seder API", "SEDER API related to the Operation command center", "1.0",
       "urn:tos", "www.axi-log.com", 
       "Apache 2.0", "http://www.apache.org/licenses/LICENSE-2.0");
 

@@ -50,6 +50,14 @@ public class InventoryQueryService extends QueryService<Inventory> {
     }
 
     /**
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public List<Inventory> findAll() {
+        log.debug("find all");
+        return inventoryRepository.findAll();
+    }
+    /**
      * Return a {@link Page} of {@link Inventory} which matches the criteria from the database.
      * @param criteria The object which holds all the filters, which the entities should match.
      * @param page The page, which should be returned.

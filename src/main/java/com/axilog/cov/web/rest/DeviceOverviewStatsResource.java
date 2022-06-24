@@ -30,7 +30,7 @@ import io.swagger.annotations.Api;
  */
 @RestController
 @RequestMapping("/api")
-@Api(tags = "Temperature Management", value = "TemperatureManagement", description = "Controller for Temperature Management")
+@Api(tags = "Vehicle Management", value = "VehicleManagement", description = "Controller for Vehicle Management")
 
 public class DeviceOverviewStatsResource {
 

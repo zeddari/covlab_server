@@ -10,6 +10,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,13 +104,14 @@ public class InventoryMapper {
 				.outletLat(inventory.getOutlet().getOutletLat())
 				.outletLng(inventory.getOutlet().getOutletLng())
 				.category(inventory.getProduct().getCategory().getCategoryCode())
-				.temperature(formatter.format(inventory.getProduct().getDeviceOverviewStats() != null ? inventory.getProduct().getDeviceOverviewStats().getTemperature() : 0))
-				.nupcoCode(inventory.getProduct().getProductCode())
+				.sederCode(inventory.getProduct().getProductCode())
 				.consumedUserQte(inventory.getConsumedUserQte())
 				.receivedUserQte(inventory.getReceivedUserQte())
 				.wastage(inventory.getWastage())
 				.damage(inventory.getDamage())
 				.sample(inventory.getSample())
+				.lastWorkOrderDate(between())
+				.nextPlannedWorkOrder(between())
 				.build();
 	}
 	
@@ -316,5 +319,21 @@ public class InventoryMapper {
 		return outletRepresentation;
 	}
 	
+	
+	/**
+	 * @return
+	 */
+	public static Date between() {
+		long aDay = TimeUnit.DAYS.toMillis(1);
+		long now = new Date().getTime();
+		Date hundredYearsAgo = new Date(now - aDay * 365 * 2);
+		Date tenDaysAgo = new Date(now - aDay * 10);
+		long startMillis = hundredYearsAgo.getTime();
+	    long endMillis = tenDaysAgo.getTime();
+	    long randomMillisSinceEpoch = ThreadLocalRandom
+	      .current()
+	      .nextLong(startMillis, endMillis);
+	    return new Date(randomMillisSinceEpoch);
+	}
 	
 }

@@ -38,7 +38,7 @@ spring:
     type: com.zaxxer.hikari.HikariDataSource
     #url: jdbc:mysql://vct.salehiya.com:3306/mohdbtest?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true
     url: jdbc:mysql://localhost:3306/vct?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true
-    #url: jdbc:mysql://ec2-54-245-50-184.us-west-2.compute.amazonaws.com:3306/mohdb?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true
+    #url: jdbc:mysql://34.218.180.70:3306/altabeeb?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true
     username: root
     password: Admin1!
     #username: salehiya
@@ -58,10 +58,10 @@ spring:
     contexts: dev, faker
   mail:
     otp:
-      host: outlook.office365.com
+      host: smtp.gmail.com
       port: 587
-      username: dev@salehiya.com
-      password: Sa*20200150
+      username: devmobile19
+      password: Dev!1234
       properties:
         mail:
           smtp:
@@ -69,10 +69,10 @@ spring:
             starttls:
               enable: true
     po:
-      host: outlook.office365.com
+      host: smtp.gmail.com
       port: 587
-      username: dev@salehiya.com
-      password: Sa*20200150
+      username: devmobile19
+      password: Dev!1234
       properties:
         mail:
           smtp:

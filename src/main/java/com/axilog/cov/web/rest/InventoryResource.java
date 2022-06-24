@@ -379,7 +379,7 @@ public class InventoryResource {
     @GetMapping("/inventory/list")
     public ResponseEntity<InventoryRepresentation> getAllRepresentationInventories(InventoryCriteria criteria, Pageable pageable) {
         log.debug("REST request to get Inventories by criteria: {}", criteria);
-        List<Inventory> inventories = inventoryQueryService.findByCriteria(criteria);
+        List<Inventory> inventories = inventoryQueryService.findAll();
         inventories = inventories.stream()
                 	.filter(inventory -> inventory.getIsLastInstance() != null ? inventory.getIsLastInstance().equals(Boolean.TRUE) : false) // 
                 	.collect(Collectors.toList());

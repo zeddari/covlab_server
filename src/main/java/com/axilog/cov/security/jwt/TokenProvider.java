@@ -33,8 +33,10 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.Data;
 
 @Component
+@Data
 public class TokenProvider {
     private final Logger log = LoggerFactory.getLogger(TokenProvider.class);
 
