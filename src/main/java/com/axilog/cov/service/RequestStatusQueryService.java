@@ -1,9 +1,13 @@
 package com.axilog.cov.service;
 
+import com.axilog.cov.domain.RequestStatus;
+import com.axilog.cov.domain.RequestStatus_;
+import com.axilog.cov.domain.Request_;
+import com.axilog.cov.dto.criteria.RequestStatusCriteria;
+import com.axilog.cov.repository.RequestStatusRepository;
+import io.github.jhipster.service.QueryService;
 import java.util.List;
-
 import javax.persistence.criteria.JoinType;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -11,15 +15,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.axilog.cov.domain.RequestStatus;
-import com.axilog.cov.domain.RequestStatus_;
-import com.axilog.cov.domain.Request_;
-import com.axilog.cov.dto.criteria.RequestStatusCriteria;
-import com.axilog.cov.repository.RequestStatusRepository;
-import com.axilog.cov.repository.search.RequestStatusSearchRepository;
-
-import io.github.jhipster.service.QueryService;
 
 /**
  * Service for executing complex queries for {@link RequestStatus} entities in the database.
@@ -30,16 +25,12 @@ import io.github.jhipster.service.QueryService;
 @Service
 @Transactional(readOnly = true)
 public class RequestStatusQueryService extends QueryService<RequestStatus> {
-
     private final Logger log = LoggerFactory.getLogger(RequestStatusQueryService.class);
 
     private final RequestStatusRepository requestStatusRepository;
 
-    private final RequestStatusSearchRepository requestStatusSearchRepository;
-
-    public RequestStatusQueryService(RequestStatusRepository requestStatusRepository, RequestStatusSearchRepository requestStatusSearchRepository) {
+    public RequestStatusQueryService(RequestStatusRepository requestStatusRepository) {
         this.requestStatusRepository = requestStatusRepository;
-        this.requestStatusSearchRepository = requestStatusSearchRepository;
     }
 
     /**
@@ -97,8 +88,13 @@ public class RequestStatusQueryService extends QueryService<RequestStatus> {
                 specification = specification.and(buildRangeSpecification(criteria.getUpdatedAt(), RequestStatus_.updatedAt));
             }
             if (criteria.getRequestId() != null) {
-                specification = specification.and(buildSpecification(criteria.getRequestId(),
-                    root -> root.join(RequestStatus_.request, JoinType.LEFT).get(Request_.id)));
+                specification =
+                    specification.and(
+                        buildSpecification(
+                            criteria.getRequestId(),
+                            root -> root.join(RequestStatus_.request, JoinType.LEFT).get(Request_.id)
+                        )
+                    );
             }
         }
         return specification;

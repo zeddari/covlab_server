@@ -1,10 +1,10 @@
 package com.axilog.cov.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -13,21 +13,15 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * A Request.
  */
 @Entity
 @Table(name = "request")
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "request")
 public class Request implements Serializable {
-
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -136,7 +130,7 @@ public class Request implements Serializable {
     }
 
     public Set<RequestStatus> getRequestStatuses() {
-    	if (requestStatuses == null) return new HashSet<>();
+        if (requestStatuses == null) return new HashSet<>();
         return requestStatuses;
     }
 
@@ -186,7 +180,6 @@ public class Request implements Serializable {
         this.slas = slas;
     }
 
-    
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override

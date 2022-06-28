@@ -1,9 +1,14 @@
 package com.axilog.cov.service;
 
+import com.axilog.cov.domain.Request;
+import com.axilog.cov.domain.RequestStatus_;
+import com.axilog.cov.domain.Request_;
+import com.axilog.cov.domain.Sla_;
+import com.axilog.cov.dto.criteria.RequestCriteria;
+import com.axilog.cov.repository.RequestRepository;
+import io.github.jhipster.service.QueryService;
 import java.util.List;
-
 import javax.persistence.criteria.JoinType;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -11,17 +16,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.axilog.cov.domain.Request;
-import com.axilog.cov.domain.RequestStatus_;
-import com.axilog.cov.domain.Request_;
-import com.axilog.cov.domain.Sla_;
-import com.axilog.cov.dto.criteria.RequestCriteria;
-import com.axilog.cov.repository.RequestRepository;
-import com.axilog.cov.repository.search.RequestSearchRepository;
-import com.axilog.cov.domain.*; // for static metamodels
-
-import io.github.jhipster.service.QueryService;
 
 /**
  * Service for executing complex queries for {@link Request} entities in the database.
@@ -32,16 +26,12 @@ import io.github.jhipster.service.QueryService;
 @Service
 @Transactional(readOnly = true)
 public class RequestQueryService extends QueryService<Request> {
-
     private final Logger log = LoggerFactory.getLogger(RequestQueryService.class);
 
     private final RequestRepository requestRepository;
 
-    private final RequestSearchRepository requestSearchRepository;
-
-    public RequestQueryService(RequestRepository requestRepository, RequestSearchRepository requestSearchRepository) {
+    public RequestQueryService(RequestRepository requestRepository) {
         this.requestRepository = requestRepository;
-        this.requestSearchRepository = requestSearchRepository;
     }
 
     /**
@@ -108,14 +98,20 @@ public class RequestQueryService extends QueryService<Request> {
                 specification = specification.and(buildStringSpecification(criteria.getRequestId(), Request_.requestId));
             }
             if (criteria.getRequestStatusId() != null) {
-                specification = specification.and(buildSpecification(criteria.getRequestStatusId(),
-                    root -> root.join(Request_.requestStatuses, JoinType.LEFT).get(RequestStatus_.id)));
+                specification =
+                    specification.and(
+                        buildSpecification(
+                            criteria.getRequestStatusId(),
+                            root -> root.join(Request_.requestStatuses, JoinType.LEFT).get(RequestStatus_.id)
+                        )
+                    );
             }
             if (criteria.getSlaId() != null) {
-                specification = specification.and(buildSpecification(criteria.getSlaId(),
-                    root -> root.join(Request_.slas, JoinType.LEFT).get(Sla_.id)));
+                specification =
+                    specification.and(
+                        buildSpecification(criteria.getSlaId(), root -> root.join(Request_.slas, JoinType.LEFT).get(Sla_.id))
+                    );
             }
-          
         }
         return specification;
     }

@@ -1,7 +1,11 @@
 package com.axilog.cov.service;
 
+import com.axilog.cov.domain.Task;
+import com.axilog.cov.domain.Task_;
+import com.axilog.cov.dto.criteria.TaskCriteria;
+import com.axilog.cov.repository.TaskRepository;
+import io.github.jhipster.service.QueryService;
 import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -9,14 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.axilog.cov.domain.Task;
-import com.axilog.cov.domain.Task_;
-import com.axilog.cov.dto.criteria.TaskCriteria;
-import com.axilog.cov.repository.TaskRepository;
-import com.axilog.cov.repository.search.TaskSearchRepository;
-
-import io.github.jhipster.service.QueryService;
 
 /**
  * Service for executing complex queries for {@link Task} entities in the database.
@@ -27,16 +23,12 @@ import io.github.jhipster.service.QueryService;
 @Service
 @Transactional(readOnly = true)
 public class TaskQueryService extends QueryService<Task> {
-
     private final Logger log = LoggerFactory.getLogger(TaskQueryService.class);
 
     private final TaskRepository taskRepository;
 
-    private final TaskSearchRepository taskSearchRepository;
-
-    public TaskQueryService(TaskRepository taskRepository, TaskSearchRepository taskSearchRepository) {
+    public TaskQueryService(TaskRepository taskRepository) {
         this.taskRepository = taskRepository;
-        this.taskSearchRepository = taskSearchRepository;
     }
 
     /**

@@ -1,23 +1,17 @@
 package com.axilog.cov.domain;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
-import javax.persistence.*;
-
-import org.springframework.data.elasticsearch.annotations.FieldType;
 import java.io.Serializable;
 import java.time.Instant;
+import javax.persistence.*;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 /**
  * A Task.
  */
 @Entity
 @Table(name = "task")
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "task")
 public class Task implements Serializable {
-
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -144,6 +138,7 @@ public class Task implements Serializable {
     public void setEquipName(String equipName) {
         this.equipName = equipName;
     }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override

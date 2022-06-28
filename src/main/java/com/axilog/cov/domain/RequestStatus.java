@@ -1,8 +1,9 @@
 package com.axilog.cov.domain;
 
+import com.axilog.cov.enums.RequestStatusEnum;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.time.LocalDate;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -12,29 +13,21 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
-import com.axilog.cov.enums.RequestStatusEnum;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 /**
  * A RequestStatus.
  */
 @Entity
 @Table(name = "request_status")
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-@org.springframework.data.elasticsearch.annotations.Document(indexName = "requeststatus")
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class RequestStatus implements Serializable {
-
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -99,6 +92,7 @@ public class RequestStatus implements Serializable {
     public void setRequest(Request request) {
         this.request = request;
     }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
