@@ -10,7 +10,11 @@ public enum ExceptionWorkflowEnum {
 	PROCESS_NOT_FOUND("ERR_WORKFLOW_05", "The process %s not found by the business key %s"),
 	DEAD_LETTER_JOB_NOT_FOUND("ERR_WORKFLOW_06", "Dead letter job %s not found"),
 	BAD_REQUEST_NULL_BODY("ERR_WORKFLOW_08", "Bad Request, null body"),
-	REQUEST_NOT_FOUND("ERR_REQUEST_01", "Request not found")
+	REQUEST_NOT_FOUND("ERR_REQUEST_01", "Request not found"),
+	TASK_NOT_FOUND("ERR_WFL_09", "The task %s is not found"),
+	PROCESS_WITH_SAME_DEFINITION_ID_AND_BUSINESS_KEY_EXIST("ERR_WFL_10",
+			"Process with same definition Id %s and business key %s is running")
+
 	;
 	
 	private String code;

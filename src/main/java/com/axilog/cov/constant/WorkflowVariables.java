@@ -10,4 +10,5 @@ public class WorkflowVariables {
 	public static final String CONTEXT_DEADLETTER = "contextDeadLetter";
 	public static final String REQUEST_NAME = "requestName";
 	public static final String REQUEST_ID = "requestId";
+	public static final String APPLICATION_ID = "applicationId";
 }

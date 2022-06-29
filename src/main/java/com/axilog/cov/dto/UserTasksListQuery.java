@@ -26,6 +26,7 @@ public class UserTasksListQuery {
 	private String sort;
 	private String businessKey;
 	private String context;
+	private String applicationId;
 	
 	@ValidateStringEnum(acceptedValues = { "ASSIGNED", "UNASSIGNED", "ASSIGNED_TO_ME", "ALL" }, message = "must be in {acceptedValues}")
 	private String assigned;

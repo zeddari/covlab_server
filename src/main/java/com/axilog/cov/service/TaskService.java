@@ -10,6 +10,9 @@ import com.axilog.cov.dto.base.PageRepresentation;
 import com.axilog.cov.exception.NextTaskNotAvailableException;
 import com.axilog.cov.exception.NextTaskNotFoundException;
 import com.axilog.cov.exception.RequestNotFoundException;
+import com.axilog.cov.exception.TaskNotFoundException;
+import com.axilog.cov.service.dto.CompleteWaitingRoomCommand;
+import com.axilog.cov.service.dto.WaitingRoomTaskRepresentation;
 
 /**
  * Service Interface for managing {@link Task}.
@@ -24,4 +27,7 @@ public interface TaskService {
 	public TaskDto nextTaskByApplicatioId(String userId, String group, String applicationId) throws NextTaskNotAvailableException;
 	public PageRepresentation<TaskDto> getUserTaskPageByBusinessKey(String userId, UserTasksListQuery query);
 	public List<TaskDto> getUserTaskListByBusinessKey(String userId, UserTasksListQuery query);
+	void completeWaitingRoomTaskAndComment(CompleteWaitingRoomCommand completeWaitingRoomCommand)
+			throws TaskNotFoundException;
+	PageRepresentation<WaitingRoomTaskRepresentation> getWaitingRoomTaskList(String userId, UserTasksListQuery query);
 }

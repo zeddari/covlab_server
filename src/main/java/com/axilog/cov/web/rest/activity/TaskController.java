@@ -1,5 +1,6 @@
 package com.axilog.cov.web.rest.activity;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,16 +14,22 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.axilog.cov.aop.logging.annotation.ExcludeLog;
 import com.axilog.cov.dto.TaskDto;
 import com.axilog.cov.dto.UserTasksListQuery;
+import com.axilog.cov.dto.base.PageRepresentation;
 import com.axilog.cov.exception.RequestNotFoundException;
+import com.axilog.cov.exception.TaskNotFoundException;
 import com.axilog.cov.exception.base.BadRequestException;
 import com.axilog.cov.security.jwt.JWTParser;
 import com.axilog.cov.security.jwt.TokenProvider;
 import com.axilog.cov.service.activity.api.WorflowManagementService;
+import com.axilog.cov.service.dto.CompleteWaitingRoomCommand;
+import com.axilog.cov.service.dto.WaitingRoomTaskCompletionCommand;
+import com.axilog.cov.service.dto.WaitingRoomTaskRepresentation;
 import com.axilog.cov.service.impl.TaskServiceImpl;
 
 import io.swagger.annotations.Api;
@@ -133,4 +140,41 @@ public class TaskController {
 		String userId = jwtParser.getUserId();
 		return taskService.getUserTaskListByBusinessKey(userId, userTasksListQuery);
 	}
+	
+	
+	@GetMapping(value = "/user/waiting-room", produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiOperation(value = "Get waiting room task list", produces = MediaType.APPLICATION_JSON_VALUE)
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successful") })
+	@ApiImplicitParam(name = "Authorization", value = "Bearer token", dataType = "string", paramType = "header")
+	public PageRepresentation<WaitingRoomTaskRepresentation> getWaitingRoomTasksList(
+			@RequestHeader(name = JWT_HEADER) String jwtHeader,
+			@ApiParam(value = "applicationId , optional", required = false) @RequestParam(required = false) String applicationId,
+			@ApiParam(value = "page , required", required = true) @RequestParam(required = true) Integer page,
+			@ApiParam(value = "size , required", required = true) @RequestParam(required = true) Integer size,
+			@ApiParam(value = "sort , optional", required = false) @RequestParam(required = false) String sort)
+			throws BadRequestException {
+		JWTParser jwtParser = new JWTParser(jwtHeader, tokenProvider.getKey());
+		String userId = jwtParser.getUserId();
+		UserTasksListQuery userTasksListQuery = UserTasksListQuery.builder().businessKey(applicationId).page(page)
+				.sort(sort).size(size).build();
+		return taskService.getWaitingRoomTaskList(userId, userTasksListQuery);
+	}
+	
+	@PostMapping("/user/tasks/waiting-room/{taskId}/complete")
+	@ApiOperation(value = "Complete waiting room task")
+	@ApiImplicitParam(name = "Authorization", value = "Bearer token", dataType = "string", paramType = "header")
+	public void completeWaitingRoom(@RequestHeader(name = JWT_HEADER) String jwtHeader, @PathVariable String taskId,
+			@ApiParam(value = "{ taskCompletionCommand : TaskCompletionCommand}") @RequestBody @Valid WaitingRoomTaskCompletionCommand taskCompletionCommand) throws BadRequestException,
+			TaskNotFoundException {
+		JWTParser jwtParser = new JWTParser(jwtHeader, tokenProvider.getKey());
+		String userId = jwtParser.getUserId();
+		Map<String, Object> variables = new HashMap<>();
+		variables.put("waitingRoomAction", taskCompletionCommand.getAction());
+		taskService.completeWaitingRoomTaskAndComment(CompleteWaitingRoomCommand.builder()
+				.action(taskCompletionCommand.getAction()).comment(taskCompletionCommand.getComment()).taskId(taskId).variables(variables)
+				.userGroupList(jwtParser.getGroups()).userId(userId).build());
+	}
+
+	
+	
 }

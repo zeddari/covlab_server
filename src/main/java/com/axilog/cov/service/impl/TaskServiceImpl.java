@@ -2,6 +2,8 @@ package com.axilog.cov.service.impl;
 
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +19,7 @@ import org.flowable.task.service.impl.TaskQueryProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import com.axilog.cov.aop.logging.annotation.ExcludeLog;
 import com.axilog.cov.dto.TaskDto;
@@ -27,8 +30,11 @@ import com.axilog.cov.dto.representation.DefaultPageRepresentation;
 import com.axilog.cov.exception.NextTaskNotAvailableException;
 import com.axilog.cov.exception.NextTaskNotFoundException;
 import com.axilog.cov.exception.RequestNotFoundException;
+import com.axilog.cov.exception.TaskNotFoundException;
 import com.axilog.cov.service.SlaService;
 import com.axilog.cov.service.TaskService;
+import com.axilog.cov.service.dto.CompleteWaitingRoomCommand;
+import com.axilog.cov.service.dto.WaitingRoomTaskRepresentation;
 import com.axilog.cov.util.paging.RangeCriteria;
 
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +54,8 @@ public class TaskServiceImpl implements TaskService{
 
 	@Autowired
 	private IdentityService identityService;
+	
+
 
 	/**
 	 * @param userId
@@ -227,6 +235,76 @@ public class TaskServiceImpl implements TaskService{
 					.taskName(task.getName())
 					.requestId((String) task.getProcessVariables().get("requestId")).build();
 		}
+		public static List<WaitingRoomTaskRepresentation> mapToWaitingRommList(List<Task> tasks) {
+
+			if (!CollectionUtils.isEmpty(tasks)) {
+				return tasks.stream().map(TaskMapper::mapToWaitingRoomTask).collect(Collectors.toList());
+			}
+			return Collections.emptyList();
+		}
+
+		private static WaitingRoomTaskRepresentation mapToWaitingRoomTask(Task task) {
+			String actions = (String) task.getProcessVariables()
+					.get("waitingRoomActions");
+			List<String> actionsList = actions == null ? new ArrayList<>()
+					: Arrays.asList(actions.split(","));
+			return WaitingRoomTaskRepresentation.builder().taskId(task.getId()).assignee(task.getAssignee())
+					.actions(actionsList).taskName(task.getName())
+					.context((String) task.getProcessVariables()
+							.get("waitingRoomContext"))
+					.event((String) task.getProcessVariables().get("waitingRoomEvent"))
+					.creationDate(task.getCreateTime()).category(task.getCategory())
+					.error((String) task.getProcessVariables().get("waitingRoomError"))
+					.externalId((String) task.getProcessVariables()
+							.get("waitingRoomExternalId"))
+					.applicationId((String) task.getProcessVariables().get("applicationId")).build();
+		}
+	}
+	@Override
+	public PageRepresentation<WaitingRoomTaskRepresentation> getWaitingRoomTaskList(String userId,
+			UserTasksListQuery query) {
+		log.info("Get waiting room task list, userId {}", userId);
+		TaskQuery tq = taskService.createTaskQuery().includeProcessVariables();
+				//.taskCandidateGroup(WorkflowVariables.WAITING_ROOM.CANDIDATE_GROUP_VALUE);
+		if (!StringUtils.isEmpty(query.getApplicationId())) {
+			tq = tq.processInstanceBusinessKeyLikeIgnoreCase(
+					new StringBuilder(query.getApplicationId()).append("%").toString());
+		}
+
+		if (!StringUtils.isEmpty(query.getSort()) && "creationDate:asc".equalsIgnoreCase(query.getSort())) {
+			tq = tq.orderByTaskCreateTime().asc();
+		} else {
+			tq = tq.orderByTaskCreateTime().desc();
+		}
+		RangeCriteria rangeCriteria = RangeCriteria.fromPageCriteria(query.getPage(), query.getSize());
+		return new DefaultPageRepresentation<>(
+				TaskMapper.mapToWaitingRommList(tq.listPage(rangeCriteria.offset(), rangeCriteria.limit())),
+				tq.count());
+	}
+
+	@Override
+	public void completeWaitingRoomTaskAndComment(CompleteWaitingRoomCommand completeWaitingRoomCommand) throws TaskNotFoundException {
+		log.debug("Complete task, taskId = {}, userId = {}", completeWaitingRoomCommand.getTaskId());
+		Task task = taskService.createTaskQuery().taskId(completeWaitingRoomCommand.getTaskId()).singleResult();
+		if (task == null) {
+			throw new TaskNotFoundException(completeWaitingRoomCommand.getTaskId());
+		}
+//		taskAccessAuthorizationHelper.checkIfUserCanAccessToTask(completeWaitingRoomCommand.getTaskId(),
+//				completeWaitingRoomCommand.getUserId(), completeWaitingRoomCommand.getUserGroupList());
+//		String applicationId = (String) taskService.getVariable(completeWaitingRoomCommand.getTaskId(),
+//				"applicationId");
+
+		//Long commentId = requestService.addCommentForWaitingRoom(applicationId, completeWaitingRoomCommand);
+		try {
+			taskService.claim(completeWaitingRoomCommand.getTaskId(), completeWaitingRoomCommand.getUserId());
+			identityService.setAuthenticatedUserId(completeWaitingRoomCommand.getUserId());
+			taskService.complete(completeWaitingRoomCommand.getTaskId(), completeWaitingRoomCommand.getVariables());
+		} catch (Exception e) {
+			log.error("error while completing waiting room task", e);
+			throw e;
+		} finally {
+			identityService.setAuthenticatedUserId(null);
+		}		
 	}
 
 }
