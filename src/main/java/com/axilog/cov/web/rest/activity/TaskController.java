@@ -142,8 +142,9 @@ public class TaskController {
 		String userId = jwtParser.getUserId();
 		//mocks
 		List<TaskDto> tasks= new ArrayList<>();
-		tasks.add(TaskDto.builder().assignee("Assi1").dueDate(new Date()).priority(1).build());
-		tasks.add(TaskDto.builder().assignee("Assi2").dueDate(new Date()).priority(2).build());
+		tasks.add(TaskDto.builder().assignee("Assi1").taskId("GGGDGD12").taskName("Assign to my driver container").dueDate(new Date()).priority(1).build());
+		tasks.add(TaskDto.builder().assignee("Assi2").taskId("GGGDGD13").taskName("Assign to my driver water").dueDate(new Date()).priority(2).build());
+		tasks.add(TaskDto.builder().assignee("Assi3").taskId("GGGDGD13").taskName("Assign to my driver EREL").dueDate(new Date()).priority(2).build());
 		return tasks;
 		//return taskService.getUserTaskListByBusinessKey(userId, userTasksListQuery);
 	}
