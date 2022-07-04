@@ -41,7 +41,7 @@ public class RequestQuotation implements Serializable {
     private String customerName;
 
     @Column(name = "mobile_number")
-    private Long mobileNumber;
+    private String mobileNumber;
 
     @Column(name = "instructions")
     private String instructions;
