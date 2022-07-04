@@ -11,4 +11,5 @@ public class WorkflowVariables {
 	public static final String REQUEST_NAME = "requestName";
 	public static final String REQUEST_ID = "requestId";
 	public static final String APPLICATION_ID = "applicationId";
+	public static final String WAITING_ROOM_ACTION = "waitingRoomAction";
 }

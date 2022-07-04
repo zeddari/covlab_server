@@ -34,7 +34,7 @@ public class UserTasksListQuery {
 	@ValidateStringEnum(acceptedValues = { "SUSPEND", "UNSUSPEND" }, message = "must be in {acceptedValues}")
 	private String suspend;
 	
-	private String equipName;
+	//private String equipName;
 	
 	private String taskDefinitionKey;
 

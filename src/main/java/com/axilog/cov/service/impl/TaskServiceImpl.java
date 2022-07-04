@@ -128,23 +128,46 @@ public class TaskServiceImpl implements TaskService{
 	 * @param userId
 	 * @param variables
 	 * @throws RequestNotFoundException 
+	 * @throws TaskNotFoundException 
 	 */
 	@ExcludeLog
-	public void completeTask(String taskId, String userId, Map<String, Object> variables, List<String> groups) throws RequestNotFoundException {
+	public void completeTask(String taskId, String userId, Map<String, Object> variables, List<String> groups) throws RequestNotFoundException, TaskNotFoundException {
 		try {
-			log.debug("Complete task, taskId = {}, userId = {}", taskId, userId);
-			identityService.setAuthenticatedUserId(userId);
-
-			Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
-			ProcessInstance processInstance = runtimeService.createProcessInstanceQuery().processInstanceId(task.getProcessInstanceId()).singleResult();
-			String applicationId = processInstance.getBusinessKey();
-			taskService.complete(taskId, variables);
-			slaService.endSla(applicationId, userId);
-		} finally {
+		log.debug("Complete task, taskId = {}, userId = {}", taskId, userId);
+		Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
+		if (task == null) {
+			throw new TaskNotFoundException(taskId);
+		}
+		//TODO check complete only assigned Tasks
+//		if (!userId.equals(task.getAssignee())) {
+//			throw new UnauthorizedException(ExceptionWorkflowEnum.UNAUTHORIZED_OPERATION, userId);
+//		}
+		taskService.complete(taskId, variables);
+		}finally {
 			identityService.setAuthenticatedUserId(null);
 		}
+
 	}
 
+	@ExcludeLog
+	public void completeTasks(List<String> taskIds, String userId, Map<String, Object> variables, List<String> groups) {
+		
+		for (String taskId : taskIds) {
+			try {
+				log.debug("Complete task, taskId = {}, userId = {}", taskId, userId);
+				identityService.setAuthenticatedUserId(userId);
+				taskService.complete(taskId, variables);
+			} catch (Exception e) {
+				log.error("error while completing Task with Id" + taskId , e);
+			} finally {
+				identityService.setAuthenticatedUserId(null);
+			}
+			
+		}
+		
+		
+	}
+	
 	/**
 	 * @param groupId
 	 * @return

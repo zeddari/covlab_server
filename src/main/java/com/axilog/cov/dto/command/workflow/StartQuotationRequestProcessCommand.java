@@ -14,4 +14,6 @@ import lombok.NoArgsConstructor;
 public class StartQuotationRequestProcessCommand {
 	@NotBlank
 	private String applicationId;
+	
+	private String emailDestination;
 }

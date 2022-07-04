@@ -1,0 +1,178 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>New Order</title>
+    <bookmarks> <bookmark name="Products" href="#poPdfDetail.listDetails"></bookmark>
+</bookmarks>
+    
+    <style>
+    .invoice-box {
+        max-width: 800px;
+        margin: auto;
+        padding: 30px;
+        border: 1px solid #eee;
+        box-shadow: 0 0 10px rgba(0, 0, 0, .15);
+        font-size: 12px;
+        line-height: 24px;
+        font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
+        color: #555;
+    }
+    
+    .invoice-box table {
+        width: 100%;
+        line-height: inherit;
+        text-align: left;
+    }
+    
+    .invoice-box table td {
+        padding: 5px;
+        vertical-align: top;
+    }
+    
+    .invoice-box table tr td:nth-child(2) {
+        text-align: left;
+    }
+    
+    .invoice-box table tr.top table td {
+        padding-bottom: 20px;
+    }
+    
+    .invoice-box table tr.top table td.title {
+        font-size: 10px;
+        line-height: 45px;
+        color: #333;
+    }
+    
+    .invoice-box table tr.information table td {
+        padding-bottom: 40px;
+        
+    }
+    
+    .invoice-box table tr.heading td {
+        background: #eee;
+        border-bottom: 1px solid #ddd;
+        font-weight: bold;
+    }
+    
+    .invoice-box table tr.details td {
+        padding-bottom: 20px;
+    }
+    
+    .invoice-box table tr.item td{
+        border-bottom: 1px solid #eee;
+    }
+    
+    .invoice-box table tr.item.last td {
+        border-bottom: none;
+    }
+    
+    .invoice-box table tr.total td:nth-child(2) {
+        border-top: 2px solid #eee;
+        font-weight: bold;
+    }
+    
+    @media only screen and (max-width: 600px) {
+        .invoice-box table tr.top table td {
+            width: 100%;
+            display: block;
+            text-align: center;
+        }
+        
+        .invoice-box table tr.information table td {
+            width: 100%;
+            display: block;
+            text-align: center;
+            font-size:10px;
+        }
+    }
+    
+    /** RTL **/
+    .rtl {
+        direction: ltr;
+        font-family: Tahoma, 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
+    }
+    
+    .rtl table {
+        text-align: right;
+    }
+    
+    .rtl table tr td:nth-child(2) {
+        text-align: left;
+    }
+    </style>
+</head>
+
+<body>
+
+    <div class="invoice-box" id="poPdfDetail.listDetails">
+        <table cellpadding="0" cellspacing="0">
+            <tr class="top">
+                <td colspan="2">
+                    <table>
+                        <tr>
+                            <td class="title">
+                                <img th:src="@{${headerImage}}"  width="100px" height="100px"></img>
+                                <br/>
+                                <b><span>Ministry of Health of Kingdom Saudi Arabia</span></b>
+                            </td>
+                                                      
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            
+            <tr class="information">
+                
+                             <td colspan="2">
+                   <table>
+                        <tr>
+                            <td  width="35%">
+                   Order #: <b><span th:text="${poPdfDetail.headerPdfDetail.orderNumber}"></span></b><br/>
+                   Created: <b><span th:text="${poPdfDetail.headerPdfDetail.creationDate}"></span></b><br/>
+                   Due Date: <b><span th:text="${poPdfDetail.headerPdfDetail.DueDate}"></span></b><br/>
+                   Destination: <b><span th:text="${poPdfDetail.headerPdfDetail.destination}"></span></b><br/>
+                            </td>
+                          <td width="20%"></td>
+                       	 
+                               <td  width="45%">
+                                Vendor: <b><span th:text="${poPdfDetail.headerPdfDetail.vendor}"></span></b><br/>
+								Contact Person: <b><span th:text="${poPdfDetail.headerPdfDetail.contactPersonName}"></span></b><br/>
+								Mobile: <b><span th:text="${poPdfDetail.headerPdfDetail.contactPersonMobile}"></span></b><br/>
+								Email: <b><span th:text="${poPdfDetail.headerPdfDetail.contactPersonEmail}"></span></b><br/>
+                            </td>
+                        </tr>
+                   </table>
+                </td>
+                   
+            </tr>
+              </table>
+               
+    </div>
+    <div class="invoice-box" id="poPdfDetail.listDetails">
+    <span  width="100%" class="titles-style" th:text="|Products / Count: ${#lists.size(poPdfDetail.listDetails)}|"></span>
+        <table cellpadding="0" cellspacing="0">
+ 		
+            
+            <tr class="heading" th:if="${not #lists.isEmpty(poPdfDetail.listDetails)}">
+               			<td>Code</td>
+						<td>Product Name</td>
+						<td>Category</td>
+						<td>Quantity</td>
+						<td>UOM</td>
+            </tr>
+            
+
+            
+            <tr class="item" th:each="inventory : ${poPdfDetail.listDetails}">
+               			<td th:text="${inventory.code}"></td>
+						<td th:text="${inventory.description}"></td>
+						<td th:text="${inventory.category}"></td>
+						<td th:text="${inventory.quantity}"></td>
+						<td th:text="${inventory.uom}"></td>
+            </tr>
+            
+            
+        </table>
+    </div>
+    <img th:src="@{${footerImage}}" width="616px" height="856px"></img>
+</body>
+</html>

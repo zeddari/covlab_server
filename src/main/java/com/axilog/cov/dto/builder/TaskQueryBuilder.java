@@ -71,9 +71,6 @@ public class TaskQueryBuilder {
 		if (!StringUtils.isEmpty(query.getBusinessKey())) {
 			taskQuery.processInstanceBusinessKey(query.getBusinessKey());// busnisesKEy
 		}
-		if (!StringUtils.isEmpty(query.getEquipName())) {
-			taskQuery.processVariableValueEquals(WorkflowVariables.EQUIP_NAME, query.getEquipName());
-		}
 	}
 
 	public void buildSorting() {

@@ -28,6 +28,7 @@ import com.axilog.cov.domain.Tasks;
 import com.axilog.cov.dto.TaskDto;
 import com.axilog.cov.dto.UserTasksListQuery;
 import com.axilog.cov.exception.RequestNotFoundException;
+import com.axilog.cov.exception.TaskNotFoundException;
 import com.axilog.cov.exception.base.BadRequestException;
 import com.axilog.cov.repository.RequestRepository;
 import com.axilog.cov.repository.TasksRepository;
@@ -130,7 +131,7 @@ public class TasksResource {
 	@ExcludeLog
 	public void complete(@RequestHeader(name = JWT_HEADER) String jwtHeader, @PathVariable String taskId,
 			@ApiParam(value = "{ applicantRejected: boolean, applicationId: String }") @RequestBody Map<String, Object> variables)
-			throws BadRequestException, RequestNotFoundException {
+			throws BadRequestException, RequestNotFoundException, TaskNotFoundException {
 		JWTParser jwtParser = new JWTParser(jwtHeader, tokenProvider.getKey());
 		jwtParser.checkAuthorizedGroup();
 		String userId = jwtParser.getUserId();

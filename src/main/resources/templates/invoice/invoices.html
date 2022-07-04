@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Students View</title>
+    <!-- Bootstrap -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+
+    <h1 th:text="'Product / Count:' + ${#lists.size(inventories)}" ></h1>
+
+    <div class="table-responsive">
+        <table class="table">
+            <tr>
+                <th>Code</th>
+                <th>Product Name</th>
+                <th>Quantity</th>
+                <th>UO</th>
+            </tr>
+           <tr th:each="inventory : ${inventories}">
+						<td th:text="${inventory.productCode}"></td>
+						<td th:text="${inventory.description}"></td>
+						<td th:text="${inventory.quantity}"></td>
+						<td th:text="${inventory.uom}"></td>
+		   </tr>
+        </table>
+    </div>
+    <img th:src="@{/images/pdf_icon.png}" height="35" width="35"/>
+    <a th:href="@{|/download-pdf|}"><span>Download PDF Document</span></a>
+</div>
+
+</body>
+</html>

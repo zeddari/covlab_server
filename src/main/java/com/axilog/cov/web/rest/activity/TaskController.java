@@ -28,6 +28,7 @@ import com.axilog.cov.security.jwt.JWTParser;
 import com.axilog.cov.security.jwt.TokenProvider;
 import com.axilog.cov.service.activity.api.WorflowManagementService;
 import com.axilog.cov.service.dto.CompleteWaitingRoomCommand;
+import com.axilog.cov.service.dto.TasksCompletionCommand;
 import com.axilog.cov.service.dto.WaitingRoomTaskCompletionCommand;
 import com.axilog.cov.service.dto.WaitingRoomTaskRepresentation;
 import com.axilog.cov.service.impl.TaskServiceImpl;
@@ -86,12 +87,25 @@ public class TaskController {
 	@ExcludeLog
 	public void complete(@RequestHeader(name = JWT_HEADER) String jwtHeader, @PathVariable String taskId,
 			@ApiParam(value = "{ applicantRejected: boolean, applicationId: String }") @RequestBody Map<String, Object> variables)
-			throws BadRequestException, RequestNotFoundException {
+			throws BadRequestException, RequestNotFoundException, TaskNotFoundException {
 		JWTParser jwtParser = new JWTParser(jwtHeader, tokenProvider.getKey());
 		jwtParser.checkAuthorizedGroup();
 		String userId = jwtParser.getUserId();
 		List<String> groups = jwtParser.getGroups();
 		taskService.completeTask(taskId, userId, variables, groups);
+	}
+	
+	@PostMapping("/complete/tasks")
+	@ApiOperation(value = "Complete task list")
+	@ApiImplicitParam(name = "Authorization", value = "Bearer token", dataType = "string", paramType = "header")
+	@ExcludeLog
+	public void completeTasks(@RequestHeader(name = JWT_HEADER) String jwtHeader, @RequestBody @Valid TasksCompletionCommand tasksCompletionCommand)
+			throws BadRequestException, RequestNotFoundException, TaskNotFoundException {
+		JWTParser jwtParser = new JWTParser(jwtHeader, tokenProvider.getKey());
+		jwtParser.checkAuthorizedGroup();
+		String userId = jwtParser.getUserId();
+		List<String> groups = jwtParser.getGroups();
+		taskService.completeTasks(tasksCompletionCommand.getTasksId(), userId, tasksCompletionCommand.getVariables(), groups);
 	}
 
 	@PostMapping("/unclaim/{taskId}")
