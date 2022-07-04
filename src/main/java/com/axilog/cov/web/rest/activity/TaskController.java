@@ -1,5 +1,7 @@
 package com.axilog.cov.web.rest.activity;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -152,7 +154,13 @@ public class TaskController {
 			throws BadRequestException {
 		JWTParser jwtParser = new JWTParser(jwtHeader, tokenProvider.getKey());
 		String userId = jwtParser.getUserId();
-		return taskService.getUserTaskListByBusinessKey(userId, userTasksListQuery);
+		//mocks
+		List<TaskDto> tasks= new ArrayList<>();
+		tasks.add(TaskDto.builder().assignee("Assi1").taskId("GGGDGD12").taskName("Assign to my driver container").dueDate(new Date()).priority(1).build());
+		tasks.add(TaskDto.builder().assignee("Assi2").taskId("GGGDGD13").taskName("Assign to my driver water").dueDate(new Date()).priority(2).build());
+		tasks.add(TaskDto.builder().assignee("Assi3").taskId("GGGDGD13").taskName("Assign to my driver EREL").dueDate(new Date()).priority(2).build());
+		return tasks;
+		//return taskService.getUserTaskListByBusinessKey(userId, userTasksListQuery);
 	}
 	
 	
