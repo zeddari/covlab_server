@@ -16,7 +16,7 @@ public class InvoiceDetail {
 
 	private String supervisorName;
 	private String driverName;
-	private String TaskId;
+	private String taskId;
 	private String motif;
 	private String reason;
 }

@@ -48,7 +48,7 @@ public class PdfServiceInvoice {
 
     public File generatePdf(InvoicePdfDetail details ) throws IOException, DocumentException {
         Context context = getContext(details, "invoicePdfDetail");
-        String html = loadAndFillTemplate(context, "invoice/pdf_invoices");
+        String html = loadAndFillTemplate(context, "invoice2/pdf_invoice");
         return renderPdf(html, details.getHeader());
     }
 
