@@ -1,7 +1,7 @@
 package com.axilog.cov.dto.mapper;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -30,15 +30,17 @@ public class InvoiceMapper {
 			.paiementAmount(paiement.getPaiementAmount())
 			.reason(paiement.getReason())
 			.supervisorName(paiement.getSupervisorName())
-			.TaskId(paiement.getTaskId()).build());
-		}
-
+			.paiementDate(paiement.getCreatedDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")))
+			.taskId(paiement.getTaskId()).build());
+		}	
+		String header =String.valueOf(customer.getId()) ;
 		
 		return InvoicePdfDetail.builder().customerFirstName(customer.getFirstName())
 				.header(null)
 				.customerLastName(customer.getLastName())
 				.customerFirstName(customer.getFirstName())
-				.header("header")
+				.header(header)
+				.customerBirthDate(customer.getBirthDate())
 				.invoiceDetails(invoiceDetails)
 				.build();
 	}
