@@ -54,7 +54,7 @@ public class TaskController {
 
 	@Autowired
 	private WorflowManagementService worflowManagementService;
-	
+
 	@Autowired
 	private TokenProvider tokenProvider;
 
@@ -96,7 +96,7 @@ public class TaskController {
 		List<String> groups = jwtParser.getGroups();
 		taskService.completeTask(taskId, userId, variables, groups);
 	}
-	
+
 	@PostMapping("/complete/tasks")
 	@ApiOperation(value = "Complete task list")
 	@ApiImplicitParam(name = "Authorization", value = "Bearer token", dataType = "string", paramType = "header")
@@ -154,16 +154,11 @@ public class TaskController {
 			throws BadRequestException {
 		JWTParser jwtParser = new JWTParser(jwtHeader, tokenProvider.getKey());
 		String userId = jwtParser.getUserId();
-		//mocks
-		List<TaskDto> tasks= new ArrayList<>();
-		tasks.add(TaskDto.builder().assignee("Assi1").taskId("GGGDGD12").taskName("Assign to my driver container").dueDate(new Date()).priority(1).build());
-		tasks.add(TaskDto.builder().assignee("Assi2").taskId("GGGDGD13").taskName("Assign to my driver water").dueDate(new Date()).priority(2).build());
-		tasks.add(TaskDto.builder().assignee("Assi3").taskId("GGGDGD13").taskName("Assign to my driver EREL").dueDate(new Date()).priority(2).build());
-		return tasks;
-		//return taskService.getUserTaskListByBusinessKey(userId, userTasksListQuery);
+
+		return taskService.getUserTaskListByBusinessKey(userId, userTasksListQuery);
 	}
-	
-	
+
+
 	@GetMapping(value = "/user/waiting-room", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiOperation(value = "Get waiting room task list", produces = MediaType.APPLICATION_JSON_VALUE)
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "Successful") })
@@ -181,8 +176,8 @@ public class TaskController {
 				.sort(sort).size(size).build();
 		return taskService.getWaitingRoomTaskList(userId, userTasksListQuery);
 	}
-	
-	@PostMapping("/user/tasks/waiting-room/{taskId}/complete")
+
+	@PostMapping("/waiting-room/{taskId}/complete")
 	@ApiOperation(value = "Complete waiting room task")
 	@ApiImplicitParam(name = "Authorization", value = "Bearer token", dataType = "string", paramType = "header")
 	public void completeWaitingRoom(@RequestHeader(name = JWT_HEADER) String jwtHeader, @PathVariable String taskId,
@@ -197,6 +192,6 @@ public class TaskController {
 				.userGroupList(jwtParser.getGroups()).userId(userId).build());
 	}
 
-	
-	
+
+
 }

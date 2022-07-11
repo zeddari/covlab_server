@@ -22,7 +22,7 @@ logging:
 spring:
   profiles:
     active: dev
-   
+
       # Uncomment to activate TLS for the dev profile
       #- tls
   devtools:
@@ -40,7 +40,7 @@ spring:
     url: jdbc:mysql://localhost:3306/vct?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true
     #url: jdbc:mysql://34.218.180.70:3306/altabeeb?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true
     username: root
-    password: admin
+    password: Admin1!
     #username: salehiya
     #password: Salehiya01
     hikari:
@@ -53,6 +53,8 @@ spring:
         useServerPrepStmts: true
   jpa:
     show-sql: false
+    hibernate:
+      ddl-auto: update
   liquibase:
     # Remove 'faker' if you do not want the sample data to be loaded automatically
     contexts: dev, faker

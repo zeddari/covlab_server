@@ -54,7 +54,7 @@ public class TaskServiceImpl implements TaskService{
 
 	@Autowired
 	private IdentityService identityService;
-	
+
 
 
 	/**
@@ -127,8 +127,8 @@ public class TaskServiceImpl implements TaskService{
 	 * @param taskId
 	 * @param userId
 	 * @param variables
-	 * @throws RequestNotFoundException 
-	 * @throws TaskNotFoundException 
+	 * @throws RequestNotFoundException
+	 * @throws TaskNotFoundException
 	 */
 	@ExcludeLog
 	public void completeTask(String taskId, String userId, Map<String, Object> variables, List<String> groups) throws RequestNotFoundException, TaskNotFoundException {
@@ -151,7 +151,7 @@ public class TaskServiceImpl implements TaskService{
 
 	@ExcludeLog
 	public void completeTasks(List<String> taskIds, String userId, Map<String, Object> variables, List<String> groups) {
-		
+
 		for (String taskId : taskIds) {
 			try {
 				log.debug("Complete task, taskId = {}, userId = {}", taskId, userId);
@@ -162,12 +162,12 @@ public class TaskServiceImpl implements TaskService{
 			} finally {
 				identityService.setAuthenticatedUserId(null);
 			}
-			
+
 		}
-		
-		
+
+
 	}
-	
+
 	/**
 	 * @param groupId
 	 * @return
@@ -224,12 +224,12 @@ public class TaskServiceImpl implements TaskService{
 				TaskMapper.mapTo(tq.listPage(rangeCriteria.offset(), rangeCriteria.limit())), tq.count());
 
 	}
-	
-	
+
+
 	public List<TaskDto> getUserTaskListByBusinessKey(String userId, UserTasksListQuery query) {
 		log.info("Get user tasks list,group = {}, userId {}", query.getGroup(), userId);
 		TaskQuery tq = new TaskQueryBuilder.Builder(taskService.createTaskQuery(), query).assignment(userId)
-				.candidateGroup().processVariables().suspendCriteria().sorting().processTaskDefinitionKey().build().getTaskQuery();
+				.candidateGroup().processVariables().suspendCriteria().sorting().processTaskDefinitionKey().processTaskName().build().getTaskQuery();
 		return TaskMapper.mapTo(tq.list());
 	}
 
@@ -240,7 +240,6 @@ public class TaskServiceImpl implements TaskService{
 		}
 
 		/**
-		 * @param tasksDto
 		 * @param tasks
 		 */
 		public static List<TaskDto> mapTo(List<Task> tasks) {
@@ -256,6 +255,7 @@ public class TaskServiceImpl implements TaskService{
 					.processInstanceId(task.getProcessInstanceId()).assignee(task.getAssignee())
 					.processVariables(task.getProcessVariables())
 					.taskName(task.getName())
+                    .equipName((String) task.getProcessVariables().get("requestedProductCode"))
 					.requestId((String) task.getProcessVariables().get("requestId")).build();
 		}
 		public static List<WaitingRoomTaskRepresentation> mapToWaitingRommList(List<Task> tasks) {
@@ -327,7 +327,7 @@ public class TaskServiceImpl implements TaskService{
 			throw e;
 		} finally {
 			identityService.setAuthenticatedUserId(null);
-		}		
+		}
 	}
 
 }

@@ -1,6 +1,8 @@
 package com.axilog.cov.web.rest;
 
 import com.axilog.cov.domain.RequestQuotation;
+import com.axilog.cov.dto.command.workflow.RequestQuotationCommand;
+import com.axilog.cov.dto.mapper.QuotationMapper;
 import com.axilog.cov.service.RequestQuotationService;
 import com.axilog.cov.web.rest.errors.BadRequestAlertException;
 
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,20 +49,20 @@ public class QuotationResource {
     /**
      * {@code POST  /RequestQuotations} : Create a new RequestQuotation.
      *
-     * @param RequestQuotation the RequestQuotation to create.
+     * @param requestQuotation the RequestQuotationCommand to create.
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new RequestQuotation, or with status {@code 400 (Bad Request)} if the RequestQuotation has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/quotations")
-    public ResponseEntity<RequestQuotation> createQuotation(@RequestBody RequestQuotation requestQuotation) throws URISyntaxException {
+    public ResponseEntity<RequestQuotation> createQuotation(@RequestBody RequestQuotationCommand requestQuotation) throws URISyntaxException, ParseException {
         log.debug("REST request to save Request Quotation : {}", requestQuotation);
-   
-        RequestQuotation result = requestQuotationService.save(requestQuotation);
+
+        RequestQuotation result = requestQuotationService.save(QuotationMapper.toQuotation(requestQuotation));
         return ResponseEntity.created(new URI("/api/quotations/"))
-                .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, null))
+                .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getRequestQuotationId()))
                 .body(result);
-		
-	     
+
+
     }
 
     /**

@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.axilog.cov.facade.impl.workflow;
 
@@ -30,10 +30,10 @@ public class WorkflowStartQuotationRequestFacadeImpl implements WorkflowStartPro
 		Map<String, Object> processVariables = new HashMap<>();
 		String applicationId = startQuotationRequestProcessCommand.getApplicationId();
 		processVariables.put(WorkflowVariables.APPLICATION_ID, applicationId);
-		processVariables.put("waitingRoomAction", "ContainerDoesntExist");
 		processVariables.put("emailDestination", startQuotationRequestProcessCommand.getEmailDestination());
+        processVariables.put("requestedProductCode", startQuotationRequestProcessCommand.getRequestedProductCode());
 
-		
+
 		workflowManagementService.startProcessInstanceByKey(
 				WorkflowProcessDefinitionsEnum.QUOTATION_REQUEST_PROCESS_DEFINITION_ID.getDefinitionId(), applicationId,
 				processVariables);

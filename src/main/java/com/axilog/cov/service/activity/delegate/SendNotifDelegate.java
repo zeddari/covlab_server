@@ -2,7 +2,12 @@ package com.axilog.cov.service.activity.delegate;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import com.axilog.cov.domain.Product;
+import com.axilog.cov.service.ProductService;
 import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.engine.delegate.JavaDelegate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,11 +30,14 @@ public class SendNotifDelegate implements JavaDelegate {
 	@Autowired
 	InventoryService inventoryService;
 
+    @Autowired
+    ProductService productService;
+
 	@Override
 	public void execute(DelegateExecution execution) {
 		String applicationId = getApplicationId(execution);
 		log.info("send notification for the application id {}", applicationId);
-		
+
 		String destintationEmail = (String) execution.getVariable("emailDestination");
 		// TODO send notification
 		otpMailService.sendEmail(destintationEmail,
@@ -37,14 +45,21 @@ public class SendNotifDelegate implements JavaDelegate {
 				"The cotation request will start", false, true);
 
 		// TODO send SMS
-		
-		
+
+
 		//how to decide if container Exist
 		//select inventory where status available.
-		List<Inventory> inventory =	inventoryService.findByStatusIn(Arrays.asList("available"));
-		if (inventory != null && inventory.size()!=0) {
-			execution.setVariable(WorkflowVariables.WAITING_ROOM_ACTION , "ContainerExist");
-		}
+        String containerProductCode = (String) execution.getVariable("requestedProductCode");
+        List<Product> products = productService.findByProductCode(containerProductCode);
+        if (Optional.ofNullable(products).isPresent() && !products.isEmpty()) {
+            Set<Inventory> inventories =	products.get(0).getInventories();
+            if (Optional.ofNullable(inventories).isPresent() && !inventories.isEmpty()) {
+                List<Inventory> inventoriesActive = inventories.stream().filter(inv -> inv.getIsLastInstance().equals(Boolean.TRUE)).collect(Collectors.toList());
+                if (Optional.ofNullable(inventoriesActive).isPresent() && !inventoriesActive.isEmpty())
+                    execution.setVariable(WorkflowVariables.WAITING_ROOM_ACTION , "ContainerExist");
+            }
+        }
+
 	}
 
 	protected String getApplicationId(DelegateExecution execution) {

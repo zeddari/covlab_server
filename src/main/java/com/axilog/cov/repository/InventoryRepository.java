@@ -27,14 +27,14 @@ public interface InventoryRepository extends JpaRepository<Inventory, Long>, Jpa
 	List<Inventory> findByStatusInAndIsLastInstanceAndCapacityLessThan(List<String> status, Boolean isLastInstance, Double capapcity);
 	List<Inventory> findByOutletAndProductAndIsLastInstance(Outlet outlet, Product product, Boolean isLastInstance);
 	List<Inventory> findByLastUpdatedAtBetween(Date lastUpdatedAtstart, Date lastUpdatedAtend);
-	
+
 	List<Inventory> findByOutletOutletId(Long outletId);
-	
+
 	@Query(value = "SELECT current_balance FROM inventory where product_id =:productCode and outlet_id =:outlet and is_last_instance = 0 and last_updated_at = (select max(last_updated_at) from inventory where product_id =:productCode and outlet_id =:outlet and is_last_instance = 0)", nativeQuery = true)
 	Double  getPreviousBalance(@Param ( "productCode" ) String productCode , @Param ( "outlet" ) String outlet);
-	
+
 	@Query(value = "SELECT * FROM inventory where product_id =:productCode and outlet_id =:outlet and is_last_instance = 0 and last_updated_at = (select max(last_updated_at) from inventory where product_id =:productCode and outlet_id =:outlet and is_last_instance = 0)", nativeQuery = true)
 	Inventory  getPreviousBalanceData(@Param ( "productCode" ) String productCode , @Param ( "outlet" ) Long outlet);
-	
-	
+
+
 }

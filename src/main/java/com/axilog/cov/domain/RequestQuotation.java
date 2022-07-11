@@ -2,6 +2,7 @@ package com.axilog.cov.domain;
 
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,14 +32,21 @@ public class RequestQuotation implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Long id;
+
+
     @Column(name = "request_quotation_id")
-    private Long requestQuotationId;
+    private String requestQuotationId;
 
     @Column(name = "customer_name")
     private String customerName;
+
+    @Column(name = "customer_email")
+    private String customerEmail;
 
     @Column(name = "mobile_number")
     private String mobileNumber;
@@ -51,20 +59,23 @@ public class RequestQuotation implements Serializable {
 
     @Column(name = "service_location_long")
     private Double servicelocationlong;
-    
+
     @Column(name = "service_request")
     private String serviceRequest;
-    
+
     @Column(name = "service_request_type")
     private String serviceRequestType;
 
     @Column(name = "service_type")
     private String serviceType;
-    
+
     @Column(name = "service_date")
-    private String serviceDate;
-  
-  
-    
+    private Date serviceDate;
+
+    @Column(name = "service_product")
+    private String product;
+
+
+
 
 }

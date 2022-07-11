@@ -88,6 +88,12 @@ public class TaskQueryBuilder {
 			taskQuery.taskDefinitionKey(query.getTaskDefinitionKey());
 		}
 	}
+
+    public void buildTaskName() {
+        if (!StringUtils.isEmpty(query.getTaskName())) {
+            taskQuery.taskName(query.getTaskName());
+        }
+    }
 	public TaskQuery getTaskQuery() {
 		return taskQuery;
 	}
@@ -124,7 +130,12 @@ public class TaskQueryBuilder {
 			tb.buildTaskDefinitionKey();
 			return this;
 		}
-		
+
+        public Builder processTaskName() {
+            tb.buildTaskName();
+            return this;
+        }
+
 		public Builder sorting() {
 			tb.buildSorting();
 			return this;
