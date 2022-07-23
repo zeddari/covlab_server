@@ -1,5 +1,6 @@
 package com.axilog.cov.service;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -22,7 +23,10 @@ public interface PaymentService {
      */
     void addPayment(InvoiceRequest invoiceRequest ) throws IOException, DocumentException;
 
-    
-   
+    /**
+     * getPdfByInvoicePdf
+     */
+    byte[] getPdfByInvoicePdf(String invoiceId );
+
 
 }

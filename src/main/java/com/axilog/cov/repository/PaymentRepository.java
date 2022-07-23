@@ -15,4 +15,6 @@ import com.axilog.cov.domain.Payment;
 public interface PaymentRepository extends JpaRepository<Payment, Long>, JpaSpecificationExecutor<Payment> {
 
 	List<Payment> findByDriverNameOrSupervisorName(String driverName , String supervisorName );
+	
+	Payment findByInvoiceId(String invoiceId);
 }

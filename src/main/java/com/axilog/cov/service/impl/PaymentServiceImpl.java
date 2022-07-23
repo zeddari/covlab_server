@@ -91,12 +91,15 @@ public class PaymentServiceImpl implements PaymentService {
 		
 		otpMailService.sendEmailWithAttachment(requestQuotation.getCustomerEmail(), "Quotation Payment : " + DateUtil.dateTimeNow(DateUtil.MOI_DATE_ENCODING)
 		, (String)pdfService[0], true, true, poPdf);
-		
-//		il(requestQuotation.getCustomerEmail(),
-//				"Quotation Payment : " + DateUtil.dateTimeNow(DateUtil.MOI_DATE_ENCODING),
-//				(String)pdfService[0], false, true);
+		}
 
-
+	@Override
+	public byte[] getPdfByInvoicePdf(String invoiceId) {
+		Payment payment = paymentRepository.findByInvoiceId(invoiceId);
+		if (payment !=null) {
+			return payment.getInvoiceFile();
+		}
+		return null;
 	}
 
 }

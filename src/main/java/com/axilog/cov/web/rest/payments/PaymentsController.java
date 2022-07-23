@@ -1,5 +1,6 @@
 package com.axilog.cov.web.rest.payments;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -64,6 +66,13 @@ public class PaymentsController {
         log.debug("REST request to generate PDF : {}", invoiceRequest);
         paymentService.addPayment(invoiceRequest);
 		return ResponseEntity.ok("Succes");
+    }
+
+    
+    @GetMapping("/invoicePdf/{invoiceId}")
+    public ResponseEntity<byte[]> getPdf(@PathVariable(name="invoiceId", required=true) String invoiceId) {
+        log.debug("REST request to get Payments for user");
+        return ResponseEntity.ok().body(paymentService.getPdfByInvoicePdf(invoiceId));
     }
 
 
