@@ -1,7 +1,6 @@
 package com.axilog.cov.dto.representation;
 
 import java.util.Date;
-import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,12 +12,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class InvoicePdfDetail {
-	
-	private String customerFirstName;
-	private String customerLastName;
-	private Date customerBirthDate;
+	private String mobileNumber;
+	private String serviceType;
+	private String customerName;
+	private String customerEmail;
+	private String product;
 	private String header;
-	private List<InvoiceDetail> invoiceDetails ;
+	private InvoiceDetail invoiceDetail ;
 	
 
 

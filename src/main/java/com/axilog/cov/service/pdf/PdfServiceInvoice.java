@@ -46,10 +46,11 @@ public class PdfServiceInvoice {
         this.templateEngine = templateEngine;
     }
 
-    public File generatePdf(InvoicePdfDetail details ) throws IOException, DocumentException {
+    public Object[] generatePdf(InvoicePdfDetail details ) throws IOException, DocumentException {
         Context context = getContext(details, "invoicePdfDetail");
         String html = loadAndFillTemplate(context, "invoice2/pdf_invoice");
-        return renderPdf(html, details.getHeader());
+        return new Object[]{html, renderPdf(html, details.getHeader())};
+        //return renderPdf(html, details.getHeader());
     }
 
 
@@ -61,23 +62,10 @@ public class PdfServiceInvoice {
         renderer.layout();
         renderer.createPDF(outputStream);
         outputStream.close();
-        //file.deleteOnExit();
+        file.deleteOnExit();
         return file;
     }
 
-    /**
-     * @param details
-     * @param variableName
-     * @return
-     */
-    public Context getContext(PoPdfDetail details, String variableName) {
-        Context context = new Context();
-        context.setVariable(variableName, details);
-        context.setVariable("baseUrl", baseUrl);
-        context.setVariable("footerImage", poFooterImage);
-        context.setVariable("headerImage", poHeaderImage);
-        return context;
-    }
     
     /**
      * @param objectValue

@@ -2,6 +2,7 @@ package com.axilog.cov.domain;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,8 +18,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  * A Request.
  */
 @Entity
-@Table(name = "paiement")
-public class Paiement implements Serializable {
+@Table(name = "payment")
+public class Payment implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -26,7 +27,7 @@ public class Paiement implements Serializable {
     private Long id;
 
     @Column(name = "created_date")
-    private LocalDate createdDate;
+    private Date createdDate;
 
     @Column(name = "supervisor_name")
     private String supervisorName;
@@ -43,12 +44,19 @@ public class Paiement implements Serializable {
     @Column(name = "reason")
     private String reason;
     
-    @Column(name = "paiement_amount")
-    private Double paiementAmount;
+    @Column(name = "payment_amount")
+    private Double paymentAmount;
+    
+    @Column(name = "invoice_id")
+    private String invoiceId;
+    
+    @Column(name = "invoice_file" ,columnDefinition="LONGBLOB")
+    private byte[] invoiceFile;
+    
 
     @ManyToOne
-    @JsonIgnoreProperties(value = "paiements", allowSetters = true)
-    private Customer customer;
+    @JsonIgnoreProperties(value = "payments", allowSetters = true)
+    private RequestQuotation requestQuotation;
     
 
 
@@ -87,14 +95,14 @@ public class Paiement implements Serializable {
 	/**
 	 * @return the createdDate
 	 */
-	public LocalDate getCreatedDate() {
+	public Date getCreatedDate() {
 		return createdDate;
 	}
 
 	/**
 	 * @param createdDate the createdDate to set
 	 */
-	public void setCreatedDate(LocalDate createdDate) {
+	public void setCreatedDate(Date createdDate) {
 		this.createdDate = createdDate;
 	}
 
@@ -168,33 +176,39 @@ public class Paiement implements Serializable {
 		this.reason = reason;
 	}
 
-	/**
-	 * @return the paiementAmount
-	 */
-	public Double getPaiementAmount() {
-		return paiementAmount;
+
+	public Double getPaymentAmount() {
+		return paymentAmount;
 	}
 
-	/**
-	 * @param paiementAmount the paiementAmount to set
-	 */
-	public void setPaiementAmount(Double paiementAmount) {
-		this.paiementAmount = paiementAmount;
+	public void setPaymentAmount(Double paymentAmount) {
+		this.paymentAmount = paymentAmount;
 	}
 
-	/**
-	 * @return the customer
-	 */
-	public Customer getCustomer() {
-		return customer;
+	public RequestQuotation getRequestQuotation() {
+		return requestQuotation;
 	}
 
-	/**
-	 * @param customer the customer to set
-	 */
-	public void setCustomer(Customer customer) {
-		this.customer = customer;
+	public void setRequestQuotation(RequestQuotation requestQuotation) {
+		this.requestQuotation = requestQuotation;
 	}
+
+	public String getInvoiceId() {
+		return invoiceId;
+	}
+
+	public void setInvoiceId(String invoiceId) {
+		this.invoiceId = invoiceId;
+	}
+
+	public byte[] getInvoiceFile() {
+		return invoiceFile;
+	}
+
+	public void setInvoiceFile(byte[] invoiceFile) {
+		this.invoiceFile = invoiceFile;
+	}
+
     
 
 
