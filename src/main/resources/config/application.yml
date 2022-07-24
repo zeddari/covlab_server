@@ -194,6 +194,7 @@ poEmailApprovalLevel2: 'azeddari@gmail.com'
 baseUrl: http://localhost:4200
 
 # footer & header
+logoImage: 'http://localhost:7001/logo.png'
 poHeaderImage: 'http://localhost:7001/logo.jpg'
 poFooterImage: 'http://localhost:7001/footer.jpg'
 poThreesholdCapacity: 10

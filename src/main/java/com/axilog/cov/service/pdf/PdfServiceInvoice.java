@@ -5,8 +5,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
@@ -15,11 +13,8 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
-import com.axilog.cov.dto.mapper.InventoryMapper;
 import com.axilog.cov.dto.representation.InvoicePdfDetail;
-import com.axilog.cov.dto.representation.PoPdfDetail;
 import com.axilog.cov.service.InventoryService;
-import com.axilog.cov.util.XlsxFileUtil;
 import com.lowagie.text.DocumentException;
 
 @Service
@@ -37,6 +32,10 @@ public class PdfServiceInvoice {
     
     @Value("${poHeaderImage}")
     private String poHeaderImage;
+    
+    @Value("${logoImage}")
+    private String logoImage;
+    
 
 
     
@@ -76,6 +75,7 @@ public class PdfServiceInvoice {
         Context context = new Context();
         context.setVariable(objectName, objectValue);
         context.setVariable("baseUrl", baseUrl);
+        context.setVariable("logoImage", logoImage);
         context.setVariable("footerImage", poFooterImage);
         context.setVariable("headerImage", poHeaderImage);
         return context;
