@@ -256,7 +256,9 @@ public class TaskServiceImpl implements TaskService{
 					.processVariables(task.getProcessVariables())
 					.taskName(task.getName())
                     .equipName((String) task.getProcessVariables().get("requestedProductCode"))
-					.requestId((String) task.getProcessVariables().get("requestId")).build();
+					.requestId((String) task.getProcessVariables().get("requestQuotationId"))
+                    .quotationId((String) task.getProcessVariables().get("requestQuotationId"))
+                .build();
 		}
 		public static List<WaitingRoomTaskRepresentation> mapToWaitingRommList(List<Task> tasks) {
 

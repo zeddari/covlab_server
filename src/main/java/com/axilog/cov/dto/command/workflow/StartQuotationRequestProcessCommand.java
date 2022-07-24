@@ -17,4 +17,5 @@ public class StartQuotationRequestProcessCommand {
 	private String emailDestination;
     private String requestedProductCode;
     private String serviceType;
+    private String requestQuotationId;
 }

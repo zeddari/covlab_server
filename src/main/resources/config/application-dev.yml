@@ -40,7 +40,7 @@ spring:
     url: jdbc:mysql://localhost:3306/vct?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true
     #url: jdbc:mysql://34.218.180.70:3306/altabeeb?useUnicode=true&characterEncoding=utf8&useSSL=false&useLegacyDatetimeCode=false&serverTimezone=UTC&createDatabaseIfNotExist=true
     username: root
-    password: root
+    password: Admin1!
     #username: salehiya
     #password: Salehiya01
     hikari:
@@ -62,8 +62,8 @@ spring:
     otp:
       host: smtp.gmail.com
       port: 587
-      username: oussama.maamar@gmail.com
-      password: sstmjxbceqzuvfus
+      username: devmobile19@gmail.com
+      password: Dev!1234
       properties:
         mail:
           smtp:
@@ -73,8 +73,8 @@ spring:
     po:
       host: smtp.gmail.com
       port: 587
-      username: oussama.maamar@gmail.com
-      password: sstmjxbceqzuvfus
+      username: devmobile19@gmail.com
+      password: Dev!1234
       properties:
         mail:
           smtp:

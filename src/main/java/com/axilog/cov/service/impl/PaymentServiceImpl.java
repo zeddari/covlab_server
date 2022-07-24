@@ -44,7 +44,7 @@ public class PaymentServiceImpl implements PaymentService {
 	PaymentMapper paymentMapper;
 	@Autowired
 	PdfServiceInvoice pdfServiceInvoice;
-	
+
 
 	@Autowired
 	OtpMailService otpMailService;
@@ -88,9 +88,9 @@ public class PaymentServiceImpl implements PaymentService {
 		Payment payment = paymentMapper.toPayment(invoiceRequest, requestQuotation, invoice);
 
 		paymentRepository.save(payment);
-		
-		otpMailService.sendEmailWithAttachment(requestQuotation.getCustomerEmail(), "Quotation Payment : " + DateUtil.dateTimeNow(DateUtil.MOI_DATE_ENCODING)
-		, (String)pdfService[0], true, true, poPdf);
+
+//		otpMailService.sendEmailWithAttachment(requestQuotation.getCustomerEmail(), "Quotation Payment : " + DateUtil.dateTimeNow(DateUtil.MOI_DATE_ENCODING)
+//		, (String)pdfService[0], true, true, poPdf);
 		}
 
 	@Override

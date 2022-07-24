@@ -11,4 +11,5 @@ public class SmsCommand {
 	private String message;
     private String messagingServiceSid;
     private String phone;
+    private String authToken;
 }

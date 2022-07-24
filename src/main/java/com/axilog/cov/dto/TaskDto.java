@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class TaskDto {
 
-	
+
 	private Long id;
     private String taskId;
     private String taskName;
@@ -26,6 +26,7 @@ public class TaskDto {
     private String processInstanceId;
     private String assignee;
     private String requestId;
+    private String quotationId;
     private String equipName;
 	private Map<String, Object> processVariables;
 

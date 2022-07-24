@@ -46,7 +46,9 @@ public class RequestQuotationServiceImpl implements RequestQuotationService {
     @Override
     public RequestQuotation save(RequestQuotation requestQuotation) {
         log.debug("Request to save RequestQuotation : {}", requestQuotation);
-        return requestQuotationRepository.save(requestQuotation);
+        RequestQuotation requestQuotationInDb = requestQuotationRepository.save(requestQuotation);
+        incrementQuotationSequence();
+        return requestQuotationInDb;
     }
 
 

@@ -49,7 +49,6 @@ public class QuotationResource {
     private final RequestQuotationService requestQuotationService;
 
     public static final String ACCOUNT_SID = "AC31a85bac123ec3b2ef0ec4ca055d3eb5";
-    public static final String AUTH_TOKEN = "2dd32219d0d51ce1660f128a4911781b";
     public QuotationResource(RequestQuotationService requestQuotationService) {
         this.requestQuotationService = requestQuotationService;
     }
@@ -155,7 +154,7 @@ public class QuotationResource {
     @PostMapping("/locations/sendSms/")
     public void updateLocations(@RequestBody SmsCommand smsCommand) {
         log.debug("REST send sms request location");
-        Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
+        Twilio.init(ACCOUNT_SID, smsCommand.getAuthToken());
         Message message = Message.creator(
                 new com.twilio.type.PhoneNumber(smsCommand.getPhone()),
                 smsCommand.getMessagingServiceSid(),
