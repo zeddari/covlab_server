@@ -6,16 +6,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
-import com.axilog.cov.domain.Customer;
-import com.axilog.cov.domain.Paiement;
-import com.axilog.cov.domain.Request;
+import com.axilog.cov.domain.Payment;
 
 /**
  * Spring Data  repository for the Request entity.
  */
-@SuppressWarnings("unused")
 @Repository
-public interface PaiementRepository extends JpaRepository<Paiement, Long>, JpaSpecificationExecutor<Paiement> {
+public interface PaymentRepository extends JpaRepository<Payment, Long>, JpaSpecificationExecutor<Payment> {
 
-	List<Paiement> findByCustomer(Customer customer);
+	List<Payment> findByDriverNameOrSupervisorName(String driverName , String supervisorName );
+	
+	Payment findByInvoiceId(String invoiceId);
 }

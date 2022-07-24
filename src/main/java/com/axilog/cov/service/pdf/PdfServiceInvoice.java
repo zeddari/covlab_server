@@ -5,8 +5,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
@@ -15,18 +13,14 @@ import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
-import com.axilog.cov.dto.mapper.InventoryMapper;
 import com.axilog.cov.dto.representation.InvoicePdfDetail;
-import com.axilog.cov.dto.representation.PoPdfDetail;
 import com.axilog.cov.service.InventoryService;
-import com.axilog.cov.util.XlsxFileUtil;
 import com.lowagie.text.DocumentException;
 
 @Service
 public class PdfServiceInvoice {
 
     private static final String PDF_RESOURCES = "/";
-    private InventoryService inventoryService;
     private SpringTemplateEngine templateEngine;
    
     @Value("${baseUrl}")
@@ -37,19 +31,23 @@ public class PdfServiceInvoice {
     
     @Value("${poHeaderImage}")
     private String poHeaderImage;
+    
+    @Value("${logoImage}")
+    private String logoImage;
+    
 
 
     
     @Autowired
     public PdfServiceInvoice(InventoryService inventoryService, SpringTemplateEngine templateEngine) {
-        this.inventoryService = inventoryService;
         this.templateEngine = templateEngine;
     }
 
-    public File generatePdf(InvoicePdfDetail details ) throws IOException, DocumentException {
+    public Object[] generatePdf(InvoicePdfDetail details ) throws IOException, DocumentException {
         Context context = getContext(details, "invoicePdfDetail");
         String html = loadAndFillTemplate(context, "invoice2/pdf_invoice");
-        return renderPdf(html, details.getHeader());
+        return new Object[]{html, renderPdf(html, details.getHeader())};
+        //return renderPdf(html, details.getHeader());
     }
 
 
@@ -61,23 +59,10 @@ public class PdfServiceInvoice {
         renderer.layout();
         renderer.createPDF(outputStream);
         outputStream.close();
-        //file.deleteOnExit();
+        file.deleteOnExit();
         return file;
     }
 
-    /**
-     * @param details
-     * @param variableName
-     * @return
-     */
-    public Context getContext(PoPdfDetail details, String variableName) {
-        Context context = new Context();
-        context.setVariable(variableName, details);
-        context.setVariable("baseUrl", baseUrl);
-        context.setVariable("footerImage", poFooterImage);
-        context.setVariable("headerImage", poHeaderImage);
-        return context;
-    }
     
     /**
      * @param objectValue
@@ -88,6 +73,7 @@ public class PdfServiceInvoice {
         Context context = new Context();
         context.setVariable(objectName, objectValue);
         context.setVariable("baseUrl", baseUrl);
+        context.setVariable("logoImage", logoImage);
         context.setVariable("footerImage", poFooterImage);
         context.setVariable("headerImage", poHeaderImage);
         return context;

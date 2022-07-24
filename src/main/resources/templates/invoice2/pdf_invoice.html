@@ -202,7 +202,7 @@ footer {
  <body>
     <header class="clearfix">
       <div id="logo">
-        <img src="logo.png"></img>
+           <img th:src="@{${logoImage}}"></img>
       </div>
       <div id="company">
         <h2 class="name">Company Name</h2>
@@ -214,42 +214,41 @@ footer {
     <main>
       <div id="details" class="clearfix">
         <div id="client">
-          <div class="to">INVOICE TO:</div>
-          <h2 class="name"><span th:text="${ invoicePdfDetail.customerFirstName}"></span>&nbsp; <span th:text="${ invoicePdfDetail.customerLastName}"></span>	</h2>
-          <div class="address"><span th:text="${ invoicePdfDetail.customerBirthDate}"></span></div>
-          <div class="email"><a href="mailto:john@example.com">john@example.com</a></div>
+          <h2 class="to">INVOICE TO:</h2>
+          <div class="name">Customer Name : <span th:text="${ invoicePdfDetail.customerName}"></span>	</div>
+          <div class="address">Customer Phone : <span th:text="${ invoicePdfDetail.mobileNumber}"></span></div>
+          <div class="email">Customer Email : <span th:text="${ invoicePdfDetail.customerEmail}"></span></div>
         </div>
         <div id="invoice">
-          <h1>INVOICE 3-2-1</h1>
-          <div class="date">Date of Invoice: 01/06/2014</div>
-          <div class="date">Due Date: 30/06/2014</div>
+          <h1><span th:text="${invoicePdfDetail.invoiceDetail.invoiceId}"></span></h1>
+          <div class="date">Date of Invoice: <span th:text="${invoicePdfDetail.invoiceDetail.paymentDate}"></span> </div>
+         <!--  <div class="date">Due Date: 30/06/2014</div> -->
         </div>
       </div>
       <table >
         <thead>
           <tr>
-            <th class="no">Paiement Id</th>
+            <th class="no">Invoice Id</th>
             <th class="desc">Supervisor Name</th>
             <th class="unit">Driver Name</th>
             <th class="desc">Task Id</th>
             <th class="unit">Motif</th>
             <th class="desc">Reason</th>
-            <th class="unit">Paiement Date</th>
+            <th class="unit">Payment Date</th>
             <th class="total">Amount</th>
           </tr>
         </thead>
         <tbody>
-        <tr th:each="invoice : ${ invoicePdfDetail.invoiceDetails}">
+        <tr>
 
-            <td class="no" th:text="${invoice.id}"></td>
-            <td class="desc" th:text="${invoice.supervisorName}"></td>
-            <td class="unit" th:text="${invoice.driverName}"></td>
-            <td class="qty" th:text="${invoice.TaskId}"></td>
-            <td class="unit"  th:text="${invoice.motif}"></td>
-                        <td class="desc" th:text="${invoice.Reason}"></td>
-                        <td class="unit" th:text="${invoice.paiementDate}"></td>
-                        <td class="no" th:text="${invoice.paiementAmount}">-Euro</td>
-            
+            <td class="no" th:text="${invoicePdfDetail.invoiceDetail.invoiceId}"></td>
+            <td class="desc" th:text="${invoicePdfDetail.invoiceDetail.supervisorName}"></td>
+            <td class="unit" th:text="${invoicePdfDetail.invoiceDetail.driverName}"></td>
+            <td class="qty" th:text="${invoicePdfDetail.invoiceDetail.TaskId}"></td>
+            <td class="unit"  th:text="${invoicePdfDetail.invoiceDetail.motif}"></td>
+            <td class="desc" th:text="${invoicePdfDetail.invoiceDetail.Reason}"></td>
+            <td class="unit" th:text="${invoicePdfDetail.invoiceDetail.paymentDate}"></td>
+            <td class="no" th:text="${invoicePdfDetail.invoiceDetail.paymentAmount}"> -$</td>
           </tr>
         </tbody>
         <tfoot>

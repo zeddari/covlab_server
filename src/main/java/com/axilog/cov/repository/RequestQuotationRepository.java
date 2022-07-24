@@ -17,5 +17,6 @@ public interface RequestQuotationRepository extends JpaRepository<RequestQuotati
 
 	List<RequestQuotation> findByRequestQuotationId(Long requestQuotationId);
 
-	
+	RequestQuotation findByRequestQuotationId(String requestQuotationId);
+
 }

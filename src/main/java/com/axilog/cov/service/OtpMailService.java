@@ -55,7 +55,7 @@ public class OtpMailService {
   
 
     @Async
-    public void sendEmailWithAttachment(String to, String subject, String content, boolean isMultipart, boolean isHtml, String fileToAttach) {
+    public void sendEmailWithAttachment(String to, String subject, String content, boolean isMultipart, boolean isHtml, File fileToAttach) {
         log.debug(
             "Send email[multipart '{}' and html '{}'] to '{}' with subject '{}' and content={}",
             isMultipart,
@@ -67,14 +67,14 @@ public class OtpMailService {
 
         // Prepare message using a Spring helper
         MimeMessage mimeMessage = otpMailSender.createMimeMessage();
-        FileSystemResource file = new FileSystemResource(new File(fileToAttach));
+        //FileSystemResource file = new FileSystemResource(new File(fileToAttach));
         try {
             MimeMessageHelper message = new MimeMessageHelper(mimeMessage, isMultipart, StandardCharsets.UTF_8.name());
             message.setTo(to);
             message.setFrom(otpSourceEmail);
             message.setSubject(subject);
             message.setText(content, isHtml);
-            message.addAttachment("orders.pdf", file);
+            message.addAttachment("invoice.pdf", fileToAttach);
             otpMailSender.send(mimeMessage);
             log.debug("Sent email to User '{}'", to);
         } catch (MailException | MessagingException e) {
