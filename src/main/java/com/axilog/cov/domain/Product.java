@@ -59,7 +59,7 @@ public class Product implements Serializable {
     @ManyToOne
     @JsonIgnoreProperties(value = "products", allowSetters = true)
     private Category category;
-    
+
     @OneToMany(fetch = FetchType.EAGER)
     private Set<Substitute> substitutes = new HashSet<>();
 
@@ -67,6 +67,14 @@ public class Product implements Serializable {
     @JsonIgnoreProperties(value = "products", allowSetters = true)
     private DeviceOverviewStats deviceOverviewStats;
 
+    @Column(name = "delivery_price")
+    private Integer deliveryPrice;
+
+    @Column(name = "change_price")
+    private Integer changePrice;
+
+    @Column(name = "take_out_price")
+    private Integer takeOutPrice;
     // jhipster-needle-entity-add-field - JHipster will add fields here
     public Long getId() {
         return id;

@@ -5,6 +5,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
 
+import com.axilog.cov.domain.CategoryType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -109,6 +110,13 @@ public class CategoryResource {
     public ResponseEntity<List<Category>> getAllCategories(CategoryCriteria criteria, Pageable pageable) {
         log.debug("REST request to get Categories by criteria: {}", criteria);
         List<Category> categories = categoryService.findAll();
+        return ResponseEntity.ok().body(categories);
+    }
+
+    @GetMapping("/categoriesType")
+    public ResponseEntity<List<CategoryType>> getAllCategories() {
+        log.debug("REST request to get Categories by criteria");
+        List<CategoryType> categories = categoryService.findAllCategoriesType();
         return ResponseEntity.ok().body(categories);
     }
 

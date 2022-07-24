@@ -1,6 +1,10 @@
 package com.axilog.cov.web.rest;
 
+import com.axilog.cov.domain.CurrentCustomerLocation;
+import com.axilog.cov.domain.Notification;
 import com.axilog.cov.domain.RequestQuotation;
+import com.axilog.cov.dto.command.NewPoCommand;
+import com.axilog.cov.dto.command.SmsCommand;
 import com.axilog.cov.dto.command.workflow.RequestQuotationCommand;
 import com.axilog.cov.dto.mapper.QuotationMapper;
 import com.axilog.cov.service.RequestQuotationService;
@@ -24,6 +28,9 @@ import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
 
+import com.twilio.Twilio;
+import com.twilio.rest.api.v2010.account.Message;
+
 /**
  * REST controller for managing {@link com.axilog.cov.domain.RequestQuotation}.
  */
@@ -41,7 +48,8 @@ public class QuotationResource {
 
     private final RequestQuotationService requestQuotationService;
 
-
+    public static final String ACCOUNT_SID = "AC31a85bac123ec3b2ef0ec4ca055d3eb5";
+    public static final String AUTH_TOKEN = "2dd32219d0d51ce1660f128a4911781b";
     public QuotationResource(RequestQuotationService requestQuotationService) {
         this.requestQuotationService = requestQuotationService;
     }
@@ -81,6 +89,7 @@ public class QuotationResource {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
         RequestQuotation result = requestQuotationService.save(requestQuotation);
+        requestQuotationService.incrementQuotationSequence();
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, requestQuotation.getRequestQuotationId().toString()))
             .body(result);
@@ -127,5 +136,41 @@ public class QuotationResource {
         log.debug("REST request to delete RequestQuotation : {}", id);
         requestQuotationService.delete(id);
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
+    }
+
+    @GetMapping("/requestQuotations/currentVal")
+    public Long getCurrentVal() {
+        log.debug("REST request to get current sequence");
+        return requestQuotationService.getNextRequestQuotationSequence();
+    }
+
+    @PostMapping("/locations/update/")
+    public void updateLocations(@RequestParam String quotationId, @RequestParam String lat, @RequestParam String lng) {
+        log.debug("REST update customer locations");
+        CurrentCustomerLocation currentCustomerLocation = CurrentCustomerLocation.builder().quotationId(quotationId).lat(lat).lng(lng).build();
+        requestQuotationService.saveLocation(currentCustomerLocation);
+        requestQuotationService.createUpdateLocationNotif(lat, lng, quotationId);
+    }
+
+    @PostMapping("/locations/sendSms/")
+    public void updateLocations(@RequestBody SmsCommand smsCommand) {
+        log.debug("REST send sms request location");
+        Twilio.init(ACCOUNT_SID, AUTH_TOKEN);
+        Message message = Message.creator(
+                new com.twilio.type.PhoneNumber(smsCommand.getPhone()),
+                smsCommand.getMessagingServiceSid(),
+                smsCommand.getMessage())
+            .create();
+    }
+
+    @GetMapping("/notifications")
+    public List<Notification> getTop5Notifs() {
+        log.debug("REST get Top 5 notif");
+        return requestQuotationService.getTop5Notif();
+    }
+
+    @PostMapping("/po/save/")
+    public void saveNewPo(@RequestBody NewPoCommand newPoCommand) {
+        requestQuotationService.saveNewPo(newPoCommand);
     }
 }

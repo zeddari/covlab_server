@@ -3,15 +3,14 @@ package com.axilog.cov.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.axilog.cov.domain.*;
+import com.axilog.cov.dto.command.NewPoCommand;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.axilog.cov.domain.Product;
-import com.axilog.cov.domain.RequestQuotation;
-
 public interface RequestQuotationService {
-	
+
 	/**
      * Save a RequestQuotation.
      *
@@ -26,7 +25,7 @@ public interface RequestQuotationService {
      * @return the list of entities.
      */
     Page<RequestQuotation> findAll(Pageable pageable);
-    
+
     /**
      * @return
      */
@@ -41,14 +40,14 @@ public interface RequestQuotationService {
      */
     Optional<RequestQuotation> findOne(Long id);
 
-    
+
     /**
      * @param exampleRequestQuotation
      * @return
      */
     Optional<RequestQuotation> findOne(Example<RequestQuotation> exampleRequestQuotation);
-    
-    
+
+
     /**
      * Delete the "id" RequestQuotation.
      *
@@ -61,4 +60,17 @@ public interface RequestQuotationService {
 	RequestQuotation save(RequestQuotation requestQuotation);
 
 
+    Long getNextRequestQuotationSequence();
+
+    RequestSequence getNextRequestQuotationSequenceObject();
+
+    void incrementQuotationSequence();
+
+    void saveLocation(CurrentCustomerLocation currentCustomerLocation);
+
+    void createUpdateLocationNotif(String lat, String lng, String quotationId);
+
+    List<Notification> getTop5Notif();
+
+    void saveNewPo(NewPoCommand newPoCommand);
 }

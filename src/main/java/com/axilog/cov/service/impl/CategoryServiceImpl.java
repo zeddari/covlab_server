@@ -1,11 +1,14 @@
 package com.axilog.cov.service.impl;
 
+import com.axilog.cov.domain.CategoryType;
+import com.axilog.cov.repository.CategoryTypeRepository;
 import com.axilog.cov.service.CategoryService;
 import com.axilog.cov.domain.Category;
 import com.axilog.cov.repository.CategoryRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,6 +27,9 @@ public class CategoryServiceImpl implements CategoryService {
     private final Logger log = LoggerFactory.getLogger(CategoryServiceImpl.class);
 
     private final CategoryRepository categoryRepository;
+
+    @Autowired
+    private CategoryTypeRepository categoryTypeRepository;
 
     public CategoryServiceImpl(CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
@@ -60,4 +66,9 @@ public class CategoryServiceImpl implements CategoryService {
 	public List<Category> findAll() {
 		return categoryRepository.findAll();
 	}
+
+    @Override
+    public List<CategoryType> findAllCategoriesType() {
+        return categoryTypeRepository.findAll();
+    }
 }

@@ -3,6 +3,7 @@ package com.axilog.cov.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.axilog.cov.domain.CategoryType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -28,7 +29,7 @@ public interface CategoryService {
      * @return the list of entities.
      */
     Page<Category> findAll(Pageable pageable);
-    
+
     List<Category> findAll();
 
 
@@ -46,4 +47,6 @@ public interface CategoryService {
      * @param id the id of the entity.
      */
     void delete(Long id);
+
+    List<CategoryType> findAllCategoriesType();
 }

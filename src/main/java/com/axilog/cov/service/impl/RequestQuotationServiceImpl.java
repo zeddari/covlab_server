@@ -1,17 +1,19 @@
 package com.axilog.cov.service.impl;
 
+import com.axilog.cov.domain.*;
+import com.axilog.cov.dto.command.NewPoCommand;
+import com.axilog.cov.repository.*;
 import com.axilog.cov.service.RequestQuotationService;
-import com.axilog.cov.domain.Product;
-import com.axilog.cov.domain.RequestQuotation;
-import com.axilog.cov.repository.RequestQuotationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,6 +28,17 @@ public class RequestQuotationServiceImpl implements RequestQuotationService {
 
     private final RequestQuotationRepository requestQuotationRepository;
 
+    @Autowired
+    private RequestSequenceRepository requestSequenceRepository;
+
+    @Autowired
+    private CurrentCustomerLocationRepository currentCustomerLocationRepository;
+
+    @Autowired
+    private NotificationRepository notificationRepository;
+
+    @Autowired
+    private NewPoRepository newPoRepository;
     public RequestQuotationServiceImpl(RequestQuotationRepository requestQuotationRepository) {
         this.requestQuotationRepository = requestQuotationRepository;
     }
@@ -69,7 +82,7 @@ public class RequestQuotationServiceImpl implements RequestQuotationService {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 
 	@Override
 	public List<RequestQuotation> findByRequestQuotationId(Long requestQuotationId) {
@@ -77,4 +90,77 @@ public class RequestQuotationServiceImpl implements RequestQuotationService {
 
 	}
 
+    @Override
+    public Long getNextRequestQuotationSequence() {
+        RequestSequence requestSequence = requestSequenceRepository.curVal();
+        if (Optional.ofNullable(requestSequence).isPresent()) {
+            Long currentVal = requestSequence.getCurrentNumber();
+            return currentVal;
+        }
+        return -1L;
+    }
+
+    @Override
+    public RequestSequence getNextRequestQuotationSequenceObject() {
+        return requestSequenceRepository.curVal();
+    }
+
+    @Override
+    public void incrementQuotationSequence() {
+        RequestSequence requestSequence = requestSequenceRepository.curVal();
+        requestSequence.setCurrentNumber(requestSequence.getCurrentNumber() + 1);
+        requestSequenceRepository.save(requestSequence);
+    }
+
+    @Override
+    public void saveLocation(CurrentCustomerLocation currentCustomerLocation) {
+        List<CurrentCustomerLocation> currentCustomerLocationList = currentCustomerLocationRepository.findByQuotationId(currentCustomerLocation.getQuotationId());
+        if (Optional.ofNullable(currentCustomerLocationList).isPresent() && currentCustomerLocationList.size()> 0) {
+            CurrentCustomerLocation currentCustomerLocationInDb = currentCustomerLocationList.get(0);
+            currentCustomerLocationInDb.setLat(currentCustomerLocation.getLat());
+            currentCustomerLocationInDb.setLng(currentCustomerLocation.getLng());
+            currentCustomerLocationRepository.save(currentCustomerLocationInDb);
+        }
+        else {
+            currentCustomerLocationRepository.save(currentCustomerLocation);
+        }
+    }
+
+    @Override
+    public void createUpdateLocationNotif(String lat, String lng, String quotationId) {
+        String title = "New Location Update for Quotation: "+quotationId;
+        String description = "The latitude is: "+lat+", the longitude is: "+lng;
+        Notification notification = Notification.builder().notifTitle(title).notifDescription(description).updateAt(new Date()).build();
+        notificationRepository.save(notification);
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Override
+    public List<Notification> getTop5Notif() {
+        List<Notification> notifications = notificationRepository.findAllByOrderByUpdateAtDesc();
+        return notifications;
+    }
+
+
+    /**
+     *
+     * @param newPoCommand
+     */
+    @Override
+    public void saveNewPo(NewPoCommand newPoCommand) {
+        List<NewPo> newPoList = newPoRepository.findByQuotationIdAndAndPoId(newPoCommand.getQuotationId(), newPoCommand.getPoNumber());
+        if (newPoList != null && !newPoList.isEmpty()) {
+            NewPo newPoInDb = newPoList.get(0);
+            newPoInDb.setPoAmount(newPoInDb.getPoAmount());
+            newPoRepository.save(newPoInDb);
+        }
+        else {
+            NewPo newPo = NewPo.builder().quotationId(newPoCommand.getQuotationId()).poAmount(newPoCommand.getPoAmount()).poId(newPoCommand.getPoNumber()).build();
+            newPoRepository.save(newPo);
+        }
+
+    }
 }
