@@ -21,7 +21,6 @@ import com.lowagie.text.DocumentException;
 public class PdfServiceInvoice {
 
     private static final String PDF_RESOURCES = "/";
-    private InventoryService inventoryService;
     private SpringTemplateEngine templateEngine;
    
     @Value("${baseUrl}")
