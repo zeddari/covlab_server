@@ -59,6 +59,14 @@ public class PaymentsController {
         String currentUser = SecurityUtils.getCurrentUserLogin().get();
         return ResponseEntity.ok().body(paymentService.findAll(currentUser));
     }
+    
+    @GetMapping("/myPaymentsAmount")
+    public ResponseEntity<String> getPaymentAmountTotal() {
+        log.debug("REST request to get Payments amount for user");
+        String currentUser = SecurityUtils.getCurrentUserLogin().get();
+        String paymentAmount = paymentService.getMyPaymentAmountTotal(currentUser);
+        return ResponseEntity.ok().body(paymentAmount);
+    }
 
     
     @PostMapping(value = "/addPayment", consumes = MediaType.APPLICATION_JSON_VALUE )

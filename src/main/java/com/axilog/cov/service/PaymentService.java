@@ -1,6 +1,5 @@
 package com.axilog.cov.service;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -27,6 +26,13 @@ public interface PaymentService {
      * getPdfByInvoicePdf
      */
     byte[] getPdfByInvoicePdf(String invoiceId );
+    
+    /**
+     * 
+     * @param currentUser
+     * @return
+     */
+	String getMyPaymentAmountTotal(String currentUser);
 
 
 }
