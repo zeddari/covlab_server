@@ -40,7 +40,6 @@ public class PdfServiceInvoice {
     
     @Autowired
     public PdfServiceInvoice(InventoryService inventoryService, SpringTemplateEngine templateEngine) {
-        this.inventoryService = inventoryService;
         this.templateEngine = templateEngine;
     }
 
