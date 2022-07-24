@@ -2,8 +2,11 @@ package com.axilog.cov.service.impl;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.mail.MessagingException;
 
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -88,9 +91,17 @@ public class PaymentServiceImpl implements PaymentService {
 		Payment payment = paymentMapper.toPayment(invoiceRequest, requestQuotation, invoice);
 
 		paymentRepository.save(payment);
-
-//		otpMailService.sendEmailWithAttachment(requestQuotation.getCustomerEmail(), "Quotation Payment : " + DateUtil.dateTimeNow(DateUtil.MOI_DATE_ENCODING)
-//		, (String)pdfService[0], true, true, poPdf);
+		
+		try {
+			otpMailService.sendHtmlMail(requestQuotation.getCustomerEmail(), "Quotation Payment : " + DateUtil.dateTimeNow(DateUtil.MOI_DATE_ENCODING)
+			, (String)pdfService[0]);
+		} catch (MessagingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		otpMailService.sendEmailWithAttachment(requestQuotation.getCustomerEmail(), "Quotation Payment : " + DateUtil.dateTimeNow(DateUtil.MOI_DATE_ENCODING)
+		, (String)pdfService[0], true, true, poPdf);
 		}
 
 	@Override
@@ -100,6 +111,18 @@ public class PaymentServiceImpl implements PaymentService {
 			return payment.getInvoiceFile();
 		}
 		return null;
+	}
+
+	@Override
+	public String getMyPaymentAmountTotal(String user) {
+		double paymentsAmount = 0;
+		List<Payment> paymentList = paymentRepository.findByDriverNameOrSupervisorName(user, user);
+		if (paymentList !=null) {
+			for (Payment payment : paymentList) {
+				paymentsAmount = paymentsAmount + payment.getPaymentAmount();			
+			}
+		}
+		return new DecimalFormat("##.##").format(paymentsAmount);
 	}
 
 }
