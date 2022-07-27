@@ -18,4 +18,8 @@ public class StartQuotationRequestProcessCommand {
     private String requestedProductCode;
     private String serviceType;
     private String requestQuotationId;
+    private String serviceLocationLong;
+    private String serviceLocationLati;
+
+    
 }

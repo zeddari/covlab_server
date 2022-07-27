@@ -34,6 +34,8 @@ public class WorkflowStartQuotationRequestFacadeImpl implements WorkflowStartPro
         processVariables.put("requestedProductCode", startQuotationRequestProcessCommand.getRequestedProductCode());
         processVariables.put("serviceType", startQuotationRequestProcessCommand.getServiceType());
         processVariables.put("requestQuotationId", startQuotationRequestProcessCommand.getRequestQuotationId());
+        processVariables.put("serviceLocationLong", startQuotationRequestProcessCommand.getServiceLocationLong());
+        processVariables.put("serviceLocationLat", startQuotationRequestProcessCommand.getServiceLocationLati());
 
 
 		workflowManagementService.startProcessInstanceByKey(
