@@ -160,7 +160,7 @@ public class TaskServiceImpl implements TaskService{
 			try {
 				log.debug("Complete task, taskId = {}, userId = {}", taskId, userId);
 				identityService.setAuthenticatedUserId(userId);
-				//taskService.complete(taskId, variables);
+				taskService.complete(taskId, variables);
 				//update request quotation by adding the signature
 				if (variables.get("signature") != null) {
 				String signature = 	org.apache.commons.lang3.StringUtils.substringAfter((String) variables.get("signature"), "base64,");
