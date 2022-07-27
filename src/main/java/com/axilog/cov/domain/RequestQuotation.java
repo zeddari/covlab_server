@@ -75,6 +75,9 @@ public class RequestQuotation implements Serializable {
     @Column(name = "service_product")
     private String product;
     
+    @Column(name = "signature_file" ,columnDefinition="LONGBLOB")
+    private String signature;
+    
     @OneToMany(mappedBy = "requestQuotation")
     private Set<Payment> payment = new HashSet<>();
 

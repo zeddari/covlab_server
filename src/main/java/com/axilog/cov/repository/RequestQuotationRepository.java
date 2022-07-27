@@ -1,12 +1,12 @@
 package com.axilog.cov.repository;
 
-import com.axilog.cov.domain.RequestQuotation;
-import com.axilog.cov.domain.Product;
-
 import java.util.List;
 
-import org.springframework.data.jpa.repository.*;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
+
+import com.axilog.cov.domain.RequestQuotation;
 
 /**
  * Spring Data  repository for the RequestQuotation entity.
@@ -18,5 +18,6 @@ public interface RequestQuotationRepository extends JpaRepository<RequestQuotati
 	List<RequestQuotation> findByRequestQuotationId(Long requestQuotationId);
 
 	RequestQuotation findByRequestQuotationId(String requestQuotationId);
+	
 
 }
