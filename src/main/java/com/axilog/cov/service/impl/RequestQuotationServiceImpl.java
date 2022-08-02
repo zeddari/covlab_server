@@ -3,7 +3,13 @@ package com.axilog.cov.service.impl;
 import com.axilog.cov.domain.*;
 import com.axilog.cov.dto.command.NewPoCommand;
 import com.axilog.cov.repository.*;
+import com.axilog.cov.service.OtpMailService;
 import com.axilog.cov.service.RequestQuotationService;
+import com.axilog.cov.service.pdf.PdfServiceQuotation;
+import com.axilog.cov.util.DateUtil;
+import com.lowagie.text.DocumentException;
+
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +19,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -36,6 +44,32 @@ public class RequestQuotationServiceImpl implements RequestQuotationService {
 
     @Autowired
     private NotificationRepository notificationRepository;
+    @Autowired
+    private PdfServiceQuotation pdfServiceQuotation;
+    
+	@Autowired
+	OtpMailService otpMailService;
+    
+    @Override
+    public void generatePdf(String requestQuotationId) throws IOException, DocumentException {
+        log.debug("generate PDF for RequestQuotation : {}", requestQuotationId);
+
+        RequestQuotation requestQuotation =  requestQuotationRepository.findByRequestQuotationId(requestQuotationId);
+
+        Object[] pdfService = pdfServiceQuotation.generatePdf(requestQuotation);
+        File poPdf = (File)pdfService[1] ;
+		byte[] invoice = FileUtils.readFileToByteArray(poPdf);
+		requestQuotation.setPdfFile(invoice);
+		requestQuotationRepository.save(requestQuotation);
+		try {
+			otpMailService.sendEmailWithAttachment(requestQuotation.getCustomerEmail(), "Quotation Created : " + DateUtil.dateTimeNow(DateUtil.MOI_DATE_ENCODING), (String)pdfService[0], true, true, poPdf);
+		
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+    }
 
     @Autowired
     private NewPoRepository newPoRepository;

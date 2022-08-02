@@ -77,6 +77,10 @@ public class RequestQuotation implements Serializable {
     
     @Column(name = "signature_file" ,columnDefinition="LONGBLOB")
     private String signature;
+    
+    @Column(name = "pdf_file" ,columnDefinition="LONGBLOB")
+    private byte[]  pdfFile;
+    
     @Column(name = "quotation_amount")
     private Double quotationAmount;
     
