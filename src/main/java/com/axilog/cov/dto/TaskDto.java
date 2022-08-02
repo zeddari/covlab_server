@@ -28,6 +28,7 @@ public class TaskDto {
     private String requestId;
     private String quotationId;
     private String equipName;
+    private String supervisorId;
 	private Map<String, Object> processVariables;
 
 

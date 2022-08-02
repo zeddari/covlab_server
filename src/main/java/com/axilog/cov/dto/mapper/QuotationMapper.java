@@ -22,6 +22,8 @@ public class QuotationMapper {
             .serviceRequestType(requestQuotationCommand.getServiceRequestType())
             .serviceType(requestQuotationCommand.getServiceType())
             .serviceDate(new SimpleDateFormat(DATE_FORMAT).parse(requestQuotationCommand.getServiceDate()))
+            .customerEmail(requestQuotationCommand.getCustomerEmail())
+            .quotationAmount(requestQuotationCommand.getProductAmount())
             .build();
     }
 }

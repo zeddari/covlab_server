@@ -25,5 +25,7 @@ public class RequestQuotationCommand {
     private String serviceType;
     private String serviceDate;
     private String product;
+    private Double productAmount;
+    private String customerEmail;
 
 }
