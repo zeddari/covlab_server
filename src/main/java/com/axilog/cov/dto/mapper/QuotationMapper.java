@@ -17,7 +17,7 @@ public class QuotationMapper {
             .instructions(requestQuotationCommand.getInstructions())
             .mobileNumber(requestQuotationCommand.getMobileNumber())
             .serviceLocationLati(requestQuotationCommand.getServiceLocationLati())
-            .servicelocationlong(requestQuotationCommand.getServiceLocationlong())
+            .servicelocationlong(requestQuotationCommand.getServiceLocationLong())
             .serviceRequest(requestQuotationCommand.getServiceRequest())
             .serviceRequestType(requestQuotationCommand.getServiceRequestType())
             .serviceType(requestQuotationCommand.getServiceType())
