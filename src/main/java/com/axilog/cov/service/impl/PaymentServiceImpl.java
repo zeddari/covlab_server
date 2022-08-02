@@ -93,8 +93,8 @@ public class PaymentServiceImpl implements PaymentService {
 		paymentRepository.save(payment);
 		
 		try {
-			otpMailService.sendHtmlMail(requestQuotation.getCustomerEmail(), "Quotation Payment : " + DateUtil.dateTimeNow(DateUtil.MOI_DATE_ENCODING)
-			, (String)pdfService[0]);
+			otpMailService.sendEmailWithAttachment(requestQuotation.getCustomerEmail(), "Quotation Payment : " + DateUtil.dateTimeNow(DateUtil.MOI_DATE_ENCODING), (String)pdfService[0], true, true, poPdf);
+		
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
