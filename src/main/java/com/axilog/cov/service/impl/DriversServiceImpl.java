@@ -1,11 +1,14 @@
 package com.axilog.cov.service.impl;
 
+import com.axilog.cov.domain.User;
+import com.axilog.cov.repository.UserRepository;
 import com.axilog.cov.service.DriversService;
 import com.axilog.cov.domain.Drivers;
 import com.axilog.cov.repository.DriversRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,6 +27,9 @@ public class DriversServiceImpl implements DriversService {
     private final Logger log = LoggerFactory.getLogger(DriversServiceImpl.class);
 
     private final DriversRepository driversRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     public DriversServiceImpl(DriversRepository driversRepository) {
         this.driversRepository = driversRepository;
@@ -57,7 +63,7 @@ public class DriversServiceImpl implements DriversService {
     }
 
 	@Override
-	public List<Drivers> findAll() {
-		return driversRepository.findAll();
+	public List<User> findAll() {
+        return userRepository.findAllByAuthoritiesContains("ROLE_DRIVER");
 	}
 }

@@ -2,17 +2,26 @@ package com.axilog.cov.service;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
+
+import com.axilog.cov.dto.JsonString;
+import com.axilog.cov.dto.UserDto;
+import com.axilog.cov.service.dto.UserDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +33,7 @@ import com.axilog.cov.repository.AuthorityRepository;
 import com.axilog.cov.repository.UserRepository;
 import com.axilog.cov.security.AuthoritiesConstants;
 import com.axilog.cov.security.SecurityUtils;
-import com.axilog.cov.service.dto.UserDTO;
+
 
 import io.github.jhipster.security.RandomUtil;
 
@@ -42,6 +51,8 @@ public class UserService {
 
     private final AuthorityRepository authorityRepository;
 
+    @Autowired
+    private AuthenticationManagerBuilder authenticationManagerBuilder;
 
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthorityRepository authorityRepository) {
         this.userRepository = userRepository;
@@ -165,7 +176,7 @@ public class UserService {
         user.setPassword(encryptedPassword);
         user.setResetKey(RandomUtil.generateResetKey());
         user.setResetDate(Instant.now());
-        user.setActivated(true);
+        user.setActivated(false);
         if (userDTO.getAuthorities() != null) {
             Set<Authority> authorities = userDTO
                 .getAuthorities()
@@ -306,7 +317,7 @@ public class UserService {
                 }
             );
     }
- 
+
     /**
      * Gets a list of all the authorities.
      * @return a list of all the authorities.
@@ -314,5 +325,115 @@ public class UserService {
     @Transactional(readOnly = true)
     public List<String> getAuthorities() {
         return authorityRepository.findAll().stream().map(Authority::getName).collect(Collectors.toList());
+    }
+
+
+    public List<UserDto> getNotActivatedUsers() {
+        List<User> users = userRepository.findAllByActivatedIsFalse();
+        List<UserDto> usersDto = new ArrayList<>();
+        log.info("users not activated nb: " + users.size());
+        users.forEach(user -> {
+            usersDto.add(fromUserToUserDto(user));
+        });
+        log.info("usersDto nb: " + users.size());
+        return usersDto;
+
+    }
+
+    private UserDto fromUserToUserDto(User user) {
+        UserDto userDto = new UserDto();
+        userDto.setEmail(user.getLogin());
+        userDto.setEmail(user.getEmail());
+        userDto.setFirstName(user.getFirstName());
+        userDto.setLastName(user.getLastName());
+        return userDto;
+    }
+
+
+
+    public String activateUser(String login) {
+        log.info("login: " + login);
+        Optional<User> userExist = userRepository.findOneByLogin(login.toLowerCase());
+        log.info("user Exists? " + userExist.isPresent());
+        if(userExist.isPresent()) {
+            User user = userExist.get();
+            user.setActivated(true);
+            log.info("user Activated? " + user.getActivated());
+            userRepository.save(user);
+
+            return "{\"result\": \"activated\"}";
+        }
+        return "{\"result\": \"error\"}";
+    }
+
+    public String activateUserAndGetAuthorities(String login, List<String> authorities) {
+        log.info("login: " + login);
+        Optional<User> userExist = userRepository.findOneByLogin(login.toLowerCase());
+        log.info("user Exists? " + userExist.isPresent());
+        if(userExist.isPresent()) {
+            User user = userExist.get();
+            user.setActivated(true);
+            Set authoritiee = new HashSet<Authority>();
+            authorities.forEach(authority -> authoritiee.add(Authority.builder().name(authority).build()) );
+            user.setAuthorities(authoritiee);
+            log.info("user Activated? " + user.getActivated());
+            log.info("user = " + user);
+            userRepository.save(user);
+
+            return "{\"result\": \"activated\"}";
+        }
+        return "{\"result\": \"error\"}";
+    }
+
+
+
+
+
+
+    public ResponseEntity<JsonString> changePasswordOfUser(UserDto userDto) throws Exception {
+        Optional<User> userExist = userRepository.findOneByLogin(userDto.getEmail().toLowerCase());
+        if(userExist.isPresent()) {
+            User user = userExist.get();
+
+            String oldPassword = userDto.getPassword();
+            log.info("old password of the user " + userDto.getEmail().toLowerCase() + " to change = " +  oldPassword);
+
+            Authentication authentication = authenticate(user.getLogin(), oldPassword);
+
+            String newPassword = userDto.getPassword();
+            log.info("New password = " +  newPassword);
+
+            String encryptedNewPassword = passwordEncoder.encode(newPassword);
+            log.info("New password encrypted " + encryptedNewPassword);
+
+            user.setPassword(encryptedNewPassword);
+            userRepository.save(user);
+
+            return ResponseEntity.ok(new JsonString("success_update"));
+        }
+        else
+        {
+            log.info(userDto.getEmail() + " does not exist in DB!");
+            return ResponseEntity.ok(new JsonString("user_not_exist"));
+        }
+    }
+
+    private Authentication authenticate(String username, String password) throws Exception {
+        Objects.requireNonNull(username);
+        Objects.requireNonNull(password);
+        try {
+            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
+                username,
+                password
+            );
+
+            return authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+        } catch (DisabledException e) {
+            log.info("user is disabled!");
+            throw new Exception("USER_DISABLED");
+        } catch (BadCredentialsException e) {
+            log.info("Current password is incorrect!");
+            throw new Exception("current_password_incorrect");
+        }
     }
 }

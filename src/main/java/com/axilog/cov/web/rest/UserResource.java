@@ -2,6 +2,9 @@ package com.axilog.cov.web.rest;
 
 import com.axilog.cov.config.Constants;
 import com.axilog.cov.domain.User;
+import com.axilog.cov.dto.JsonString;
+import com.axilog.cov.dto.UserDto;
+import com.axilog.cov.dto.UserWithAuthorities;
 import com.axilog.cov.repository.UserRepository;
 import com.axilog.cov.security.AuthoritiesConstants;
 import com.axilog.cov.service.OtpMailService;
@@ -28,6 +31,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -199,5 +203,35 @@ public class UserResource {
         log.debug("REST request to delete User: {}", login);
         userService.deleteUser(login);
         return ResponseEntity.noContent().headers(HeaderUtil.createAlert(applicationName, "userManagement.deleted", login)).build();
+    }
+
+    @GetMapping(value ="/user/notActivated", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<UserDto> registerUser( ) {
+
+        return userService.getNotActivatedUsers();
+
+    }
+
+    @GetMapping(value ="/user/activate/{login}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> activateUser(@PathVariable(name="login", required=true) String login ) {
+
+        return ResponseEntity.ok(userService.activateUser(login));
+
+    }
+
+
+    @PostMapping(value ="/user/activate", produces = MediaType.APPLICATION_JSON_VALUE)
+    public String activateUserAndGetAuthorities(@RequestBody UserWithAuthorities userWithAuth ) {
+
+        log.info(userWithAuth.getLogin());
+        log.info(userWithAuth.getAuthorities()+"");
+        return userService.activateUserAndGetAuthorities(userWithAuth.getLogin(), userWithAuth.getAuthorities());
+    }
+
+
+    @PostMapping(value ="/user/changePassword", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<JsonString> changePasswordOfUser(@RequestBody UserDto userDto ) throws Exception {
+        return userService.changePasswordOfUser(userDto);
+
     }
 }

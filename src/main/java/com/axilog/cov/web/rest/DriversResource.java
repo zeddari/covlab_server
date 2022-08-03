@@ -2,9 +2,13 @@ package com.axilog.cov.web.rest;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import com.axilog.cov.domain.User;
+import com.axilog.cov.dto.Driver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -101,7 +105,7 @@ public class DriversResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of drivers in body.
      */
 
-   
+
 
     /**
      * {@code GET  /drivers} : get all the drivers.
@@ -111,11 +115,15 @@ public class DriversResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of drivers in body.
      */
     @GetMapping("/drivers")
-    public ResponseEntity<List<Drivers>> getAllDrivers(DriversCriteria criteria, Pageable pageable) {
+    public ResponseEntity<List<Driver>> getAllDrivers(DriversCriteria criteria, Pageable pageable) {
         log.debug("REST request to get Drivers by criteria: {}", criteria);
-        List<Drivers> drivers = driversService.findAll();
+        List<User> users = driversService.findAll();
+        List<Driver> drivers = new ArrayList<>();
+        if (users != null) {
+            drivers = users.stream().map(User -> Driver.builder().idDrivers(User.getId()).nameDrivers(User.getLogin()).build()).collect(Collectors.toList());
+        }
         return ResponseEntity.ok().body(drivers);
-        
+
     }
 
     /**

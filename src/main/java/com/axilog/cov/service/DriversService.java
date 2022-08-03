@@ -2,6 +2,7 @@ package com.axilog.cov.service;
 
 import com.axilog.cov.domain.Drivers;
 
+import com.axilog.cov.domain.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -31,10 +32,9 @@ public interface DriversService {
 
 
     /**
-     * 
      * @return
      */
-    List<Drivers> findAll();
+    List<User> findAll();
     /**
      * Get the "id" tickets.
      *
