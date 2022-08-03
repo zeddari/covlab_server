@@ -17,11 +17,13 @@ public class QuotationMapper {
             .instructions(requestQuotationCommand.getInstructions())
             .mobileNumber(requestQuotationCommand.getMobileNumber())
             .serviceLocationLati(requestQuotationCommand.getServiceLocationLati())
-            .servicelocationlong(requestQuotationCommand.getServicelocationlong())
+            .servicelocationlong(requestQuotationCommand.getServiceLocationLong())
             .serviceRequest(requestQuotationCommand.getServiceRequest())
             .serviceRequestType(requestQuotationCommand.getServiceRequestType())
             .serviceType(requestQuotationCommand.getServiceType())
             .serviceDate(new SimpleDateFormat(DATE_FORMAT).parse(requestQuotationCommand.getServiceDate()))
+            .customerEmail(requestQuotationCommand.getCustomerEmail())
+            .quotationAmount(requestQuotationCommand.getProductAmount())
             .build();
     }
 }

@@ -19,11 +19,13 @@ public class RequestQuotationCommand {
     private String mobileNumber;
     private String instructions;
     private Double serviceLocationLati;
-    private Double servicelocationlong;
+    private Double serviceLocationLong;
     private String serviceRequest;
     private String serviceRequestType;
     private String serviceType;
     private String serviceDate;
     private String product;
+    private Double productAmount;
+    private String customerEmail;
 
 }

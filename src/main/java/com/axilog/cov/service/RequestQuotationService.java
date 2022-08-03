@@ -1,10 +1,13 @@
 package com.axilog.cov.service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
 import com.axilog.cov.domain.*;
 import com.axilog.cov.dto.command.NewPoCommand;
+import com.lowagie.text.DocumentException;
+
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -73,4 +76,6 @@ public interface RequestQuotationService {
     List<Notification> getTop5Notif();
 
     void saveNewPo(NewPoCommand newPoCommand);
+
+	void generatePdf(String requestQuotationId) throws IOException, DocumentException;
 }

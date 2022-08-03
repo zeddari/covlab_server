@@ -33,6 +33,7 @@ import com.axilog.cov.exception.NextTaskNotFoundException;
 import com.axilog.cov.exception.RequestNotFoundException;
 import com.axilog.cov.exception.TaskNotFoundException;
 import com.axilog.cov.repository.RequestQuotationRepository;
+import com.axilog.cov.service.RequestQuotationService;
 import com.axilog.cov.service.SlaService;
 import com.axilog.cov.service.TaskService;
 import com.axilog.cov.service.dto.CompleteWaitingRoomCommand;
@@ -58,6 +59,9 @@ public class TaskServiceImpl implements TaskService{
 	private IdentityService identityService;
 	@Autowired
 	private RequestQuotationRepository requestQuotationRepository;
+	
+	@Autowired
+	RequestQuotationService requestQuotationService;
 
 
 
@@ -162,16 +166,12 @@ public class TaskServiceImpl implements TaskService{
 				identityService.setAuthenticatedUserId(userId);
 				taskService.complete(taskId, variables);
 				//update request quotation by adding the signature
-				if (variables.get("signature") != null) {
-				String signature = 	org.apache.commons.lang3.StringUtils.substringAfter((String) variables.get("signature"), "base64,");
-
 				ArrayList<String> requestQuotationId =	(ArrayList)variables.get("requestQuotationId");
-				RequestQuotation requestQuotation=	requestQuotationRepository.findByRequestQuotationId(requestQuotationId.get(0));
-				requestQuotation.setSignature(signature);
-				requestQuotationRepository.save(requestQuotation);
+				if (variables.get("signature") != null) {
+				addSignatureToQuotation(variables , requestQuotationId.get(0));
+				requestQuotationService.generatePdf(requestQuotationId.get(0));
 				}
-				
-				
+
 			} catch (Exception e) {
 				log.error("error while completing Task with Id" + taskId , e);
 			} finally {
@@ -181,6 +181,14 @@ public class TaskServiceImpl implements TaskService{
 		}
 
 
+	}
+
+	private void addSignatureToQuotation(Map<String, Object> variables, String requestQuotationId) {
+		String signature = 	org.apache.commons.lang3.StringUtils.substringAfter((String) variables.get("signature"), "base64,");
+		
+		RequestQuotation requestQuotation=	requestQuotationRepository.findByRequestQuotationId(requestQuotationId);
+		requestQuotation.setSignature(signature);
+		requestQuotationRepository.save(requestQuotation);
 	}
 
 	/**

@@ -6,8 +6,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.mail.MessagingException;
-
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,6 +80,8 @@ public class PaymentServiceImpl implements PaymentService {
 
 		RequestQuotation requestQuotation = requestQuotationRepository
 				.findByRequestQuotationId(invoiceRequest.getRequestQuotationId());
+		//Add payment amount to payment data
+		invoiceRequest.setPaymentAmount(requestQuotation.getQuotationAmount());
 
 		InvoicePdfDetail invoicePdfDetail = paymentMapper.toInvoicePdfDetail(invoiceRequest, requestQuotation);
 		Object[] pdfService = pdfServiceInvoice.generatePdf(invoicePdfDetail);
@@ -92,16 +92,14 @@ public class PaymentServiceImpl implements PaymentService {
 
 		paymentRepository.save(payment);
 		
-//		try {
-//			otpMailService.sendHtmlMail(requestQuotation.getCustomerEmail(), "Quotation Payment : " + DateUtil.dateTimeNow(DateUtil.MOI_DATE_ENCODING)
-//			, (String)pdfService[0]);
-//		} catch (MessagingException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		try {
+			otpMailService.sendEmailWithAttachment(requestQuotation.getCustomerEmail(), "Quotation Payment : " + DateUtil.dateTimeNow(DateUtil.MOI_DATE_ENCODING), (String)pdfService[0], true, true, poPdf);
 		
-		otpMailService.sendEmailWithAttachment(requestQuotation.getCustomerEmail(), "Quotation Payment : " + DateUtil.dateTimeNow(DateUtil.MOI_DATE_ENCODING)
-		, (String)pdfService[0], true, true, poPdf);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		}
 
 	@Override

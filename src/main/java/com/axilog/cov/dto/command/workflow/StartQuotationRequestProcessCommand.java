@@ -20,6 +20,9 @@ public class StartQuotationRequestProcessCommand {
     private String requestQuotationId;
     private String serviceLocationLong;
     private String serviceLocationLati;
+    private String productAmount;
+    private String supervisorId;
+
 
     
 }
