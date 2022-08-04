@@ -116,8 +116,11 @@ public class PaymentServiceImpl implements PaymentService {
 		double paymentsAmount = 0;
 		List<Payment> paymentList = paymentRepository.findByDriverNameOrSupervisorName(user, user);
 		if (paymentList !=null) {
-			for (Payment payment : paymentList) {
-				paymentsAmount = paymentsAmount + payment.getPaymentAmount();			
+			for (Payment payment : paymentList ) {
+				if (payment!=null && payment.getPaymentAmount()!=null) {
+					paymentsAmount = paymentsAmount + payment.getPaymentAmount();			
+
+				}
 			}
 		}
 		return new DecimalFormat("##.##").format(paymentsAmount);
