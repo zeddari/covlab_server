@@ -28,7 +28,7 @@ public class JWTParser {
 	}
 
 	public String getUserId() throws BadRequestException {
-		if(claims.containsKey(USER) 
+		if(claims.containsKey(USER)
 				&& !claims.get(USER).toString().isEmpty() ) {
 			return claims.get(USER).toString();
 		}
@@ -43,7 +43,7 @@ public class JWTParser {
 		return Arrays.asList(claims.get(GROUPS, String.class));
 	}
 
-	
+
 	private static Claims parseStringToken(final String token, final Key tokenSigningKey) {
 		if (tokenSigningKey == null)
 			return Jwts.parser().parseClaimsJws(token).getBody();
@@ -52,7 +52,7 @@ public class JWTParser {
 		        .parseClaimsJws(token)
 		        .getBody();
 	}
-	
+
 	private static Claims decode(String jwtToken) {
 
 		final Claims[] claims = new Claims[1];
@@ -80,8 +80,8 @@ public class JWTParser {
 	public String checkAndGetAuthorizedGroup() {
 		List<String> groups = getGroups();
 		Optional<String> groupOption = groups.stream()
-				.filter(gr -> gr.equalsIgnoreCase(UserGroupsEnum.ACQUISITORS.getLabel())
-						|| gr.equalsIgnoreCase(UserGroupsEnum.CONSTRUCTORS.getLabel())
+				.filter(gr -> gr.equalsIgnoreCase(UserGroupsEnum.DRIVERS.getLabel())
+						|| gr.equalsIgnoreCase(UserGroupsEnum.SUPERVISOR.getLabel())
 						|| gr.equalsIgnoreCase(UserGroupsEnum.INTEGRATORS.getLabel())
 						|| gr.equalsIgnoreCase(UserGroupsEnum.ADMINISTRATORS.getLabel())
 						)
@@ -96,8 +96,8 @@ public class JWTParser {
 	public void checkAuthorizedGroup() {
 		List<String> groups = getGroups();
 
-		boolean anyMatch = groups.stream().anyMatch(gr -> gr.equalsIgnoreCase(UserGroupsEnum.ACQUISITORS.getLabel())
-				|| gr.equalsIgnoreCase(UserGroupsEnum.CONSTRUCTORS.getLabel())
+		boolean anyMatch = groups.stream().anyMatch(gr -> gr.equalsIgnoreCase(UserGroupsEnum.DRIVERS.getLabel())
+				|| gr.equalsIgnoreCase(UserGroupsEnum.SUPERVISOR.getLabel())
 				|| gr.equalsIgnoreCase(UserGroupsEnum.INTEGRATORS.getLabel())
 				|| gr.equalsIgnoreCase(UserGroupsEnum.ADMINISTRATORS.getLabel()));
 

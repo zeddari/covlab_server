@@ -1,6 +1,7 @@
 package com.axilog.cov.service;
 
 import com.axilog.cov.domain.User;
+import com.axilog.cov.dto.command.QuotationCommand;
 import io.github.jhipster.config.JHipsterProperties;
 
 import java.io.File;
@@ -48,11 +49,16 @@ public class OtpMailService {
     private SpringTemplateEngine templateEngine;
 
     @Value("${otpSourceEmail}")
-    private String otpSourceEmail; 
-    
+    private String otpSourceEmail;
+
     @Value("${activationContactEmail}")
-    private String activationContactEmail; 
-  
+    private String activationContactEmail;
+
+    @Value("${logoImage}")
+    private String logoImage;
+
+    @Value("${servicesImage}")
+    private String servicesImage;
 
     @Async
     public void sendEmailWithAttachment(String to, String subject, String content, boolean isMultipart, boolean isHtml, File fileToAttach) {
@@ -81,7 +87,7 @@ public class OtpMailService {
             log.warn("Email could not be sent to user '{}'", to, e);
         }
     }
-    
+
     @Async
     public void sendEmailWithAttachmentAndMultiple(String[] to, String subject, String content, boolean isMultipart, boolean isHtml, File fileToAttach) {
         log.debug(
@@ -133,6 +139,22 @@ public class OtpMailService {
         } catch (MailException | MessagingException e) {
             log.warn("Email could not be sent to user '{}'", to, e);
         }
+    }
+
+    @Async
+    public void sendEmailFromQuotationTemplate(QuotationCommand quotationCommand, String templateName, String titleKey) {
+        if (quotationCommand.getCustomerEmail() == null) {
+            log.debug("Email doesn't exist for user '{}'", quotationCommand.getCustomerName());
+            return;
+        }
+        Context context = new Context(Locale.getDefault());
+        context.setVariable("quotation", quotationCommand);
+        context.setVariable("servicesImage", servicesImage);
+        context.setVariable("logoImage", logoImage);
+        context.setVariable(BASE_URL, jHipsterProperties.getMail().getBaseUrl());
+        String content = templateEngine.process(templateName, context);
+        String subject = messageSource.getMessage(titleKey, null, Locale.getDefault());
+        sendEmail(quotationCommand.getCustomerEmail(), subject, content, false, true);
     }
 
     @Async

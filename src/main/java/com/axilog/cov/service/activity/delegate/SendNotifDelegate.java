@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.axilog.cov.domain.Product;
+import com.axilog.cov.dto.command.QuotationCommand;
 import com.axilog.cov.service.ProductService;
 import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.engine.delegate.JavaDelegate;
@@ -40,15 +41,20 @@ public class SendNotifDelegate implements JavaDelegate {
 
 		String destintationEmail = (String) execution.getVariable("emailDestination");
 		// TODO send notification
-		otpMailService.sendEmail(destintationEmail,
-				"Quotation request start at : " + DateUtil.dateTimeNow(DateUtil.MOI_DATE_ENCODING),
-				"The cotation request will start", false, true);
-
+//		otpMailService.sendEmail(destintationEmail,
+//				"Quotation request start at : " + DateUtil.dateTimeNow(DateUtil.MOI_DATE_ENCODING),
+//				"The cotation request will start", false, true);
+        QuotationCommand quotationCommand = QuotationCommand.builder().customerEmail(destintationEmail)
+            .requestedProductCode((String) execution.getVariable("requestedProductCode"))
+            .mobileNumber((String) execution.getVariable("customerPhone"))
+            .build();
+        otpMailService.sendEmailFromQuotationTemplate(quotationCommand, "quotation/newQuotation", "quotation.new.request");
 		// TODO send SMS
 
 
 		//how to decide if container Exist
 		//select inventory where status available.
+        execution.setVariable(WorkflowVariables.WAITING_ROOM_ACTION , "ContainerDoesntExist");
         String containerProductCode = (String) execution.getVariable("requestedProductCode");
         List<Product> products = productService.findByProductCode(containerProductCode);
         if (Optional.ofNullable(products).isPresent() && !products.isEmpty()) {

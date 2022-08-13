@@ -1,5 +1,6 @@
 package com.axilog.cov.service.impl;
 
+import com.axilog.cov.domain.Authority;
 import com.axilog.cov.domain.User;
 import com.axilog.cov.repository.UserRepository;
 import com.axilog.cov.service.DriversService;
@@ -18,7 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Service Implementation for managing {@link Tickets}.
+ * Service Implementation for managing {@link Drivers}.
  */
 @Service
 @Transactional
@@ -62,8 +63,9 @@ public class DriversServiceImpl implements DriversService {
         driversRepository.deleteById(id);
     }
 
-	@Override
-	public List<User> findAll() {
-        return userRepository.findAllByAuthoritiesContains("ROLE_DRIVER");
-	}
+    @Override
+    public List<User> findAll() {
+        Authority authority = Authority.builder().name("ROLE_DRIVER").build();
+        return userRepository.findByAuthorities(authority);
+    }
 }

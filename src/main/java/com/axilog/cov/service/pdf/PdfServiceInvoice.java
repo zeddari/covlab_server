@@ -22,22 +22,25 @@ public class PdfServiceInvoice {
 
     private static final String PDF_RESOURCES = "/";
     private SpringTemplateEngine templateEngine;
-   
+
     @Value("${baseUrl}")
     private String baseUrl;
-    
+
     @Value("${poFooterImage}")
     private String poFooterImage;
-    
+
     @Value("${poHeaderImage}")
     private String poHeaderImage;
-    
+
     @Value("${logoImage}")
     private String logoImage;
-    
+
+    @Value("${qrCodeImage}")
+    private String qrCodeImage;
 
 
-    
+
+
     @Autowired
     public PdfServiceInvoice(InventoryService inventoryService, SpringTemplateEngine templateEngine) {
         this.templateEngine = templateEngine;
@@ -63,7 +66,7 @@ public class PdfServiceInvoice {
         return file;
     }
 
-    
+
     /**
      * @param objectValue
      * @param objectName
@@ -74,6 +77,7 @@ public class PdfServiceInvoice {
         context.setVariable(objectName, objectValue);
         context.setVariable("baseUrl", baseUrl);
         context.setVariable("logoImage", logoImage);
+        context.setVariable("qrCodeImage", qrCodeImage);
         context.setVariable("footerImage", poFooterImage);
         context.setVariable("headerImage", poHeaderImage);
         return context;
@@ -82,5 +86,5 @@ public class PdfServiceInvoice {
     public String loadAndFillTemplate(Context context, String templateName) {
         return templateEngine.process(templateName, context);
     }
-    
+
 }

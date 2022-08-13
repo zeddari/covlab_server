@@ -22,7 +22,8 @@ public class StartQuotationRequestProcessCommand {
     private String serviceLocationLati;
     private String productAmount;
     private String supervisorId;
+    private String customerPhone;
 
 
-    
+
 }

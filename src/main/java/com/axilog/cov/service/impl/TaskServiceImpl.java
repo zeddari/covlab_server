@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.axilog.cov.util.DateUtil;
 import org.flowable.common.engine.api.query.QueryProperty;
 import org.flowable.engine.IdentityService;
 import org.flowable.engine.RuntimeService;
@@ -17,6 +18,7 @@ import org.flowable.task.api.Task;
 import org.flowable.task.api.TaskQuery;
 import org.flowable.task.service.impl.TaskQueryProperty;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -59,11 +61,13 @@ public class TaskServiceImpl implements TaskService{
 	private IdentityService identityService;
 	@Autowired
 	private RequestQuotationRepository requestQuotationRepository;
-	
+
 	@Autowired
 	RequestQuotationService requestQuotationService;
 
 
+    @Value("${task.dueDateDays}")
+    private static Integer taskDueDateDays;
 
 	/**
 	 * @param userId
@@ -163,13 +167,20 @@ public class TaskServiceImpl implements TaskService{
 		for (String taskId : taskIds) {
 			try {
 				log.debug("Complete task, taskId = {}, userId = {}", taskId, userId);
+                //copy supervisorName to process varaibles
+                Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
+                if (task != null) {
+                    String supervisorId = (String)variables.get("supervisorId");
+                    task.getProcessVariables().put("supervisorId", supervisorId);
+                }
+
 				identityService.setAuthenticatedUserId(userId);
 				taskService.complete(taskId, variables);
 				//update request quotation by adding the signature
 				ArrayList<String> requestQuotationId =	(ArrayList)variables.get("requestQuotationId");
 				if (variables.get("signature") != null) {
-				addSignatureToQuotation(variables , requestQuotationId.get(0));
-				requestQuotationService.generatePdf(requestQuotationId.get(0));
+                    addSignatureToQuotation(variables , requestQuotationId.get(0));
+                    requestQuotationService.generatePdf(requestQuotationId.get(0));
 				}
 
 			} catch (Exception e) {
@@ -185,9 +196,9 @@ public class TaskServiceImpl implements TaskService{
 
 	private void addSignatureToQuotation(Map<String, Object> variables, String requestQuotationId) {
 		String signature = 	org.apache.commons.lang3.StringUtils.substringAfter((String) variables.get("signature"), "base64,");
-		
+
 		RequestQuotation requestQuotation=	requestQuotationRepository.findByRequestQuotationId(requestQuotationId);
-		requestQuotation.setSignature(signature);
+		requestQuotation.setSignature(signature.getBytes());
 		requestQuotationRepository.save(requestQuotation);
 	}
 
@@ -281,7 +292,10 @@ public class TaskServiceImpl implements TaskService{
                     .equipName((String) task.getProcessVariables().get("requestedProductCode"))
 					.requestId((String) task.getProcessVariables().get("requestQuotationId"))
                     .quotationId((String) task.getProcessVariables().get("requestQuotationId"))
-                .build();
+                    .customerPhone((String) task.getProcessVariables().get("customerPhone"))
+                    .supervisorId((String) task.getProcessVariables().get("supervisorId"))
+                    .dueDate(DateUtil.addDay(task.getCreateTime(), 3))
+                    .build();
 		}
 		public static List<WaitingRoomTaskRepresentation> mapToWaitingRommList(List<Task> tasks) {
 

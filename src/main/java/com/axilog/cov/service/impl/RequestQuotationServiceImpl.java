@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -46,16 +47,15 @@ public class RequestQuotationServiceImpl implements RequestQuotationService {
     private NotificationRepository notificationRepository;
     @Autowired
     private PdfServiceQuotation pdfServiceQuotation;
-    
+
 	@Autowired
 	OtpMailService otpMailService;
-    
+
     @Override
     public void generatePdf(String requestQuotationId) throws IOException, DocumentException {
         log.debug("generate PDF for RequestQuotation : {}", requestQuotationId);
 
         RequestQuotation requestQuotation =  requestQuotationRepository.findByRequestQuotationId(requestQuotationId);
-
         Object[] pdfService = pdfServiceQuotation.generatePdf(requestQuotation);
         File poPdf = (File)pdfService[1] ;
 		byte[] invoice = FileUtils.readFileToByteArray(poPdf);
@@ -63,7 +63,7 @@ public class RequestQuotationServiceImpl implements RequestQuotationService {
 		requestQuotationRepository.save(requestQuotation);
 		try {
 			otpMailService.sendEmailWithAttachment(requestQuotation.getCustomerEmail(), "Quotation Created : " + DateUtil.dateTimeNow(DateUtil.MOI_DATE_ENCODING), (String)pdfService[0], true, true, poPdf);
-		
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

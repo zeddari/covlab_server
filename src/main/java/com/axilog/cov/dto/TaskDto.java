@@ -29,6 +29,7 @@ public class TaskDto {
     private String quotationId;
     private String equipName;
     private String supervisorId;
+    private String customerPhone;
 	private Map<String, Object> processVariables;
 
 

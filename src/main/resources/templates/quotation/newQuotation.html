@@ -202,7 +202,7 @@ footer {
  <body>
     <header class="clearfix">
       <div id="logo">
-          <img th:src="@{${logoImage}}"></img>
+           <img th:src="@{${logoImage}}"></img>
       </div>
       <div id="company">
         <h2 class="name">Seder Group</h2>
@@ -215,69 +215,24 @@ footer {
     <main>
       <div id="details" class="clearfix">
         <div id="client">
-          <h2 class="to">Quotation To:</h2>
-          <div class="name">Customer Name : <span th:text="${ requestQuotation.customerName}"></span>	</div>
-          <div class="address">Customer Phone : <span th:text="${ requestQuotation.mobileNumber}"></span></div>
-          <div class="email">Customer Email : <span th:text="${ requestQuotation.customerEmail}"></span></div>
+          <h2 class="to">Service requested by:</h2>
+          <div class="name">Product Code : <span th:text="${ quotation.requestedProductCode}"></span>	</div>
+          <div class="address">Customer Phone : <span th:text="${ quotation.mobileNumber}"></span></div>
+          <div class="email">Customer Email : <span th:text="${ quotation.customerEmail}"></span></div>
         </div>
-        <div id="invoice">
-          <h1><span th:text="${requestQuotation.requestQuotationId}"></span></h1>
-          <div class="date">Service Date : <span th:text="${requestQuotation.serviceDate}"></span> </div>
-        </div>
+
       </div>
-      <table >
-        <thead>
-          <tr>
-            <th class="no">Request Quotation Id</th>
-            <th class="desc">Customer Name</th>
-            <th class="unit">Service Date</th>
-             <th class="desc">Service Request</th>
-            <th class="desc">Service Request Type</th>
-            <th class="unit">Service Product</th>
-<!--            <th class="desc">Instruction</th>-->
-
-          </tr>
-        </thead>
-        <tbody>
-        <tr>
-
-            <td class="no" th:text="${ requestQuotation.requestQuotationId}"></td>
-            <td class="desc" th:text="${ requestQuotation.customerName}"></td>
-            <td class="unit" th:text="${ requestQuotation.serviceDate}"></td>
-            <td class="qty" th:text="${ requestQuotation.serviceRequest}"></td>
-            <td class="unit"  th:text="${ requestQuotation.serviceRequestType}"></td>
-            <td class="desc" th:text="${ requestQuotation.product}"></td>
-<!--                        <td class="unit"  th:text="${ requestQuotation.instructions}"></td>-->
-
-          </tr>
-        </tbody>
-<!--         <tfoot> -->
-<!--           <tr> -->
-<!--             <td class="qty" colspan="2"></td> -->
-<!--             <td class="qty" colspan="2">SUBTOTAL</td> -->
-<!--             <td>$5,200.00</td> -->
-<!--           </tr> -->
-<!--           <tr> -->
-<!--             <td class="qty" colspan="2"></td> -->
-<!--             <td class="qty" colspan="2">TAX 25%</td> -->
-<!--             <td>$1,300.00</td> -->
-<!--           </tr> -->
-<!--           <tr> -->
-<!--             <td class="qty" colspan="2"></td> -->
-<!--             <td class="qty" colspan="2">GRAND TOTAL</td> -->
-<!--             <td>$6,500.00</td> -->
-<!--           </tr> -->
-<!--         </tfoot> -->
-      </table>
-       <div id="thanks">Thank you!</div>
-       <div id="notices">
-          <div>Signature:<br/><br/><br/>
-           <img  th:src="@{'data:image/jpeg;base64,'+${sigBase64}}" />
-          </div>
-       </div>
+      <div>
+          <img th:src="@{${servicesImage}}"></img>
+      </div>
+      <div id="thanks">Thank you!</div>
+      <div id="notices">
+        <div>NOTICE:</div>
+        <div class="notice">A finance charge of 1.5% will be made on unpaid balances after 30 days.</div>
+      </div>
     </main>
-<!--     <footer> -->
-<!--      Insert Signature -->
-<!--     </footer> -->
+    <footer>
+      Invoice was created on a computer and is valid without the signature and seal.
+    </footer>
   </body>
 </html>

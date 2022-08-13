@@ -34,30 +34,29 @@ public class Payment implements Serializable {
 
     @Column(name = "driver_name")
     private String driverName;
-    
+
     @Column(name = "task_id")
     private String taskId;
-    
+
     @Column(name = "motif")
     private String motif;
-    
+
     @Column(name = "reason")
     private String reason;
-    
+
     @Column(name = "payment_amount")
     private Double paymentAmount;
-    
+
     @Column(name = "invoice_id")
     private String invoiceId;
-    
+
     @Column(name = "invoice_file" ,columnDefinition="LONGBLOB")
     private byte[] invoiceFile;
-    
 
     @ManyToOne
     @JsonIgnoreProperties(value = "payments", allowSetters = true)
     private RequestQuotation requestQuotation;
-    
+
 
 
 	@Override
@@ -209,9 +208,9 @@ public class Payment implements Serializable {
 		this.invoiceFile = invoiceFile;
 	}
 
-    
 
 
 
-   
+
+
 }

@@ -1,5 +1,6 @@
 package com.axilog.cov.repository;
 
+import com.axilog.cov.domain.Authority;
 import com.axilog.cov.domain.User;
 import java.time.Instant;
 import java.util.List;
@@ -39,5 +40,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
    // User save(User user);
 
     List<User> findAllByAuthoritiesContains(String auth);
+
+    List<User> findByAuthorities(Authority authority);
 
 }

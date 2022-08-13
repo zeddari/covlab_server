@@ -111,8 +111,10 @@ spring:
   output:
     ansi:
       console-available: true
-  servlet:    multipart:      enabled: false
-   
+  servlet:
+    multipart:
+      enabled: false
+
 server:
   servlet:
     session:
@@ -194,7 +196,9 @@ poEmailApprovalLevel2: 'azeddari@gmail.com'
 baseUrl: http://localhost:4200
 
 # footer & header
-logoImage: 'http://localhost:7001/logo.png'
+logoImage: 'https://drive.google.com/uc?export=view&id=1rsdOI2OPToLDaDp8SzlsXK9PMklk5Go0'
+servicesImage: 'https://drive.google.com/uc?export=view&id=1g-7yiuQCWO7I9-jmhLCSF_k-vlI4poMG'
+qrCodeImage: 'https://drive.google.com/uc?export=view&id=1cGMjUK9UElF9Q_sdQ1B6XdJPonsTY0Se'
 poHeaderImage: 'http://localhost:7001/logo.jpg'
 poFooterImage: 'http://localhost:7001/footer.jpg'
 poThreesholdCapacity: 10

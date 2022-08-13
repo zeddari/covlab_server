@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Base64;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,22 +24,28 @@ public class PdfServiceQuotation {
 
     private static final String PDF_RESOURCES = "/";
     private SpringTemplateEngine templateEngine;
-   
+
     @Value("${baseUrl}")
     private String baseUrl;
-    
+
     @Value("${poFooterImage}")
     private String poFooterImage;
-    
+
     @Value("${poHeaderImage}")
     private String poHeaderImage;
-    
+
     @Value("${logoImage}")
     private String logoImage;
-    
+
+    @Value("${qrCodeImage}")
+    private String qrCodeImage;
 
 
-    
+    @Value("${logoImage}")
+    private String servicesImage;
+
+
+
     @Autowired
     public PdfServiceQuotation(InventoryService inventoryService, SpringTemplateEngine templateEngine) {
         this.templateEngine = templateEngine;
@@ -50,9 +57,10 @@ public class PdfServiceQuotation {
 //        return new Object[]{html, renderPdf(html, details.getHeader())};
 //        //return renderPdf(html, details.getHeader());
 //    }
-    
+
 	public Object[] generatePdf(RequestQuotation requestQuotation) throws IOException, DocumentException {
-        Context context = getContext(requestQuotation, "requestQuotation");
+        String sigBase64 = new String(requestQuotation.getSignature());
+        Context context = getContext(requestQuotation, "requestQuotation", sigBase64);
         String html = loadAndFillTemplate(context, "invoice2/pdf_quotation");
         return new Object[]{html, renderPdf(html, null)};
 
@@ -71,19 +79,21 @@ public class PdfServiceQuotation {
         return file;
     }
 
-    
+
     /**
      * @param objectValue
      * @param objectName
      * @return
      */
-    public Context getContext(Object objectValue, String objectName) {
+    public Context getContext(Object objectValue, String objectName, String sigBase64) {
         Context context = new Context();
         context.setVariable(objectName, objectValue);
         context.setVariable("baseUrl", baseUrl);
         context.setVariable("logoImage", logoImage);
+        context.setVariable("qrCodeImage", qrCodeImage);
         context.setVariable("footerImage", poFooterImage);
         context.setVariable("headerImage", poHeaderImage);
+        context.setVariable("sigBase64", sigBase64);
         return context;
     }
 
@@ -92,5 +102,5 @@ public class PdfServiceQuotation {
     }
 
 
-    
+
 }

@@ -74,20 +74,20 @@ public class RequestQuotation implements Serializable {
 
     @Column(name = "service_product")
     private String product;
-    
+
     @Column(name = "signature_file" ,columnDefinition="LONGBLOB")
-    private String signature;
-    
+    private byte[] signature;
+
     @Column(name = "pdf_file" ,columnDefinition="LONGBLOB")
     private byte[]  pdfFile;
-    
+
     @Column(name = "quotation_amount")
     private Double quotationAmount;
-    
+
     @OneToMany(mappedBy = "requestQuotation")
     private Set<Payment> payment = new HashSet<>();
 
-    
+
 
 
 
